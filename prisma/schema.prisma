@@ -1,0 +1,316 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Cohort {
+  id                 String              @id @default(cuid())
+  name               String
+  slug               String              @unique
+  description        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  users              User[]
+  vendors            Vendor[]
+  reviews            Review[]
+  requests           VendorRequest[]
+  invites            Invite[]
+  badgeNominations   BadgeNomination[]
+  sprints            Sprint[]
+  guestPostExchanges GuestPostExchange[]
+}
+
+model User {
+  id                        String              @id @default(cuid())
+  name                      String?
+  email                     String              @unique
+  emailVerified             DateTime?
+  image                     String?
+  startupUrl                String?
+  startupName               String?
+  bio                       String?
+  profileSlug               String?             @unique
+  role                      String              @default("founder")
+  publicProfileEnabled      Boolean             @default(false)
+  profileCompletePercentage Int                 @default(0)
+  gscAccessToken            String?
+  gscRefreshToken           String?
+  gscEmail                  String?
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+  cohortId                  String?
+  cohort                    Cohort?             @relation(fields: [cohortId], references: [id])
+  reviews                   Review[]
+  helpfulVotesGiven         HelpfulVote[]
+  vendorRequests            VendorRequest[]
+  badges                    Badge[]
+  backlinkLogs              BacklinkLog[]
+  nominationsGiven          BadgeNomination[]   @relation("NominationsGiven")
+  nominationsReceived       BadgeNomination[]   @relation("NominationsReceived")
+  guestPostsRequested       GuestPostExchange[] @relation("GuestPostsRequested")
+  guestPostsReceived        GuestPostExchange[] @relation("GuestPostsReceived")
+  reputationImports         ReputationImport[]
+  accounts                  Account[]
+  sessions                  Session[]
+
+  @@index([cohortId])
+}
+
+model Vendor {
+  id                String          @id @default(cuid())
+  name              String
+  category          String
+  contact           String?
+  badgeAwardSecret  String?
+  cohortId          String
+  cohort            Cohort          @relation(fields: [cohortId], references: [id])
+  reviews           Review[]
+  fulfilledRequests VendorRequest[] @relation("FulfilledRequestVendor")
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([cohortId, category])
+}
+
+model Investor {
+  id               String   @id @default(cuid())
+  name             String
+  email            String?
+  company          String?
+  badgeAwardSecret String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Review {
+  id                 String        @id @default(cuid())
+  rating             Int
+  comment            String?
+  usedVendor         Boolean       @default(false)
+  workType           String?
+  disclosedIncentive Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  userId             String
+  user               User          @relation(fields: [userId], references: [id])
+  vendorId           String
+  vendor             Vendor        @relation(fields: [vendorId], references: [id])
+  cohortId           String
+  cohort             Cohort        @relation(fields: [cohortId], references: [id])
+  helpfulVotes       HelpfulVote[]
+
+  @@index([vendorId, createdAt])
+  @@index([cohortId])
+}
+
+model HelpfulVote {
+  id        String   @id @default(cuid())
+  value     Boolean
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+}
+
+model VendorRequest {
+  id                String    @id @default(cuid())
+  category          String
+  description       String
+  status            String    @default("open")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  fulfilledAt       DateTime?
+  adminNote         String?
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+  cohortId          String
+  cohort            Cohort    @relation(fields: [cohortId], references: [id])
+  fulfilledVendorId String?
+  fulfilledVendor   Vendor?   @relation("FulfilledRequestVendor", fields: [fulfilledVendorId], references: [id])
+
+  @@index([cohortId, status, createdAt])
+  @@index([userId])
+  @@index([fulfilledVendorId])
+}
+
+model Invite {
+  id         String    @id @default(cuid())
+  email      String
+  token      String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  revokedAt  DateTime?
+  cohortId   String
+  cohort     Cohort    @relation(fields: [cohortId], references: [id])
+
+  @@index([cohortId, acceptedAt])
+  @@index([email])
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  type        String
+  description String?
+  issuerType  String   @default("auto")
+  issuerId    String?
+  earnedAt    DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([issuerType])
+}
+
+model BadgeAwardAttempt {
+  id         String   @id @default(cuid())
+  issuerType String
+  secretHash String
+  success    Boolean  @default(false)
+  error      String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([issuerType, secretHash, createdAt])
+  @@index([createdAt])
+}
+
+model BadgeNomination {
+  id           String    @id @default(cuid())
+  badgeType    String
+  reason       String
+  status       String    @default("pending")
+  createdAt    DateTime  @default(now())
+  reviewedAt   DateTime?
+  reviewerNote String?
+  nominatorId  String
+  nominator    User      @relation("NominationsGiven", fields: [nominatorId], references: [id])
+  nomineeId    String
+  nominee      User      @relation("NominationsReceived", fields: [nomineeId], references: [id])
+  cohortId     String
+  cohort       Cohort    @relation(fields: [cohortId], references: [id])
+
+  @@index([cohortId, status])
+  @@index([nominatorId])
+  @@index([nomineeId])
+}
+
+model BacklinkLog {
+  id              String    @id @default(cuid())
+  referringDomain String
+  targetUrl       String?
+  anchorText      String?
+  contextText     String?
+  linkType        String    @default("dofollow")
+  linkedAt        DateTime?
+  status          String    @default("pending")
+  lastCheckedAt   DateTime?
+  discoveredAt    DateTime  @default(now())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+model ReputationImport {
+  id             String   @id @default(cuid())
+  sourceInstance String
+  sourceName     String
+  founderId      String
+  packetJson     String
+  signature      String
+  verifiedAt     DateTime @default(now())
+  importedAt     DateTime @default(now())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Sprint {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  goalReviewCount Int      @default(3)
+  startsAt        DateTime
+  endsAt          DateTime
+  createdAt       DateTime @default(now())
+  cohortId        String
+  cohort          Cohort   @relation(fields: [cohortId], references: [id])
+
+  @@index([cohortId, startsAt, endsAt])
+}
+
+model GuestPostExchange {
+  id           String   @id @default(cuid())
+  topic        String
+  message      String?
+  status       String   @default("pending")
+  publishedUrl String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  requesterId  String
+  requester    User     @relation("GuestPostsRequested", fields: [requesterId], references: [id])
+  recipientId  String
+  recipient    User     @relation("GuestPostsReceived", fields: [recipientId], references: [id])
+  cohortId     String
+  cohort       Cohort   @relation(fields: [cohortId], references: [id])
+
+  @@index([cohortId, status])
+  @@index([requesterId])
+  @@index([recipientId])
+}
+
+model GscState {
+  id        String   @id @default(cuid())
+  state     String   @unique
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

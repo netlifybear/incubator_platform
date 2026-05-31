@@ -1,0 +1,139 @@
+{
+  "mode": "founder",
+  "ranking_weights": {
+    "velocity": 0.35,
+    "specificity": 0.25,
+    "recency": 0.15,
+    "rating": 0.10,
+    "responses": 0.08,
+    "volume": 0.07
+  },
+  "rules": [
+    {
+      "rule_id": "F_LEN_001",
+      "category": "length",
+      "signal": "min_length",
+      "threshold": 100,
+      "severity": "error",
+      "message_template": "Your review is too short. Founder reviews must include specific details to be credible.",
+      "google_justification": "Professional service reviews need detail to carry authority weight",
+      "actionable_advice": "Describe: what service, what outcome, what went well, what could improve"
+    },
+    {
+      "rule_id": "F_LEN_002",
+      "category": "length",
+      "signal": "optimal_length",
+      "threshold": 200,
+      "severity": "suggestion",
+      "message_template": "Reviews with 200+ words perform best for professional services",
+      "google_justification": "Longer, detailed content signals expertise and authority",
+      "actionable_advice": "Add a specific outcome with dates, amounts, or measurable results"
+    },
+    {
+      "rule_id": "F_SPEC_001",
+      "category": "specificity",
+      "signal": "has_service_mention",
+      "threshold": 1,
+      "severity": "error",
+      "message_template": "Name the specific vendor or professional service you used",
+      "google_justification": "Named entities help Google understand the relationship context",
+      "actionable_advice": "Example: 'Hired Smith Law for trademark filing' not just 'legal services'"
+    },
+    {
+      "rule_id": "F_SPEC_002",
+      "category": "specificity",
+      "signal": "has_outcome",
+      "threshold": 1,
+      "severity": "warning",
+      "message_template": "What was the specific outcome or result?",
+      "google_justification": "Outcome-focused content aligns with commercial search intent",
+      "actionable_advice": "Example: 'They saved me $5,000 on taxes' or 'The trademark was approved in 4 months'"
+    },
+    {
+      "rule_id": "F_SPEC_003",
+      "category": "specificity",
+      "signal": "has_number",
+      "threshold": 1,
+      "severity": "warning",
+      "message_template": "Include specific numbers (dates, amounts, timeframes) to build credibility",
+      "google_justification": "Verifiable data points increase E-E-A-T for professional content",
+      "actionable_advice": "Example: 'Filed Q3 2025', 'cost $1,200', 'delivered in 3 days'"
+    },
+    {
+      "rule_id": "F_SPEC_004",
+      "category": "specificity",
+      "signal": "has_incubator_context",
+      "threshold": 0,
+      "severity": "suggestion",
+      "message_template": "Mention your incubator affiliation if relevant",
+      "google_justification": "Incubator verification adds authority to the reviewer",
+      "actionable_advice": "Example: 'As a founder in Rockville Seed Fund, I needed...'"
+    },
+    {
+      "rule_id": "F_BAL_001",
+      "category": "balance",
+      "signal": "has_both_sentiments",
+      "threshold": 1,
+      "severity": "suggestion",
+      "message_template": "Balanced reviews (pros and cons) are most trusted by other founders",
+      "google_justification": "B2B decision-makers expect balanced, honest assessments",
+      "actionable_advice": "List one strength AND one constructive observation"
+    },
+    {
+      "rule_id": "F_DISC_001",
+      "category": "disclosure",
+      "signal": "disclosed_incentive",
+      "threshold": 1,
+      "severity": "error",
+      "message_template": "You must disclose if you received any discount or free service for this review",
+      "google_justification": "FTC requires disclosure; platform policy requires it for founder reviews",
+      "actionable_advice": "Check the disclosure box. Honest disclosure protects your reputation."
+    },
+    {
+      "rule_id": "F_SPAM_001",
+      "category": "spam",
+      "signal": "keyword_repetition_density",
+      "threshold": 0.15,
+      "severity": "warning",
+      "message_template": "You are repeating the same word or phrase too often",
+      "google_justification": "Google's spam detection flags unnatural repetition",
+      "actionable_advice": "Try using synonyms or restating naturally"
+    },
+    {
+      "rule_id": "F_SPAM_002",
+      "category": "spam",
+      "signal": "has_excessive_punctuation",
+      "threshold": 1,
+      "severity": "warning",
+      "message_template": "Avoid ALL CAPS, multiple exclamation marks (!!!), or question marks (???)",
+      "google_justification": "Excessive punctuation is a spam signal",
+      "actionable_advice": "Write naturally, as if speaking to a fellow founder"
+    },
+    {
+      "rule_id": "F_RECIP_001",
+      "category": "reciprocity",
+      "signal": "review_completed",
+      "threshold": 1,
+      "severity": "info",
+      "message_template": "This review will appear on your public founder profile and may help your SEO",
+      "google_justification": "Founder profiles with structured data and reviews may earn backlink authority",
+      "actionable_advice": "A detailed review helps you build portable reputation across incubators"
+    }
+  ],
+  "response_guidelines": {
+    "max_response_hours": 24,
+    "do_tips": [
+      "Thank the founder by name",
+      "Address specific concerns with data or timelines",
+      "Offer to resolve issues offline",
+      "Demonstrate expertise in your response",
+      "Respond within 24 hours (founders expect faster replies)"
+    ],
+    "dont_tips": [
+      "Argue with specific claims — provide facts instead",
+      "Ignore negative reviews (B2B reputation is critical)",
+      "Make excuses without solutions",
+      "Dispute founder's incubator affiliation or credibility"
+    ]
+  }
+}

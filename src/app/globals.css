@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #181d26;
+  --muted: rgb(4 14 32 / 69%);
+  --panel: #ffffff;
+  --panel-strong: #f8fafc;
+  --accent: #1b61c9;
+  --accent-strong: #254fad;
+  --border: #e0e2e6;
+  --shadow-soft: 0 0 1px rgb(0 0 0 / 32%), 0 0 2px rgb(0 0 0 / 8%), 0 1px 3px rgb(45 127 249 / 28%);
+  --shadow-ambient: 0 0 20px rgb(15 48 106 / 5%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Avenir Next", "Trebuchet MS", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", "Avenir Next", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0.08px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}

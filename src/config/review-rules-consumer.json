@@ -1,0 +1,120 @@
+{
+  "mode": "consumer",
+  "ranking_weights": {
+    "velocity": 0.42,
+    "recency": 0.25,
+    "rating": 0.15,
+    "volume": 0.08,
+    "responses": 0.05,
+    "keywords": 0.05
+  },
+  "rules": [
+    {
+      "rule_id": "C_LEN_001",
+      "category": "length",
+      "signal": "min_length",
+      "threshold": 20,
+      "severity": "suggestion",
+      "message_template": "Your review is short. Even 2-3 specific sentences help others more than 'Great service!'",
+      "google_justification": "Google's algorithm favors detailed reviews for local justifications",
+      "actionable_advice": "Add one specific detail: what service did you receive? What made it good or bad?"
+    },
+    {
+      "rule_id": "C_LEN_002",
+      "category": "length",
+      "signal": "optimal_length",
+      "threshold": 50,
+      "severity": "suggestion",
+      "message_template": "Reviews with 50+ words get more engagement and are preferred by search engines",
+      "google_justification": "Correlation between length and helpfulness votes",
+      "actionable_advice": "Add a specific outcome, a positive detail, and one constructive point"
+    },
+    {
+      "rule_id": "C_SPEC_001",
+      "category": "specificity",
+      "signal": "has_service_mention",
+      "threshold": 1,
+      "severity": "suggestion",
+      "message_template": "Mention the specific service or product you used",
+      "google_justification": "Google uses review text to match searches like 'emergency plumber to clear clog'",
+      "actionable_advice": "Example: 'Used their tax filing service' not just 'Great service'"
+    },
+    {
+      "rule_id": "C_SPEC_002",
+      "category": "specificity",
+      "signal": "has_location",
+      "threshold": 0,
+      "severity": "suggestion",
+      "message_template": "Mentioning the location helps others find this business",
+      "google_justification": "Local pack rankings benefit from geographic relevance",
+      "actionable_advice": "Add: '...at their downtown location' or '...in the Northside neighborhood'"
+    },
+    {
+      "rule_id": "C_SPEC_003",
+      "category": "specificity",
+      "signal": "has_number",
+      "threshold": 0,
+      "severity": "suggestion",
+      "message_template": "Specific numbers (dates, amounts, wait times) make your review more trustworthy",
+      "google_justification": "Verifiable details increase E-E-A-T signal",
+      "actionable_advice": "Example: 'They saved me $500' or 'Food arrived in 15 minutes'"
+    },
+    {
+      "rule_id": "C_BAL_001",
+      "category": "balance",
+      "signal": "has_both_sentiments",
+      "threshold": 1,
+      "severity": "suggestion",
+      "message_template": "Reviews with both positive and constructive points are most trusted by consumers",
+      "google_justification": "Balanced reviews receive more helpful votes, which may influence ranking",
+      "actionable_advice": "Add one thing that went well AND one thing that could improve"
+    },
+    {
+      "rule_id": "C_SPAM_001",
+      "category": "spam",
+      "signal": "keyword_repetition_density",
+      "threshold": 0.15,
+      "severity": "warning",
+      "message_template": "You are repeating the same word or phrase — this can look like keyword stuffing",
+      "google_justification": "Google's spam detection flags unnatural repetition",
+      "actionable_advice": "Try using synonyms or restating naturally"
+    },
+    {
+      "rule_id": "C_SPAM_002",
+      "category": "spam",
+      "signal": "has_excessive_punctuation",
+      "threshold": 1,
+      "severity": "warning",
+      "message_template": "Avoid ALL CAPS, multiple exclamation marks (!!!), or question marks (???)",
+      "google_justification": "Excessive punctuation is a spam signal",
+      "actionable_advice": "Write naturally, as if speaking to a friend"
+    },
+    {
+      "rule_id": "C_DISC_001",
+      "category": "disclosure",
+      "signal": "disclosed_incentive",
+      "threshold": 1,
+      "severity": "suggestion",
+      "message_template": "If you received a discount or free service, please check the disclosure box",
+      "google_justification": "FTC requires disclosure; Google may penalize undisclosed incentivized reviews",
+      "actionable_advice": "Honest disclosure protects you and the business"
+    }
+  ],
+  "response_guidelines": {
+    "max_response_hours": 48,
+    "do_tips": [
+      "Thank the customer by name",
+      "Reference specific details from their review",
+      "Apologize when appropriate for negative reviews",
+      "Offer to resolve issues offline (email/phone)",
+      "Sign off with a name or team"
+    ],
+    "dont_tips": [
+      "Use promotional language or discounts in responses",
+      "Share customer personal details",
+      "Argue or get defensive with negative reviews",
+      "Use generic, automated responses",
+      "Ignore reviews (especially negative ones)"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+type CohortScopedUser = {
+  cohortId?: string | null;
+};
+
+type DisplayableFounder = {
+  name?: string | null;
+  email?: string | null;
+};
+
+export function hasActiveCohort(
+  user: CohortScopedUser | null,
+): user is CohortScopedUser & { cohortId: string } {
+  return Boolean(user?.cohortId);
+}
+
+export function canAccessCohortResource(
+  user: CohortScopedUser | null,
+  resourceCohortId: string,
+) {
+  return Boolean(user?.cohortId && user.cohortId === resourceCohortId);
+}
+
+export function getFounderDisplayName(founder: DisplayableFounder) {
+  return founder.name ?? founder.email ?? "Unknown founder";
+}
