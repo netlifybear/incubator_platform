@@ -4,6 +4,8 @@
 
 A public, verifiable credibility page for each founder that investors can use as a due diligence signal. Complements the existing JWT export with a human-readable + machine-readable report.
 
+Current adjacent implementation: signed reputation export/import already exists, and public founder profiles already expose aggregate reputation stats. This plan should build a governed, investor-readable report on top of that baseline rather than re-create portability.
+
 ## Why This Completes the Loop
 
 ```
@@ -76,9 +78,10 @@ Returns JSON with the same data, signed with `NEXTAUTH_SECRET` (same pattern as 
 | Review stats (count, avg rating) | Public | Aggregate only — no review text exposed |
 | Helpful vote ratio | Public | Aggregate signal |
 | Badges + issuance dates | Public | Already on profile |
-| Backlink domains | Public | Trust signal |
+| Backlink counts | Public | Trust signal |
+| Backlink domains | Opt-in | Domains can reveal marketing strategy or partner relationships |
 | Individual review text | Private | Cohort-scoped, not in report |
-| GSC data | Opt-in | Founder must connect GSC |
+| GSC data | Private or explicit opt-in aggregate only | Founder must connect GSC; raw search data should not become public by default |
 
 ## Open Questions
 
@@ -86,3 +89,4 @@ Returns JSON with the same data, signed with `NEXTAUTH_SECRET` (same pattern as 
 - Should investors need to authenticate to view? (Suggested: no — public by design, like a credit report)
 - Should the badge verification hash be embeddable on the founder's own site? (Like the SVG badge but for the full report)
 - PDF: server-rendered via Puppeteer or just a print stylesheet? (Print stylesheet is simpler, no dependency)
+- Should backlink domains and GSC metrics be founder-selected disclosures rather than automatically included?

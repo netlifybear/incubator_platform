@@ -9,6 +9,9 @@ The platform implementation is built through the private trust loop, public repu
 Use these docs by purpose:
 
 - `OPERATING.md` — route map, demo accounts, smoke flow, architecture, env vars, DB-backed test setup, and implementation guardrails.
+- `docs/product.md` — product thesis, flywheel, public authority guardrails, and strategic risks.
+- `docs/traceability.md` — business thesis to feature/spec mapping.
+- `plans/` — current/future implementation plans. Some files are intentionally marked implemented or deferred to prevent stale work.
 
 ## Setup
 
@@ -43,6 +46,6 @@ See `OPERATING.md` for demo accounts, full route map, smoke test flow, architect
 ## Verification
 
 ```bash
-npm test          # 59 tests (node:test)
-npm run build     # Next.js production build (27 routes)
+npm test          # 95 tests across 28 test files (node:test)
+npm run build     # Next.js production build (38 routes)
 ```

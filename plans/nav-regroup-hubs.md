@@ -4,6 +4,10 @@
 
 Replace the feature-grouped sidebar (Core / Reputation / Growth) with three story-based entry points that answer "what do I want to do?", not "what feature category does this belong to?"
 
+## Status
+
+Implemented. The sidebar now uses Write, Connect, Grow, and an admin-only Admin link. `/connect` and `/grow` exist, and the prior feature routes still work at their existing URLs.
+
 ## Sidebar change
 
 **Before (4 groups, 13 links):**
@@ -24,7 +28,9 @@ Grow      →  /grow
 Admin     →  /admin/requests   (admin only, unchanged)
 ```
 
-Every existing route still works at its current URL. Only the sidebar nav changes.
+Actual implementation points the admin link to `/admin`, with `/admin/requests` still available as a tab/page inside the admin area.
+
+Every existing route still works at its current URL. Only the sidebar nav changed.
 
 ---
 
@@ -106,6 +112,8 @@ Primary action in hero: **"Enable your public profile"** (if disabled) or **"Vie
 
 ## Files to create / modify
 
+Status: completed.
+
 ### New files
 
 | File | Purpose |
@@ -128,6 +136,8 @@ All existing routes keep working at their current URLs. Only the sidebar nav cha
 
 ## Implementation order
 
+Status: completed.
+
 1. `app-shell.tsx` — rewrite nav groups to 3 links
 2. `page.tsx` — add sprint progress + streak to hero, change CTA
 3. `app/connect/page.tsx` — new hub page
@@ -135,10 +145,10 @@ All existing routes keep working at their current URLs. Only the sidebar nav cha
 
 ---
 
-## Open questions (decide before starting)
+## Follow-up Questions
 
-1. **Sprint progress on Write hub** — show only the active sprint's contributor entry for the current user, or the full sprint leaderboard? (Recommended: just the user's progress + goal, "View sprint →" link. Keeps the hero clean.)
+1. **Sprint progress on Write hub** — current implementation favors compact personal progress. Revisit only if the home hero needs cohort-level competition.
 
-2. **Connect hub "Answer" action** — clicking a targeted request should ideally open a mini reply form inline, not redirect to the vendor page. Do we want to build that, or keep it as a link to the vendor page with the reviewer's name highlighted? (Recommended: link to vendor page for now, inline reply is future.)
+2. **Connect hub "Answer" action** — current implementation links into existing request/vendor workflows. Inline answers remain a future improvement.
 
-3. **Grow hub SEO checklist** — should it pull live data (like the digest banner) or just show static guidance links? (Recommended: live data — same pattern as `DigestBanner` checking `publicProfileEnabled`, `backlinkCount`, etc.)
+3. **Grow hub SEO checklist** — current implementation uses live profile/backlink/GSC state. Next improvement should align this with any future impact-over-points redesign.

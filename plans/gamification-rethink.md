@@ -6,11 +6,12 @@ The platform has gamification scaffolding but no real game loop:
 
 - **Points**: Computed per review + helpful votes + badges, displayed on /grow, feeds leaderboard rank. Not consumed by anything.
 - **Tiers**: `computeTierProgress()` converts points into Bronze/Silver/Gold/Platinum with a progress bar. Visual only — no unlocks, no rewards, no perks. The tier descriptions promise features (custom slug, featured highlight, share buttons, early-access badge) that don't exist.
-- **Badges**: Awarded manually by admins, vendors, or via nominations. The `computable` flag on 6 badge types has no runtime engine to auto-award them. No badge is earned by actually doing anything.
+- **Badges**: Awarded manually by admins, vendors, investors, or via nominations. The `computable` flag exists on several badge types, but there is no runtime engine to auto-award them from behavior.
 - **Leaderboard**: Rank-only. No reward for top positions.
 - **Streak**: `computeReviewStreak()` exists but just returns 0 or 1 — no streak milestones, no rewards.
+- **Activity/notifications**: Newer activity and notification primitives make impact feedback easier to show, but the main points/tier UI still presents contribution as a score chase.
 
-The result: a points system that feels hollow because points don't unlock anything, and badges that feel absent because they require an admin to notice you.
+The result: a points system that feels hollow because points don't unlock anything, and badges that feel mostly manual because computable badges are defined but not yet awarded by an engine.
 
 ## Reframe: Review Credibility, Not Reputation
 
@@ -98,3 +99,4 @@ Keep point computation for sorting/rank internally but remove the displayed scor
 - Should the tier descriptions on /grow become impact metrics, or should the whole section be replaced?
 - Does removing the points score hurt the reputation export JWT's value (it currently ships the point total as a signal)?
 - Is there a middle ground: keep points for sorting but present impact as the primary narrative?
+- Should notifications/activity become the primary "your contribution mattered" surface, instead of adding more reward mechanics?

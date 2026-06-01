@@ -1,5 +1,14 @@
 # Operating Guide
 
+## Documentation Sources
+
+- `README.md` — compact setup and verification entry point.
+- `docs/product.md` — product thesis, flywheel, authority model, ethics, and strategic risks.
+- `docs/traceability.md` — business thesis to feature/spec mapping.
+- `plans/` — active and proposed implementation plans.
+
+Historical workspace-level docs under `../doc/archive/` and `../docs/superpowers/` are useful context, but the files above are the active project docs.
+
 ### `weekly-digest` — GET `/api/cron/weekly-digest`
 
 Weekly email digest for all cohort founders. Requires `CRON_SECRET` env var.
@@ -25,16 +34,20 @@ Same `CRON_SECRET` auth as the digest endpoint.
 
 | Route | Purpose | Auth |
 |-------|---------|------|
-| `/` | Home — vendor directory + request form + onboarding banner | Founder |
+| `/` | Write hub — vendor directory, request form, sprint/review context, onboarding banner | Founder |
 | `/signin` | Magic-link sign-in (demo collapsed) | None |
+| `/connect` | Connect hub — incoming questions, open requests, exchanges, cohort activity | Founder |
+| `/grow` | Grow hub — profile, points, tier, backlinks, SEO actions, reputation export link | Founder |
 | `/vendors` | Vendor directory with search, category filter, sort by name/rating/trending/reviews | Founder |
-| `/vendors/[id]` | Vendor detail + guided/free review form + quality engine + CelebrationToast | Founder |
+| `/vendors/[id]` | Vendor detail + founder/consumer review modes + quality engine + optional images | Founder/public hybrid |
 | `/top-vendors` | Vendor ranking page by authority score with tier badges | Founder |
 | `/requests` | My request history (open/fulfilled/closed) | Founder |
+| `/founders` | Public founder directory for opted-in profiles | None |
 | `/nominations` | Nominate a peer for a badge + see my nominations | Founder |
 | `/leaderboard` | Cohort leaderboard by points (reviews, badges, helpful votes) | Founder |
 | `/leaderboard/public` | Public cohort leaderboard (anonymous, accessible without auth) | None |
 | `/rewards` | Point rules, personal breakdown, milestone tiers with progress bar | Founder |
+| `/badges` | Badge overview and earned badge context | Founder |
 | `/sprints` | Active sprint progress bar + leaderboard; past sprint history | Founder |
 | `/exchanges` | Guest-post exchange requests (propose, accept/decline, mark published) | Founder |
 | `/analytics` | Cohort analytics: review quality, backlink stats, founder stats | Founder |
@@ -43,12 +56,20 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/backlinks` | Backlink tracker + validation analysis panel + spam policy comparison UI (Google, Bing) | Founder |
 | `/founder/[slug]` | Public founder profile (name, bio, badges, points, rank, Schema.org, copy link, portable badge embed) | None |
 | `/invite/[token]` | Accept a cohort invite | None |
-| `/admin/requests` | Admin dashboard: metrics, invites, request queue, sprint creation, admin badge award, nominations queue, founders badges with issuer labels | Admin |
+| `/notifications` | Notification inbox and mark-read controls | Founder |
+| `/admin` | Admin home with cohort overview and admin navigation | Admin |
+| `/admin/cohorts` | Cohort management | Admin |
+| `/admin/vendors` | Admin vendor management | Admin |
+| `/admin/reviews` | Admin founder/consumer review moderation | Admin |
+| `/admin/requests` | Admin requests: invites, request queue, sprint creation, badge award, nominations, digest | Admin |
 | `/api/auth/[...nextauth]` | NextAuth handler | — |
 | `/api/auth/gsc` | Google Search Console OAuth flow | Founder |
 | `/api/badge/[slug]` | Embeddable SVG reputation badge (name, cohort, points, profile completeness) | None |
 | `/api/badges/vendor-award` | Vendor badge award via secret (POST: founderEmail, badgeType, secret) | Vendor secret |
 | `/api/badges/investor-award` | Investor badge award via secret (POST: founderEmail, badgeType, secret) | Investor secret |
+| `/api/cron/weekly-digest` | Weekly cohort digest cron endpoint | Cron secret |
+| `/api/cron/sprints` | Monthly sprint auto-creation and sprint-end notification cron endpoint | Cron secret |
+| `/api/notifications` | Unread notification count API | Founder |
 | `/api/reputation/export` | Export reputation as signed JWT | Founder |
 | `/api/reputation/import` | Import reputation from JWT (verified + stored) | Founder |
 
@@ -73,8 +94,8 @@ Creates:
 ## Verification
 
 ```bash
-npm test          # 59 tests across 18 test files (node:test, node:assert/strict)
-npm run build     # Next.js production build (27 routes including 2 new API routes)
+npm test          # 95 tests across 28 test files (node:test, node:assert/strict)
+npm run build     # Next.js production build (38 routes)
 ```
 
 ## Smoke Test Flow
@@ -82,7 +103,7 @@ npm run build     # Next.js production build (27 routes including 2 new API rout
 1. `npm run dev`
 2. Open `http://localhost:3000/signin` — two options: magic-link or collapsed demo
 3. Sign in as `maya@example.com` / `password`
-4. Home page shows Demo Incubator vendors, category filters, open requests
+4. Home page shows the Write hub with Demo Incubator vendors, category filters, open requests, and contribution context
 5. Click a vendor → detail page with review(s), review form, helpful vote buttons
 6. `/vendors` — search, filter by category, sort by name/rating/trending/most reviews; vendor cards show authority tier badges (Top Rated, Highly Rated, etc.)
 7. `/top-vendors` — ranked leaderboard of vendors by authority score
@@ -98,15 +119,20 @@ npm run build     # Next.js production build (27 routes including 2 new API rout
 17. `/leaderboard/public?cohort=demo-incubator` — public leaderboard (no auth, anonymous entries)
 18. `/seo` — guidance page
 19. `/backlinks` — add `example.com`, status badges, reachability checks, GSC connect, view link profile analysis (anchor text breakdown, velocity, natural link score)
-20. Sign in as `admin@example.com` / `password`
-21. `/admin/requests` — metrics, invites, request queue, create sprint, badge award, pending nominations, founder badges grid
-22. Approve/reject the nomination from step 13
-23. `/profile/settings` — "Review quality" section shows per-user quality dashboard (avg length, avg rating, helpful votes, strengths, improvement areas)
-24. `/admin/requests` — Badge section shows issuer type labels (Auto/Admin/Vendor/Investor) on every badge definition; admin award form can award admin-approved badges only
-25. `/backlinks` — Analysis panel now shows "Policy comparison" section linking to Google/Bing spam policies when violations are detected
-26. `/api/badges/vendor-award` — Award a badge as a vendor using a shared secret. The `Vendor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
-27. `/api/badges/investor-award` — Award a badge as an investor using a shared secret. The `Investor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
-28. `/admin/requests` — External badge audit section shows recent vendor/investor award attempts without raw submitted secrets.
+20. `/connect` — incoming questions, open requests, pending exchanges, and cohort activity
+21. `/grow` — profile status, points/tier, backlinks, SEO actions, and reputation export link
+22. `/notifications` — notification inbox and mark-read controls
+23. Sign in as `admin@example.com` / `password`
+24. `/admin` — admin home and links to requests, vendors, reviews, and cohorts
+25. `/admin/requests` — metrics, invites, request queue, create sprint, badge award, pending nominations, founder badges grid, digest actions
+26. Approve/reject the nomination from step 13
+27. `/profile/settings` — "Review quality" section shows per-user quality dashboard (avg length, avg rating, helpful votes, strengths, improvement areas)
+28. `/admin/requests` — Badge section shows issuer type labels (Auto/Admin/Vendor/Investor) on every badge definition; admin award form can award admin-approved badges only
+29. `/admin/vendors` and `/admin/reviews` — create/delete cohort vendors and moderate cohort reviews
+30. `/backlinks` — Analysis panel now shows "Policy comparison" section linking to Google/Bing spam policies when violations are detected
+31. `/api/badges/vendor-award` — Award a badge as a vendor using a shared secret. The `Vendor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
+32. `/api/badges/investor-award` — Award a badge as an investor using a shared secret. The `Investor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
+33. `/admin/requests` — External badge audit section shows recent vendor/investor award attempts without raw submitted secrets.
 
 ## Architecture
 
@@ -136,8 +162,10 @@ Key libraries:
 - `src/lib/review-quality.ts` — quality analysis engine (pure functions)
 - `src/lib/review-template.ts` — guided review template data model + natural-language composition
 - `src/lib/reputation.ts` — JWT reputation packet generation, signing, verification, serialization
+- `src/lib/notifications.ts` — notification creation, unread counts, listing, and mark-read helpers
+- `src/lib/activity.ts` — cohort activity recording and feed queries
+- `src/lib/export-reputation.ts` — reputation export payload and JWT helpers
 - `src/lib/review-quality-stats.ts` — per-user quality metrics computation (avg length, sentiment balance, helpful votes, strengths/improvements)
-- `src/lib/backlink-analysis.ts` — anchor text diversity, link velocity, natural link score, spam policy comparison (Google, Bing)
 - `src/hooks/useReviewQuality.ts` — debounced hook wrapping the engine
 
 ## Env Configuration
@@ -174,7 +202,7 @@ Full schema at `prisma/schema.prisma`. Key models:
 - `Cohort`, `User`, `Vendor`, `Review`, `VendorRequest`, `Invite`
 - `Badge` (issuerType, issuerId for multi-issuer: auto/admin/vendor/investor)
 - `BadgeNomination`, `BacklinkLog` (anchorText, contextText, linkType, linkedAt)
-- `HelpfulVote`, `Sprint`, `GuestPostExchange`, `GscState`, `ReputationImport`
+- `HelpfulVote`, `Sprint`, `GuestPostExchange`, `GscState`, `Notification`, `ActivityEvent`, `ReputationImport`
 - `Investor` (name, email, company, badgeAwardSecret HMAC hash)
 - `Account`, `Session`, `VerificationToken` (NextAuth)
 

@@ -2,15 +2,17 @@
 
 ## Current State
 
-- Public vendor pages and founder profiles exist, crawlable, indexed
-- Review text is on the public web — AI crawlers can find it
+- Public vendor pages and founder profiles exist
+- Public vendor pages expose consumer reviews to anonymous crawlers
+- Named founder reviews remain behind the signed-in cohort boundary
+- Founder profile pages already include `Person` JSON-LD
 - Backlinks from founder startups → platform improve domain authority
 - GSC is wired for individual founders (oauth2)
 - `/seo` page tracks GSC + backlink verification per founder
 
 ## Gap
 
-- No structured data markup for reviews (JSON-LD)
+- No structured data markup for public vendor reviews (JSON-LD)
 - No AI-friendly site overview (llms.txt)
 - No Q&A / FAQ schema on targeted request pages
 - No deliberate citation optimization in review content
@@ -19,7 +21,10 @@
 
 ### 1. Review JSON-LD on Vendor Pages
 
-Add `Review` + `AggregateRating` schema markup to public vendor pages.
+Add `Review` + `AggregateRating` schema markup to public vendor pages, based only on reviews visible to the current audience.
+
+- Anonymous/public page: include consumer reviews only
+- Signed-in cohort page: founder reviews can be rendered for users, but should not be treated as public SEO inventory unless the product intentionally exposes them
 
 ```
 {
@@ -45,15 +50,18 @@ Add `Review` + `AggregateRating` schema markup to public vendor pages.
 }
 ```
 
-This is the highest-impact single change — it makes every review immediately structurable by AI crawlers (Google, ChatGPT, Perplexity, Gemini).
+This is the highest-impact single change for public vendor pages. It makes public consumer reviews structurable by AI crawlers (Google, ChatGPT, Perplexity, Gemini) without leaking private cohort review content.
 
-**Files:** `src/app/vendors/[vendorId]/page.tsx` — add a `<script type="application/ld+json">` block with the JSON-LD, computed server-side from vendor + reviews data.
+**Files:**
 
-**Risk:** None. JSON-LD in a script tag is invisible to users, harmless if malformed.
+- `src/app/vendors/[vendorId]/page.tsx` — add a `<script type="application/ld+json">` block with the JSON-LD, computed server-side from vendor + consumer reviews data.
+- `src/lib/vendors.ts` — either reuse `getConsumerReviewsForVendor` or add a helper that returns the exact public review fields needed by JSON-LD.
+
+**Risk:** Medium if implemented carelessly. JSON-LD is invisible to users, but crawlers may consume it as authoritative. Keep it aligned with visible public content, escape with `JSON.stringify`, do not include private founder reviews for anonymous pages, and omit `aggregateRating` when there are no public reviews.
 
 ### 2. Profile JSON-LD on Founder Pages
 
-Add `Person` schema to public founder profile pages.
+Already implemented on public founder profile pages. Keep this as a refinement area rather than a first implementation task.
 
 ```
 {
@@ -66,7 +74,13 @@ Add `Person` schema to public founder profile pages.
 }
 ```
 
-**Files:** `src/app/founder/[slug]/page.tsx` — similar JSON-LD block.
+**Files:** `src/app/founder/[slug]/page.tsx`
+
+Potential refinements:
+
+- Add `sameAs` when a founder has verified public profile URLs
+- Add `worksFor` or `founder`/`alumniOf` style organization fields if the product collects reliable startup/incubator metadata
+- Avoid adding speculative `knowsAbout` terms unless they come from explicit profile fields or reviewed categories
 
 ### 3. llms.txt
 
@@ -84,9 +98,11 @@ Generate an `llms.txt` at the root that lists all public pages with descriptions
 
 **Files:** `src/app/llms.txt/route.ts` — dynamic route that queries public vendors and founders, renders plaintext.
 
+Keep this public-only. Do not list cohort-scoped pages, private admin pages, private request queues, or reputation import/export endpoints. The existing sitemap and robots configuration are also public-only, so `llms.txt` should follow that boundary.
+
 ### 4. Q&A Schema on Request/Vendor Pages
 
-Targeted request pages (or the vendor page sections where Q&A exists) get `QAPage` schema.
+Defer until there are public Q&A pages. Current targeted request workflows are cohort-scoped, so adding `QAPage` to private request content would be misleading for crawlers and could expose content assumptions the public cannot verify.
 
 ```
 {
@@ -110,22 +126,22 @@ Structure review content to maximize AI extractability:
 - Ensure review date, author name, and rating are always in predictable positions within the DOM
 - Add a visible "key details" section to each review card with structured layout
 
-This is lower priority than JSON-LD — the script tags already give AI crawlers everything they need.
+This is lower priority than public JSON-LD and `llms.txt`. For founder reviews, prioritize clarity for signed-in users over public citation optimization unless the privacy model changes.
 
 ## Effort Estimate
 
 | Item | Effort | Impact |
 |------|--------|--------|
-| Review JSON-LD on vendor pages | ~1h | High — unlocks structured review data for all AI crawlers |
-| Profile JSON-LD on founder pages | ~30min | Medium — strengthens entity recognition |
+| Public review JSON-LD on vendor pages | ~1h | High — unlocks structured public consumer review data for crawlers |
+| Profile JSON-LD refinements | ~30min | Low-medium — already implemented; useful if richer public profile fields exist |
 | llms.txt | ~30min | Medium — improves crawl efficiency |
-| Q&A schema | ~1h | Low-medium — depends on whether request pages are public |
+| Q&A schema | Deferred | Low until public Q&A/request pages exist |
 | Citation optimization | ~2h | Low — nice-to-have after JSON-LD |
 
-Total: ~5h for the full scope. The first two items (JSON-LD on vendors + founders) cover 80% of the value in ~1.5h.
+Recommended first pass: vendor JSON-LD + `llms.txt` in ~1.5h. Founder JSON-LD is already in place.
 
 ## Open Questions
 
-- Are targeted request pages publicly accessible? (currently cohort-scoped)
-- Should llms.txt reference cohort pages or only public pages?
+- Should public vendor JSON-LD include only consumer reviews, or should there be an explicit product decision to expose selected founder reviews publicly?
+- Should `llms.txt` include every public vendor URL or only directory-level routes until vendor quality thresholds are met?
 - Do we want an `/llms-full.txt` alternative with more detail?
