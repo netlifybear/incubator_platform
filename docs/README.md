@@ -12,4 +12,4 @@ This folder holds active product and strategy docs for the Incubator Trust Platf
 
 ## Historical Docs
 
-Older workspace-level docs under `../../doc/archive/` and `../../docs/superpowers/` are historical planning artifacts. Prefer the active docs above and inspect the current code before relying on archived plans.
+Root-level `doc/` and `docs/` folders are retired. Keep active documentation in this folder and active/proposed work in `../plans/`.

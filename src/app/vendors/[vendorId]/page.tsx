@@ -21,6 +21,58 @@ type VendorPageProps = {
   }>;
 };
 
+type VendorJsonLdInput = {
+  name: string;
+  category: string;
+};
+
+type ConsumerReviewJsonLdInput = {
+  displayName: string | null;
+  createdAt: Date;
+  comment: string | null;
+  rating: number;
+};
+
+function generateVendorReviewJSONLD(
+  vendor: VendorJsonLdInput,
+  consumerReviews: ConsumerReviewJsonLdInput[],
+) {
+  if (consumerReviews.length === 0) {
+    return null;
+  }
+
+  const averageRating = getAverageRating(consumerReviews);
+  const ratingValue = averageRating !== null ? parseFloat(averageRating.toFixed(1)) : null;
+
+  const reviewObjects = consumerReviews.map((review) => ({
+    "@type": "Review",
+    author: {
+      "@type": "Person",
+      name: review.displayName ?? "Anonymous",
+    },
+    datePublished: review.createdAt.toISOString(),
+    reviewBody: review.comment ?? "",
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: review.rating.toString(),
+    },
+  }));
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: vendor.name,
+    category: vendor.category,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: ratingValue !== null ? ratingValue.toString() : undefined,
+      reviewCount: consumerReviews.length.toString(),
+      bestRating: "5",
+    },
+    review: reviewObjects,
+  };
+}
+
 export default async function VendorPage({ params, searchParams }: VendorPageProps) {
   const founder = await getCurrentFounder();
   const { vendorId } = await params;
@@ -48,6 +100,10 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
   const boundAskForDetails = founder && founder.cohortId
     ? askForDetailsAction.bind(null, vendor.category, vendor.name, vendor.id, founder.cohortId, founder.id)
     : null;
+
+  // Generate JSON-LD for public consumer reviews (only shown in consumer mode or when not signed in)
+  const showJSONLD = reviewMode === "consumer" || !founder;
+  const jsonLD = showJSONLD ? generateVendorReviewJSONLD(vendor, consumerReviews) : null;
 
   return (
     <AppShell founder={founder} cohortName={cohortName}>
@@ -270,6 +326,13 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
           )}
         </aside>
       </div>
+      {/* JSON-LD for structured data - only for public consumer reviews */}
+      {jsonLD && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
+        />
+      )}
     </AppShell>
   );
 }

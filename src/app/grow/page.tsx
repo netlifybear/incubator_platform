@@ -8,6 +8,7 @@ import { computeTierProgress, computeReviewStreak } from "@/lib/rewards";
 import { getBacklinkSnapshots } from "@/lib/backlinks";
 import { BacklinkVelocityChart } from "@/app/components/backlink-velocity-chart";
 import { prisma } from "@/lib/prisma";
+import { ReputationImportCard } from "./reputation-import-card";
 
 export default async function GrowPage() {
   const founder = await getCurrentFounder();
@@ -191,6 +192,14 @@ export default async function GrowPage() {
               detail="Download a signed JWT of your profile, points, and badges"
               href="/api/reputation/export"
             />
+            {founder.profileSlug ? (
+              <ActionItem
+                label="Your credibility report"
+                detail="Verifiable reputation report for investors and partners"
+                href={`/founder/${founder.profileSlug}/credibility`}
+              />
+            ) : null}
+            <ReputationImportCard />
           </div>
         </section>
       </div>

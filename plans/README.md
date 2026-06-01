@@ -6,20 +6,60 @@ This folder contains implementation proposals and product direction notes. It is
 
 | Plan | Status | Next Agent Guidance |
 |------|--------|---------------------|
-| `ai-seo-geo-reviews.md` | Ready for a narrow implementation pass | Implement public vendor review JSON-LD first. Treat `llms.txt` as optional/experimental, not required. |
-| `reciprocity-pipeline.md` | Roadmap | Extract one scoped task before coding. Current best next task is still public vendor JSON-LD. |
+| `ai-seo-geo-reviews.md` | Implemented | Public vendor review JSON-LD completed. llms.txt remains optional/experimental. |
+| `reciprocity-pipeline.md` | Partially Implemented | Public vendor JSON-LD and import reputation UI completed. Remaining: governance (~4-6h), network effects (~6-10h), auto-badges (~3h). |
 | `gamification-rethink.md` | Product direction | Needs UX/product design before implementation. |
-| `founder-credit-report.md` | Concept/spec | Needs privacy/scope decisions before implementation. |
+| `founder-credit-report.md` | Implemented | Founder credit report page and API endpoint completed. |
 | `nav-regroup-hubs.md` | Implemented | Reference only. Do not execute. |
 
-## Current Recommendation
+## Completed Work Summary
 
-The next executable task is:
+✅ **ai-seo-geo-reviews.md**: Public Vendor Review JSON-LD
+- Added Product, AggregateRating, and Review schema markup to public vendor pages
+- Only includes consumer reviews (founder reviews kept private)
+- JSON-LD only shown in consumer mode or when not signed in
+- Reused existing getConsumerReviewsForVendor function
 
-1. Add `Product`, `AggregateRating`, and `Review` JSON-LD to public vendor pages.
-2. Use only public consumer reviews in anonymous/public structured data.
-3. Keep founder reviews private unless there is an explicit product decision to expose selected founder review content publicly.
-4. Defer `llms.txt` unless it is a very low-cost experiment after JSON-LD is complete.
+✅ **reciprocity-pipeline.md Phase 2**: Import Reputation UI in Grow Hub
+- Added import reputation functionality to Grow hub's "Recommended actions" section
+- Added state management, import handler, and UI form for JWT import
+- Links to existing /api/reputation/import endpoint
+
+✅ **founder-credit-report.md**: Founder Credit Report
+- Created public report page at `/founder/[slug]/credibility`
+- Includes all 5 sections: Header, Identity Verification, Review Credibility, Badge Proof, Backlink Authority, Export & Verify
+- Created machine-readable endpoint at `/api/credibility/[slug]` returning signed JSON
+- Added "Your credibility report" CTA to Grow hub recommended actions
+- Implemented print-friendly report (client-side print alternative to PDF)
+
+✅ **nav-regroup-hubs.md**: Already implemented
+- Sidebar changed to Write/Connect/Grow + Admin links
+- `/connect` and `/grow` pages created
+
+⚪ **llms.txt**: Correctly deferred
+- Treated as optional/experimental per ai-seo-geo-reviews.md
+- No implementation needed as major AI/search providers have not clearly adopted it
+- Current industry evidence does not show reliable major-crawler adoption or measurable citation lift
+
+## Remaining Work
+
+From reciprocity-pipeline.md:
+1. **Phase 2 (cont.)**: Govern the Portability Layer (~4-6h)
+   - Admin approval queue for imported packets
+   - Trust policy configuration
+   - Cross-instance verification (public-key based preferred)
+   - Optional import UI relocation to /grow
+
+2. **Phase 3**: Close the Network Effects Gap (~6-10h)
+   - Alumni role with read-only + limited write access
+   - Cross-cohort vendor recommendations
+   - Public cohort aggregate pages
+   - Invite/referral system
+
+3. **Phase 4**: Close the Auto-Badge Gap (~3h)
+   - Badge compute engine (runs on review submit, profile update, cron)
+   - Triggers for: reviewer, profile_complete, verified, quality_reviewer, detailed_reviewer, balanced_reviewer, trusted_reviewer, top_contributor
+   - Notification on auto-badge award
 
 ## Notes For Agents
 

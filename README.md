@@ -47,5 +47,5 @@ See `OPERATING.md` for demo accounts, full route map, smoke test flow, architect
 
 ```bash
 npm test          # 95 tests across 28 test files (node:test)
-npm run build     # Next.js production build (38 routes)
+npm run build     # Next.js production build
 ```

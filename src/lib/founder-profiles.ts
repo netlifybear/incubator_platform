@@ -21,6 +21,8 @@ const publicFounderProfileSelect = {
   startupUrl: true,
   startupName: true,
   publicProfileEnabled: true,
+  createdAt: true,
+  gscEmail: true,
 };
 
 export async function listPublicFounders(sort?: "name" | "recent") {

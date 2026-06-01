@@ -7,7 +7,7 @@
 - `docs/traceability.md` — business thesis to feature/spec mapping.
 - `plans/` — active and proposed implementation plans.
 
-Historical workspace-level docs under `../doc/archive/` and `../docs/superpowers/` are useful context, but the files above are the active project docs.
+Root-level `doc/` and `docs/` folders are retired. Use `docs/` and `plans/` inside this nested repo for active project documentation.
 
 ### `weekly-digest` — GET `/api/cron/weekly-digest`
 
@@ -55,6 +55,7 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/seo` | SEO education guidance | Founder |
 | `/backlinks` | Backlink tracker + validation analysis panel + spam policy comparison UI (Google, Bing) | Founder |
 | `/founder/[slug]` | Public founder profile (name, bio, badges, points, rank, Schema.org, copy link, portable badge embed) | None |
+| `/founder/[slug]/credibility` | Public founder credibility report with aggregate reputation and verification data | None |
 | `/invite/[token]` | Accept a cohort invite | None |
 | `/notifications` | Notification inbox and mark-read controls | Founder |
 | `/admin` | Admin home with cohort overview and admin navigation | Admin |
@@ -67,6 +68,7 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/api/badge/[slug]` | Embeddable SVG reputation badge (name, cohort, points, profile completeness) | None |
 | `/api/badges/vendor-award` | Vendor badge award via secret (POST: founderEmail, badgeType, secret) | Vendor secret |
 | `/api/badges/investor-award` | Investor badge award via secret (POST: founderEmail, badgeType, secret) | Investor secret |
+| `/api/credibility/[slug]` | Signed machine-readable founder credibility report | None |
 | `/api/cron/weekly-digest` | Weekly cohort digest cron endpoint | Cron secret |
 | `/api/cron/sprints` | Monthly sprint auto-creation and sprint-end notification cron endpoint | Cron secret |
 | `/api/notifications` | Unread notification count API | Founder |
@@ -95,7 +97,7 @@ Creates:
 
 ```bash
 npm test          # 95 tests across 28 test files (node:test, node:assert/strict)
-npm run build     # Next.js production build (38 routes)
+npm run build     # Next.js production build
 ```
 
 ## Smoke Test Flow
