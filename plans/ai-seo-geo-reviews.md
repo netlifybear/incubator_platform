@@ -13,7 +13,7 @@
 ## Gap
 
 - No structured data markup for public vendor reviews (JSON-LD)
-- No AI-friendly site overview (llms.txt)
+- No AI-friendly site overview (`llms.txt`), but current industry evidence does not show reliable major-crawler adoption or measurable citation lift
 - No Q&A / FAQ schema on targeted request pages
 - No deliberate citation optimization in review content
 
@@ -84,7 +84,9 @@ Potential refinements:
 
 ### 3. llms.txt
 
-Generate an `llms.txt` at the root that lists all public pages with descriptions, helping AI crawlers discover the full site structure.
+Optional experiment, not a required SEO/GEO task. Recent industry reporting and server-log analyses suggest `llms.txt` is not currently a dependable lever for AI visibility: major AI/search providers have not clearly adopted it as a retrieval, citation, or ranking signal, and observed crawler fetch behavior is inconsistent.
+
+If implemented later, generate an `llms.txt` at the root that lists public pages with descriptions. Treat it as a low-cost content map for possible future tooling, not as a promised traffic or citation driver.
 
 ```
 # Incubator Trust
@@ -126,7 +128,7 @@ Structure review content to maximize AI extractability:
 - Ensure review date, author name, and rating are always in predictable positions within the DOM
 - Add a visible "key details" section to each review card with structured layout
 
-This is lower priority than public JSON-LD and `llms.txt`. For founder reviews, prioritize clarity for signed-in users over public citation optimization unless the privacy model changes.
+This is lower priority than public JSON-LD. For founder reviews, prioritize clarity for signed-in users over public citation optimization unless the privacy model changes.
 
 ## Effort Estimate
 
@@ -134,14 +136,14 @@ This is lower priority than public JSON-LD and `llms.txt`. For founder reviews, 
 |------|--------|--------|
 | Public review JSON-LD on vendor pages | ~1h | High — unlocks structured public consumer review data for crawlers |
 | Profile JSON-LD refinements | ~30min | Low-medium — already implemented; useful if richer public profile fields exist |
-| llms.txt | ~30min | Medium — improves crawl efficiency |
+| llms.txt | ~30min | Low/experimental — cheap content map, but not a proven AI visibility signal |
 | Q&A schema | Deferred | Low until public Q&A/request pages exist |
 | Citation optimization | ~2h | Low — nice-to-have after JSON-LD |
 
-Recommended first pass: vendor JSON-LD + `llms.txt` in ~1.5h. Founder JSON-LD is already in place.
+Recommended first pass: vendor JSON-LD only. Founder JSON-LD is already in place. Revisit `llms.txt` only after higher-confidence structured data work is complete.
 
 ## Open Questions
 
 - Should public vendor JSON-LD include only consumer reviews, or should there be an explicit product decision to expose selected founder reviews publicly?
-- Should `llms.txt` include every public vendor URL or only directory-level routes until vendor quality thresholds are met?
-- Do we want an `/llms-full.txt` alternative with more detail?
+- If `llms.txt` is added later, should it include every public vendor URL or only directory-level routes until vendor quality thresholds are met?
+- Is an `/llms-full.txt` alternative worth maintaining if major crawler adoption remains unproven?

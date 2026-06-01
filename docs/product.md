@@ -82,7 +82,7 @@ See `../OPERATING.md` for the detailed route map and verification commands.
 The strongest next steps are:
 
 - Add public vendor review JSON-LD from public consumer reviews only.
-- Add public-only `llms.txt`.
+- Treat public-only `llms.txt` as an optional experiment, not a required AI visibility lever.
 - Reframe points and tiers toward impact/credibility.
 - Add governance to imported reputation packets.
 - Build automatic computable badge awards.

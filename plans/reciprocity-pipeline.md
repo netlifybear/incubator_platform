@@ -20,8 +20,8 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 **1. Public vendor structured data**
 - Founder profile `Person` JSON-LD exists
 - Public vendor pages still lack `Product`/`AggregateRating`/`Review` JSON-LD for public consumer reviews
-- **Plan:** `plans/ai-seo-geo-reviews.md` — public review JSON-LD on vendor pages + `llms.txt`
-- **Effort:** ~1.5h for vendor JSON-LD + `llms.txt`
+- **Plan:** `plans/ai-seo-geo-reviews.md` — public review JSON-LD on vendor pages first; `llms.txt` is optional/experimental
+- **Effort:** ~1h for vendor JSON-LD; ~30min optional for `llms.txt`
 
 **2. Governed reputation portability**
 - JWT export and import exist, and imported packets are stored
@@ -74,12 +74,12 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 
 ## Full Implementation Roadmap
 
-### Phase 1: Close the Schema Gap (~1.5h)
+### Phase 1: Close the Public Structured Data Gap (~1h)
 The highest-leverage missing piece. Without Schema.org, the platform can't deliver on its core SEO promise to founders.
 
 - [ ] Public review JSON-LD on `/vendors/[vendorId]` (Product + AggregateRating + Review from public consumer reviews)
 - [x] Profile JSON-LD on `/founder/[slug]` (Person with affiliation/memberOf fields)
-- [ ] llms.txt for AI crawl efficiency
+- [ ] Optional/experimental `llms.txt` after JSON-LD, only if it remains low-cost
 
 ### Phase 2: Govern the Portability Layer (~4-6h)
 Founders can already export and import reputation packets. The next work is to make imported reputation trustworthy enough for admins and future investors.
@@ -110,7 +110,7 @@ Computable badge types should auto-award without admin intervention.
 
 | Phase | Effort | Impact | Dependencies |
 |-------|--------|--------|-------------|
-| 1. Schema.org | ~1.5h | High (unlocks SEO promise) | None |
+| 1. Public structured data | ~1h | High (unlocks structured public review data) | None |
 | 2. Reputation portability governance | ~4-6h | High (defensibility) | Export/import baseline already built |
 | 3. Network effects | ~6-10h | Medium-high (growth) | Alumni role needs schema change |
 | 4. Auto-badges | ~3h | Medium (engagement) | Badge definitions exist |
