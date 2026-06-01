@@ -111,6 +111,41 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     awardableByAdmin: false,
     computable: true,
   },
+  {
+    type: "helpful",
+    label: "Helpful",
+    icon: "\uD83D\uDC4D",
+    description: "Review marked helpful by peers.",
+    criteria: "Awarded when a review receives helpful votes from other founders.",
+    awardableByAdmin: true,
+    nominatable: true,
+  },
+  {
+    type: "connector",
+    label: "Connector",
+    icon: "\uD83D\uDD17",
+    description: "Initiated a guest post exchange with another founder.",
+    criteria: "Completed at least one guest post exchange request.",
+    awardableByAdmin: true,
+    nominatable: true,
+  },
+  {
+    type: "early_adopter",
+    label: "Early Adopter",
+    icon: "\uD83D\uDC4B",
+    description: "Among the first to write reviews on the platform.",
+    criteria: "One of the first founders in a cohort to submit reviews.",
+    awardableByAdmin: true,
+  },
+  {
+    type: "top_contributor",
+    label: "Top Contributor",
+    icon: "\uD83C\uDFC6",
+    description: "Contributed 5+ reviews to the directory.",
+    criteria: "Awarded to founders who have written 5 or more reviews.",
+    awardableByAdmin: true,
+    computable: true,
+  },
 ];
 
 export function badgeDefinition(type: string): BadgeDefinition | undefined {
