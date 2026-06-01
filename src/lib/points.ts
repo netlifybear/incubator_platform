@@ -1,6 +1,6 @@
-import { prisma } from "./prisma";
-import { PUBLIC_LEADERBOARD_MIN_FOUNDERS } from "./leaderboard-privacy";
-import { reviewContributionPoints } from "./review-quality";
+import { prisma } from "./prisma.ts";
+import { PUBLIC_LEADERBOARD_MIN_FOUNDERS } from "./leaderboard-privacy.ts";
+import { reviewContributionPoints } from "./review-quality.ts";
 
 const POINTS_PER_BADGE = 25;
 const POINTS_PER_HELPFUL_VOTE = 2;

@@ -27,6 +27,7 @@ model Cohort {
   badgeNominations   BadgeNomination[]
   sprints            Sprint[]
   guestPostExchanges GuestPostExchange[]
+  activityEvents     ActivityEvent[]
 }
 
 model User {
@@ -62,6 +63,8 @@ model User {
   nominationsReceived       BadgeNomination[]   @relation("NominationsReceived")
   guestPostsRequested       GuestPostExchange[] @relation("GuestPostsRequested")
   guestPostsReceived        GuestPostExchange[] @relation("GuestPostsReceived")
+  notifications             Notification[]
+  activityEvents            ActivityEvent[]
   reputationImports         ReputationImport[]
   accounts                  Account[]
   sessions                  Session[]
@@ -100,6 +103,7 @@ model Review {
   id                 String        @id @default(cuid())
   rating             Int
   comment            String?
+  images             String[]
   usedVendor         Boolean       @default(false)
   workType           String?
   disclosedIncentive Boolean       @default(false)
@@ -151,6 +155,34 @@ model VendorRequest {
   @@index([cohortId, status, createdAt])
   @@index([userId])
   @@index([fulfilledVendorId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, readAt, createdAt])
+}
+
+model ActivityEvent {
+  id        String   @id @default(cuid())
+  type      String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  cohortId  String
+  cohort    Cohort   @relation(fields: [cohortId], references: [id])
+
+  @@index([cohortId, createdAt])
+  @@index([userId, createdAt])
 }
 
 model Invite {
@@ -260,17 +292,19 @@ model ReputationImport {
 }
 
 model Sprint {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
   description     String?
-  goalReviewCount Int      @default(3)
+  goalReviewCount Int       @default(3)
   startsAt        DateTime
   endsAt          DateTime
-  createdAt       DateTime @default(now())
+  notifiedAt      DateTime?
+  createdAt       DateTime  @default(now())
   cohortId        String
-  cohort          Cohort   @relation(fields: [cohortId], references: [id])
+  cohort          Cohort    @relation(fields: [cohortId], references: [id])
 
   @@index([cohortId, startsAt, endsAt])
+  @@index([endsAt, notifiedAt])
 }
 
 model GuestPostExchange {
@@ -306,6 +340,7 @@ model ConsumerReview {
   id           String   @id @default(cuid())
   rating       Int
   comment      String?
+  images       String[]
   displayName  String?
   createdAt    DateTime @default(now())
   vendorId     String

@@ -1,5 +1,6 @@
 import { sendNotificationEmail } from "./email.ts";
 import { prisma } from "./prisma.ts";
+import { createNotification } from "./notifications.ts";
 
 export async function toggleVote(params: {
   reviewId: string;
@@ -61,6 +62,13 @@ export async function toggleVote(params: {
         body: `<p>Someone found your review helpful on the Incubator Trust Platform.</p><p><a href="${process.env.NEXTAUTH_URL}/vendors/${review.vendorId}">View your review</a></p>`,
       }).catch(() => {});
     }
+
+    createNotification({
+      userId: review!.userId,
+      type: "helpful_vote",
+      title: "Your review received a helpful vote",
+      link: `/vendors/${review!.vendorId}`,
+    }).catch(() => {});
   }
 
   const counts = await getVoteCounts(params.reviewId);

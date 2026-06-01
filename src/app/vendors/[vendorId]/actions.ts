@@ -11,6 +11,7 @@ import { reviewCelebrationPoints } from "@/lib/review-action-presenter";
 import { analyzeReviewText } from "@/lib/review-quality";
 import { createTargetedVendorRequest } from "@/lib/vendor-requests";
 import founderRules from "@/config/review-rules-founder.json" with { type: "json" };
+import { put } from "@vercel/blob";
 
 export type ReviewActionState = {
   error?: string;
@@ -21,6 +22,35 @@ export type ReviewActionState = {
     rank: { rank: number; total: number } | null;
   };
 };
+
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
+async function uploadImages(formData: FormData): Promise<string[]> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return [];
+  }
+
+  const entries = Array.from(formData.entries()).filter(([key]) => key.startsWith("image-"));
+  const urls: string[] = [];
+
+  for (const [, value] of entries) {
+    if (!(value instanceof File) || value.size === 0) continue;
+    if (!ALLOWED_IMAGE_TYPES.includes(value.type)) continue;
+    if (value.size > MAX_IMAGE_SIZE) continue;
+
+    const ext = value.name.split(".").pop() ?? "jpg";
+    const filename = `reviews/${crypto.randomUUID()}.${ext}`;
+    try {
+      const blob = await put(filename, value, { access: "public" });
+      urls.push(blob.url);
+    } catch {
+      // Keep review submission working if optional image upload is unavailable.
+    }
+  }
+
+  return urls;
+}
 
 export async function createReviewAction(
   vendorId: string,
@@ -52,6 +82,8 @@ export async function createReviewAction(
     }
   }
 
+  const images = await uploadImages(formData);
+
   try {
     await createReviewForCohort({
       vendorId,
@@ -62,6 +94,7 @@ export async function createReviewAction(
       usedVendor,
       workType,
       disclosedIncentive,
+      images,
     });
   } catch (error) {
     return {
@@ -162,8 +195,10 @@ export async function createConsumerReviewAction(
     return { error: "Rating must be between 1 and 5." };
   }
 
+  const images = await uploadImages(formData);
+
   try {
-    await createConsumerReview({ vendorId, cohortId, rating, comment: comment || null, displayName: displayName || null });
+    await createConsumerReview({ vendorId, cohortId, rating, comment: comment || null, displayName: displayName || null, images });
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Could not create review." };
   }

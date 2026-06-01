@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { sendNotificationEmail } from "@/lib/email";
+import { createNotification } from "@/lib/notifications";
+import { recordActivity } from "@/lib/activity";
 
 export type GuestPostExchangeWithUsers = {
   id: string;
@@ -54,6 +56,14 @@ export async function createGuestPostRequest(params: {
     to: exchange.recipient.email,
     subject: `${exchange.requester.name ?? "A founder"} wants to write a guest post`,
     body: `<p>${exchange.requester.name ?? "A founder"} is proposing a guest post on the topic:</p><blockquote>${exchange.topic}</blockquote><p>View and respond: <a href="${process.env.NEXTAUTH_URL}/exchanges">${process.env.NEXTAUTH_URL}/exchanges</a></p>`,
+  }).catch(() => {});
+
+  createNotification({
+    userId: exchange.recipient.id,
+    type: "exchange_request",
+    title: `${exchange.requester.name ?? "A founder"} wants to write a guest post`,
+    body: `Topic: ${exchange.topic}`,
+    link: "/exchanges",
   }).catch(() => {});
 
   return exchange;
@@ -132,6 +142,23 @@ export async function updateExchangeStatus(params: {
     subject: `Guest post "${updated.topic}" was ${updated.status}`,
     body: `<p>Your guest post proposal "${updated.topic}" was <strong>${updated.status}</strong> by ${updated.recipient.name ?? updated.recipient.email}.</p>${updated.publishedUrl ? `<p>Published at: <a href="${updated.publishedUrl}">${updated.publishedUrl}</a></p>` : ""}<p><a href="${process.env.NEXTAUTH_URL}/exchanges">View exchange</a></p>`,
   }).catch(() => {});
+
+  createNotification({
+    userId: updated.requester.id,
+    type: "exchange_response",
+    title: `Guest post "${updated.topic}" was ${updated.status}`,
+    body: updated.publishedUrl ? `Published at ${updated.publishedUrl}` : undefined,
+    link: "/exchanges",
+  }).catch(() => {});
+
+  if (params.status === "published") {
+    recordActivity({
+      userId: updated.requester.id,
+      cohortId: exchange.cohortId,
+      type: "exchange_completed",
+      metadata: { topic: updated.topic, publishedUrl: updated.publishedUrl },
+    }).catch(() => {});
+  }
 
   return updated;
 }

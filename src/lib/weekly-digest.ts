@@ -1,8 +1,9 @@
-import { prisma } from "./prisma";
-import { sendNotificationEmail } from "./email";
-import { snapshotBacklinks } from "./backlinks";
-import { getSprintDigestInfo } from "./sprints";
-import { escapeHtml, escapeHtmlAttribute } from "./html";
+import { prisma } from "./prisma.ts";
+import { sendNotificationEmail } from "./email.ts";
+import { snapshotBacklinks } from "./backlinks.ts";
+import { getSprintDigestInfo } from "./sprints.ts";
+import { escapeHtml, escapeHtmlAttribute } from "./html.ts";
+import { getCohortActivity } from "./activity.ts";
 
 type FounderDigest = {
   id: string;
@@ -16,6 +17,7 @@ type FounderDigest = {
   incomingTargetedRequests: number;
   profileSlug: string | null;
   sprintHtml: string;
+  activityHtml: string;
 };
 
 export async function generateDigestForFounder(userId: string): Promise<FounderDigest | null> {
@@ -34,7 +36,7 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
 
   if (!user || !user.email) return null;
 
-  const [reviewCount, backlinkVerifiedCount, backlinkLostCount, incomingTargetedRequests, sprintInfo] =
+  const [reviewCount, backlinkVerifiedCount, backlinkLostCount, incomingTargetedRequests, sprintInfo, activityEvents] =
     await Promise.all([
       prisma.review.count({ where: { userId } }),
       prisma.backlinkLog.count({ where: { userId, status: "verified" } }),
@@ -43,6 +45,11 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
         where: { targetUserId: userId, status: "open" },
       }),
       user.cohortId ? getSprintDigestInfo(user.cohortId, userId) : null,
+      user.cohortId
+        ? getCohortActivity(user.cohortId, 10).then((events) =>
+            events.filter((e) => e.userId !== userId),
+          )
+        : [],
     ]);
 
   let sprintHtml = "";
@@ -51,6 +58,35 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
     sprintHtml = `<p style="font-size:14px;padding:8px 16px;background:#f0fdf4;border-radius:8px"><strong>Active sprint:</strong> ${escapeHtml(sprintInfo.activeName)} — ${sprintInfo.activeMyReviews} / ${sprintInfo.activeGoal} reviews <a href="${sprintsUrl}" style="color:#2563eb">View sprint</a></p>`;
   } else if (sprintInfo?.recentName && sprintInfo.recentTotalReviews > 0) {
     sprintHtml = `<p style="font-size:14px;padding:8px 16px;background:#f5f5f5;border-radius:8px"><strong>${escapeHtml(sprintInfo.recentName)}</strong> — ${sprintInfo.recentTotalReviews} reviews by ${sprintInfo.recentParticipants} founder${sprintInfo.recentParticipants === 1 ? "" : "s"}</p>`;
+  }
+
+  let activityHtml = "";
+  if (activityEvents.length > 0) {
+    const items = activityEvents.map((e) => {
+      const name = escapeHtml(e.user.name ?? "A founder");
+      switch (e.type) {
+        case "review_written": {
+          const meta = e.metadata as Record<string, string> | null;
+          const vendor = meta?.vendorName ? escapeHtml(meta.vendorName) : "a vendor";
+          return `<li style="margin-bottom:6px">${name} reviewed ${vendor}</li>`;
+        }
+        case "badge_earned": {
+          return `<li style="margin-bottom:6px">${name} earned a badge</li>`;
+        }
+        case "exchange_completed": {
+          return `<li style="margin-bottom:6px">${name} completed a guest post exchange</li>`;
+        }
+        case "request_answered": {
+          return `<li style="margin-bottom:6px">${name} answered a question</li>`;
+        }
+        case "helpful_vote_received": {
+          return `<li style="margin-bottom:6px">${name}'s review was marked helpful</li>`;
+        }
+        default:
+          return "";
+      }
+    }).filter(Boolean).join("");
+    activityHtml = `<div style="margin-bottom:24px"><h2 style="font-size:16px;margin:0 0 8px">Cohort activity</h2><ul style="font-size:14px;line-height:1.6;color:#333;padding-left:20px;margin:0">${items}</ul></div>`;
   }
 
   return {
@@ -65,6 +101,7 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
     backlinkLostCount,
     incomingTargetedRequests,
     sprintHtml,
+    activityHtml,
   };
 }
 
@@ -122,6 +159,8 @@ function digestHtml(digest: FounderDigest): string {
       ${digest.incomingTargetedRequests > 0 ? `<p style="padding:8px 16px;background:#fef3c7;border-radius:8px;font-size:14px"><strong>${digest.incomingTargetedRequests} founder(s)</strong> asked you for vendor details. <a href="${requestsUrl}" style="color:#2563eb;text-decoration:underline">View questions</a></p>` : ""}
 
       ${digest.sprintHtml}
+
+      ${digest.activityHtml}
 
       <p style="font-size:14px;color:#666">Your profile: <a href="${safeProfileUrl}" style="color:#2563eb">${escapeHtml(profileUrl)}</a></p>
 

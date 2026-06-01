@@ -1,8 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { AppShell } from "@/app/components/app-shell";
 import { getCurrentAdmin } from "@/lib/auth";
-import { AdminMetricsSection, MetricsFallback } from "./metrics-section";
 import { AdminInvitesSection, InvitesFallback } from "./invites-section";
 import {
   AdminOpenRequestsSection,
@@ -10,7 +8,6 @@ import {
   AdminClosedRequestsSection,
 } from "./requests-section";
 import { AdminBadgesSection, BadgesFallback } from "./badges-section";
-import { AdminFlywheelSection, FlywheelFallback } from "./flywheel-section";
 import {
   AdminNominationsSection,
   NominationsFallback,
@@ -19,8 +16,6 @@ import {
   AdminFoundersBadgesSection,
   FoundersBadgesFallback,
 } from "./founders-section";
-import { AdminSprintsSection } from "./sprints-section";
-import { AdminDigestSection } from "./digest-section";
 import {
   AdminBadgeAttemptsSection,
   BadgeAttemptsFallback,
@@ -43,10 +38,10 @@ export default async function AdminRequestsPage() {
   }
 
   return (
-    <AppShell founder={admin} cohortName={admin.cohort.name}>
+    <>
       <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
-          Admin
+          Vendor Requests
         </p>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight">
           Convert founder requests into vendors.
@@ -56,14 +51,6 @@ export default async function AdminRequestsPage() {
           useful vendor, and the private directory becomes more complete.
         </p>
       </section>
-
-      <Suspense fallback={<MetricsFallback />}>
-        <AdminMetricsSection cohortId={admin.cohortId} />
-      </Suspense>
-
-      <Suspense fallback={<FlywheelFallback />}>
-        <AdminFlywheelSection cohortId={admin.cohortId} />
-      </Suspense>
 
       <Suspense fallback={<InvitesFallback />}>
         <AdminInvitesSection cohortId={admin.cohortId} />
@@ -96,12 +83,6 @@ export default async function AdminRequestsPage() {
       <Suspense fallback={<BadgeAttemptsFallback />}>
         <AdminBadgeAttemptsSection />
       </Suspense>
-
-      <Suspense fallback={<div className="h-24 animate-pulse rounded-3xl bg-[var(--panel-strong)]" />}>
-        <AdminSprintsSection cohortId={admin.cohortId} />
-      </Suspense>
-
-      <AdminDigestSection />
-    </AppShell>
+    </>
   );
 }

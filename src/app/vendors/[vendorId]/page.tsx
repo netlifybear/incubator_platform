@@ -1,15 +1,16 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
+import { HelpfulVoteButton } from "@/app/components/helpful-vote-button";
 import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { getFounderDisplayName } from "@/lib/tenant-policy";
+import { getVendorForCohort, getPublicVendor, getConsumerReviewsForVendor, getAverageRating } from "@/lib/vendors";
 import { formatAverageRating } from "@/lib/vendor-presenter";
-import { getAverageRating, getConsumerReviewsForVendor, getPublicVendor, getVendorForCohort } from "@/lib/vendors";
-import { createReviewAction, askForDetailsAction, createConsumerReviewAction } from "./actions";
+import { askForDetailsAction, createReviewAction, createConsumerReviewAction } from "./actions";
 import { ReviewForm } from "./review-form";
-import { HelpfulVoteButton } from "@/app/components/helpful-vote-button";
-import { AskForDetailsButton } from "./ask-for-details-button";
 import { QuickReviewForm } from "./quick-review-form";
+import { AskForDetailsButton } from "./ask-for-details-button";
+import { reviewContributionPoints } from "@/lib/review-quality";
 
 type VendorPageProps = {
   params: Promise<{
@@ -91,6 +92,8 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
               const userVote = founder
                 ? review.helpfulVotes.find((v) => v.userId === founder.id)
                 : undefined;
+              const qualityScore = reviewContributionPoints(review.comment);
+              const qualityPct = Math.min(100, Math.round((qualityScore / 20) * 100));
 
               return (
               <article
@@ -113,6 +116,9 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                     <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold">
                       {review.rating}/5
                     </p>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${qualityPct >= 80 ? "bg-green-100 text-green-800" : qualityPct >= 50 ? "bg-amber-100 text-amber-800" : "bg-[var(--panel-strong)] text-[var(--muted)]"}`}>
+                      {qualityPct}%
+                    </span>
                   </div>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -139,6 +145,21 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                 {review.comment ? (
                   <p className="mt-4 leading-7 text-[var(--foreground)]">{review.comment}</p>
                 ) : null}
+                {review.images.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {review.images.map((url) => (
+                      <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={url}
+                          alt=""
+                          className="h-24 w-24 rounded-xl border border-[var(--border)] object-cover transition hover:opacity-80"
+                          loading="lazy"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
                 <p className="mt-4 text-sm text-[var(--muted)]">
                   {review.createdAt.toLocaleDateString("en-US", {
                     month: "short",
@@ -146,6 +167,12 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                     year: "numeric",
                   })}
                 </p>
+                {upCount + downCount > 0 ? (
+                  <p className="mt-2 text-xs text-[var(--muted)]">
+                    {upCount} helpful{downCount > 0 ? ` · ${downCount} not helpful` : ""}
+                    {upCount + downCount > 0 ? ` (${Math.round((upCount / (upCount + downCount)) * 100)}% helpful)` : ""}
+                  </p>
+                ) : null}
                 {founder && !isOwn ? (
                   <HelpfulVoteButton
                     reviewId={review.id}
@@ -182,6 +209,21 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                 </div>
                 {review.comment ? (
                   <p className="mt-4 leading-7 text-[var(--foreground)]">{review.comment}</p>
+                ) : null}
+                {review.images?.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {review.images.map((url) => (
+                      <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={url}
+                          alt=""
+                          className="h-24 w-24 rounded-xl border border-[var(--border)] object-cover transition hover:opacity-80"
+                          loading="lazy"
+                        />
+                      </a>
+                    ))}
+                  </div>
                 ) : null}
                 <p className="mt-4 text-sm text-[var(--muted)]">
                   {review.createdAt.toLocaleDateString("en-US", {

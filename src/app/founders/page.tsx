@@ -7,8 +7,16 @@ export const metadata: Metadata = {
   description: "Browse verified startup founders with public profiles across incubator cohorts.",
 };
 
-export default async function FoundersPage() {
-  const founders = await listPublicFounders();
+type FoundersPageProps = {
+  searchParams?: Promise<{
+    sort?: string;
+  }>;
+};
+
+export default async function FoundersPage({ searchParams }: FoundersPageProps) {
+  const params = await searchParams;
+  const sort = params?.sort === "recent" ? "recent" : "name";
+  const founders = await listPublicFounders(sort);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
@@ -19,7 +27,25 @@ export default async function FoundersPage() {
         </p>
       </section>
 
-      <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="mt-10">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm text-[var(--muted)]">{founders.length} founder{founders.length === 1 ? "" : "s"}</p>
+          <div className="flex gap-1 rounded-xl border border-[var(--border)] p-1">
+            <Link
+              href="/founders"
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${sort === "name" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"}`}
+            >
+              A–Z
+            </Link>
+            <Link
+              href="/founders?sort=recent"
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${sort === "recent" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"}`}
+            >
+              Recent
+            </Link>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {founders.length === 0 ? (
           <p className="col-span-full text-center text-[var(--muted)]">
             No public profiles yet.
@@ -52,15 +78,28 @@ export default async function FoundersPage() {
                   </span>
                 ) : null}
                 <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
+                  {founder._count.reviews} review{founder._count.reviews === 1 ? "" : "s"}
+                </span>
+                <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
                   {founder._count.badges} badge{founder._count.badges === 1 ? "" : "s"}
                 </span>
                 <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
                   {founder.profileCompletePercentage}% complete
                 </span>
+                {founder.lastReviewDate ? (
+                  <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium text-[var(--accent)]">
+                    Active{" "}
+                    {(() => {
+                      const days = Math.floor((Date.now() - new Date(founder.lastReviewDate).getTime()) / 86400000);
+                      return days === 0 ? "today" : days === 1 ? "yesterday" : `${days}d ago`;
+                    })()}
+                  </span>
+                ) : null}
               </div>
             </Link>
           ))
         )}
+       </div>
       </section>
     </div>
   );

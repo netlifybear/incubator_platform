@@ -1,28 +1,28 @@
-import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { generateReputationPacket, reputationPacketToJwt } from "@/lib/reputation";
+import { generateReputationJWT } from "@/lib/export-reputation";
 
-export async function POST() {
+export async function GET() {
   const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user) {
+    return new Response("Unauthorized", { status: 401 });
   }
 
   try {
-    const packet = await generateReputationPacket(session.user.id);
-    const jwt = reputationPacketToJwt(packet);
+    const jwt = await generateReputationJWT(session.user.id);
+    const filename = `reputation-${session.user.id.slice(0, 8)}.jwt`;
 
-    return NextResponse.json({
-      jwt,
-      packet,
-      message: "Reputation packet exported. Share the JWT with another incubator instance to import your reputation.",
+    return new Response(jwt, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/jwt",
+        "Content-Disposition": `attachment; filename="${filename}"`,
+      },
     });
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Could not generate reputation packet." },
-      { status: 400 },
+  } catch (err) {
+    return new Response(
+      err instanceof Error ? err.message : "Internal error",
+      { status: 500 },
     );
   }
 }

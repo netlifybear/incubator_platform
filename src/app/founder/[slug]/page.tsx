@@ -40,6 +40,12 @@ export async function generateMetadata({
     description,
     metadataBase: new URL(baseUrl),
     alternates: { canonical: `/founder/${slug}` },
+    twitter: {
+      card: "summary_large_image",
+      title: `${displayName} | ${cohortTag}`,
+      description,
+      images: [`${baseUrl}/api/badge/${slug}`],
+    },
     openGraph: {
       title: `${displayName} | ${cohortTag}`,
       description,
@@ -47,11 +53,7 @@ export async function generateMetadata({
       siteName: "Incubator Trust",
       url: `/founder/${slug}`,
       username: slug,
-    },
-    twitter: {
-      card: "summary",
-      title: `${displayName} | ${cohortTag}`,
-      description,
+      images: [{ url: `${baseUrl}/api/badge/${slug}`, width: 240, height: 80, alt: `${displayName} reputation badge` }],
     },
   };
 }
@@ -197,6 +199,12 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
               #{rank.rank} of {rank.total} founders in {founder.cohort?.name}
             </p>
           )}
+          {reviewStats._count > 0 ? (
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              {reviewStats._count} review{reviewStats._count === 1 ? "" : "s"} written
+              {reviewStats._avg.rating !== null ? ` · ${Math.round(reviewStats._avg.rating * 10) / 10} avg rating` : ""}
+            </p>
+          ) : null}
           {founder.cohort && (
             <Link
               href={`/leaderboard/public?cohort=${founder.cohort.slug}`}

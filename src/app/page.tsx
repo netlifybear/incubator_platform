@@ -13,7 +13,11 @@ import {
   listVendorsForCohort,
 } from "@/lib/vendors";
 import { OnboardingBanner } from "@/app/components/onboarding-banner";
+import { VendorSearch } from "@/app/components/vendor-search";
 import { prisma } from "@/lib/prisma";
+import { getActiveSprint } from "@/lib/sprints";
+import { computeReviewStreak } from "@/lib/rewards";
+import { searchVendorsForCohort } from "@/lib/vendors";
 
 type HomeProps = {
   searchParams?: Promise<{
@@ -48,14 +52,18 @@ export default async function Home({ searchParams }: HomeProps) {
   }
 
   const cohortId = founder.cohortId;
-  const params = await searchParams;
+  const params = await searchParams as { category?: string; q?: string } | undefined;
   const selectedCategory = params?.category;
-  const [vendors, categories, openRequests, reviewCount, badgeCount] = await Promise.all([
-    listVendorsForCohort(cohortId, selectedCategory),
+  const searchQuery = params?.q;
+  const [vendors, categories, openRequests, reviewCount, badgeCount, activeSprint] = await Promise.all([
+    searchQuery
+      ? searchVendorsForCohort({ cohortId, query: searchQuery, category: selectedCategory, sort: "reviews" })
+      : listVendorsForCohort(cohortId, selectedCategory),
     listVendorCategoriesForCohort(cohortId),
     listOpenVendorRequestsForCohort(cohortId),
     prisma.review.count({ where: { userId: founder.id } }),
     prisma.badge.count({ where: { userId: founder.id } }),
+    getActiveSprint(cohortId),
   ]);
   const totalReviewCount = vendors.reduce(
     (sum, vendor) => sum + vendor.reviews.length,
@@ -68,6 +76,11 @@ export default async function Home({ searchParams }: HomeProps) {
     { label: "Your badges", value: badgeCount },
   ];
 
+  const streak = computeReviewStreak(founder.lastReviewDate);
+  const mySprintProgress = activeSprint
+    ? activeSprint.contributors.find((c) => c.userId === founder.id)
+    : null;
+
   return (
     <AppShell founder={founder} cohortName={founder.cohort.name}>
       <div className="space-y-8">
@@ -78,18 +91,30 @@ export default async function Home({ searchParams }: HomeProps) {
                 {founder.cohort.name}
               </p>
               <h1 className="mt-3 text-4xl font-semibold tracking-normal">
-                Founder Workbench
+                Write
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-                Browse trusted vendors, manage recommendation requests, and build
-                reputation from one cohort workspace.
+                Review vendors your cohort trusts. Your contributions build private
+                reputation and public credibility.
               </p>
+              {activeSprint && mySprintProgress ? (
+                <div className="mt-4 flex flex-wrap gap-4 text-sm">
+                  <span className="rounded-xl bg-[var(--accent)]/10 px-3 py-1.5 font-medium text-[var(--accent)]">
+                    Sprint: {mySprintProgress.reviewCount} / {activeSprint.goalReviewCount} reviews
+                  </span>
+                </div>
+              ) : null}
+              {streak > 0 ? (
+                <span className="mt-2 inline-block rounded-xl bg-amber-100 px-3 py-1.5 text-sm font-medium text-amber-800">
+                  {streak}-week streak
+                </span>
+              ) : null}
             </div>
             <Link
               href="/vendors"
               className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--accent-strong)]"
             >
-              Browse vendors
+              Write a review
             </Link>
           </div>
 
@@ -129,7 +154,11 @@ export default async function Home({ searchParams }: HomeProps) {
               </Link>
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-5">
+              <VendorSearch initialQuery={searchQuery ?? ""} />
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-2">
               <Link
                 href="/"
                 className={`rounded-xl border px-4 py-2 text-sm font-medium ${

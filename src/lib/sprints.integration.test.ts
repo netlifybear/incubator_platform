@@ -8,7 +8,7 @@ import {
   createTestVendor,
   testRunId,
 } from "./test-db.ts";
-import { autoManageSprints, getSprintDigestInfo } from "./sprints.ts";
+import { autoManageSprints, getSprintDigestInfo, notifySprintEnd } from "./sprints.ts";
 
 test("autoManageSprints creates a sprint for the current month", async () => {
   const run = testRunId("sprint-auto");
@@ -106,6 +106,52 @@ test("getSprintDigestInfo returns recent completed sprint", async () => {
     assert.equal(info?.recentName, "Past Sprint");
     assert.equal(info?.recentTotalReviews, 1);
     assert.equal(info?.recentParticipants, 1);
+  } finally {
+    await cleanupTestData({
+      cohortSlugs: [cohort.slug],
+      emails: [founder.email],
+    });
+  }
+});
+
+test("notifySprintEnd sends notifications to contributors", async () => {
+  const run = testRunId("sprint-notify");
+  const cohort = await createTestCohort(`${run}-cohort`);
+  const founder = await createTestFounder({
+    cohortId: cohort.id,
+    email: `${run}-founder@example.com`,
+  });
+
+  try {
+    const { prisma } = await import("./prisma.ts");
+    const endsAt = new Date(Date.now() - 60 * 60 * 1000);
+    await prisma.sprint.create({
+      data: {
+        cohortId: cohort.id,
+        name: "Notify Test Sprint",
+        description: "Test",
+        goalReviewCount: 1,
+        startsAt: new Date(endsAt.getTime() - 30 * 24 * 60 * 60 * 1000),
+        endsAt,
+      },
+    });
+
+    const vendor = await createTestVendor({ cohortId: cohort.id, name: `${run} Vendor` });
+    await createTestReview({ cohortId: cohort.id, userId: founder.id, vendorId: vendor.id });
+
+    const result = await notifySprintEnd(cohort.id);
+    assert.equal(result.notified, true);
+    assert.equal(result.sprintName, "Notify Test Sprint");
+    assert.equal(result.contributorCount, 1);
+
+    const second = await notifySprintEnd(cohort.id);
+    assert.equal(second.notified, false);
+
+    const notifications = await prisma.notification.findMany({
+      where: { userId: founder.id, type: "sprint_end" },
+    });
+    assert.equal(notifications.length, 1);
+    assert.ok(notifications[0].title.includes("Notify Test Sprint"));
   } finally {
     await cleanupTestData({
       cohortSlugs: [cohort.slug],

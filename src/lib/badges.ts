@@ -1,5 +1,7 @@
 import { badgeDefinition, listAwardableBadgeTypes as listAwardable } from "../config/badge-definitions.ts";
 import { prisma } from "./prisma.ts";
+import { recordActivity } from "./activity.ts";
+import { createNotification } from "./notifications.ts";
 import { NEGATIVE_WORDS, POSITIVE_WORDS } from "./review-quality.ts";
 
 export type FounderBadge = {
@@ -212,9 +214,34 @@ export async function awardBadge(
     throw new Error("This founder already has this badge.");
   }
 
-  return prisma.badge.create({
+  const badge = await prisma.badge.create({
     data: { userId, type, description, issuerType: normalizedIssuerType, issuerId },
   });
+
+  const badgeLabel = def?.label ?? type;
+
+  createNotification({
+    userId,
+    type: "badge_earned",
+    title: `You earned the ${badgeLabel} badge`,
+    body: description ?? undefined,
+    link: "/grow",
+  }).catch(() => {});
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { cohortId: true },
+  });
+  if (user?.cohortId) {
+    recordActivity({
+      userId,
+      cohortId: user.cohortId,
+      type: "badge_earned",
+      metadata: { badgeType: type },
+    }).catch(() => {});
+  }
+
+  return badge;
 }
 
 export async function getBadgesForFounder(userId: string) {

@@ -6,6 +6,7 @@ export async function createConsumerReview(input: {
   rating: number;
   comment: string | null;
   displayName: string | null;
+  images?: string[];
 }) {
-  return prisma.consumerReview.create({ data: input });
+  return prisma.consumerReview.create({ data: { ...input, images: input.images ?? [] } });
 }

@@ -2,158 +2,198 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
+import { hasActiveCohort } from "@/lib/tenant-policy";
+import { getBacklinkSnapshots } from "@/lib/backlinks";
+import { getBadgesForFounder } from "@/lib/badges";
 
+function computeProfilePercentage(profile: {
+  name?: string | null;
+  bio?: string | null;
+  startupUrl?: string | null;
+  startupName?: string | null;
+  profileSlug?: string | null;
+}): number {
+  const fields = [
+    Boolean(profile.name),
+    Boolean(profile.bio),
+    Boolean(profile.startupUrl),
+    Boolean(profile.startupName),
+    Boolean(profile.profileSlug),
+  ];
+  const filled = fields.filter(Boolean).length;
+  return Math.round((filled / fields.length) * 100);
+}
 
-export default async function SEOPage() {
+function scoreColor(pct: number) {
+  if (pct >= 80) return "text-green-700";
+  if (pct >= 50) return "text-amber-700";
+  return "text-red-700";
+}
+
+export default async function SeoPage() {
   const founder = await getCurrentFounder();
 
   if (!founder) {
     redirect("/signin");
   }
 
+  if (!hasActiveCohort(founder) || !founder.cohort) {
+    redirect("/");
+  }
+
+  const [snapshots, badges] = await Promise.all([
+    getBacklinkSnapshots(founder.id),
+    getBadgesForFounder(founder.id),
+  ]);
+
+  const profilePct = computeProfilePercentage(founder);
+  const latest = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
+  const hasGsc = Boolean(founder.gscEmail);
+  const hasPublicProfile = founder.publicProfileEnabled;
+  const hasProfileSlug = Boolean(founder.profileSlug);
+  const hasBio = Boolean(founder.bio);
+  const hasStartupUrl = Boolean(founder.startupUrl);
+  const hasStartupName = Boolean(founder.startupName);
+  const hasName = Boolean(founder.name);
+  const hasBadge = badges.length > 0;
+  const verifiedBacklinks = latest?.verifiedCount ?? 0;
+
+  const checks = [
+    { label: "Name set", done: hasName, hint: "Your display name helps search engines identify you." },
+    { label: "Startup name set", done: hasStartupName, hint: "Shows what company you're associated with." },
+    { label: "Startup URL set", done: hasStartupUrl, hint: "Links your profile to your startup's domain." },
+    { label: "Bio written", done: hasBio, hint: "A bio gives search engines context about you." },
+    { label: "Profile slug set", done: hasProfileSlug, hint: "Creates a clean URL like /founder/your-name." },
+    { label: "Public profile enabled", done: hasPublicProfile, hint: "Search engines can't index private profiles." },
+    { label: "Google Search Console connected", done: hasGsc, hint: "Auto-discovers backlinks from across the web." },
+    { label: "At least one badge earned", done: hasBadge, hint: "Badges display on your public profile." },
+    { label: "At least one verified backlink", done: verifiedBacklinks > 0, hint: "Each backlink is a citation signal." },
+  ];
+
+  const doneCount = checks.filter((c) => c.done).length;
+  const overallPct = Math.round((doneCount / checks.length) * 100);
+
   return (
-    <AppShell founder={founder} cohortName={founder.cohort?.name ?? undefined}>
-      <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
-          SEO & Authority
-        </p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight">
-          Build legitimate authority without crossing ethical lines.
-        </h1>
-        <p className="mt-4 max-w-2xl leading-7 text-[var(--muted)]">
-          This guide follows Google Search Essentials — the same rules Google uses
-          to evaluate websites. The goal is durable authority, not quick ranking
-          tricks.
-        </p>
-      </section>
+    <AppShell founder={founder} cohortName={founder.cohort.name}>
+      <div className="space-y-8">
+        <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel-strong)] p-6 shadow-[var(--shadow-ambient)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
+            {founder.cohort.name}
+          </p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-normal">SEO Checklist</h1>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
+            Optimize your founder profile and backlinks for search engine visibility.
+            Each item completed increases your chance of being found.
+          </p>
+        </section>
 
-      <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold">Your foundation</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-            <p className="text-lg font-semibold">Completed profile</p>
-            <p className="mt-2 leading-7 text-[var(--muted)]">
-              Your founder profile on this platform includes schema.org structured
-              data, which helps search engines understand who you are and what you
-              build.
-            </p>
-            <Link
-              href="/profile/settings"
-              className="mt-4 inline-flex rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Edit profile
-            </Link>
-          </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-            <p className="text-lg font-semibold">Named reviews</p>
-            <p className="mt-2 leading-7 text-[var(--muted)]">
-              Writing detailed, named vendor reviews creates authentic content that
-              helps other founders. Your reviews are attributed to your profile as
-              genuine editorial content.
-            </p>
-            <Link
-              href="/"
-              className="mt-4 inline-flex rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Browse vendors
-            </Link>
-          </div>
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-            <p className="text-lg font-semibold">Google Search Console</p>
-            <p className="mt-2 leading-7 text-[var(--muted)]">
-              {founder.gscEmail
-                ? `Connected as ${founder.gscEmail}. See your search performance and top linking domains on the backlink dashboard.`
-                : "Connect Google Search Console to see search queries, clicks, and impressions for your startup site."}
-            </p>
-            <Link
-              href={founder.gscEmail ? "/backlinks" : "/api/auth/gsc"}
-              className="mt-4 inline-flex rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
-            >
-              {founder.gscEmail ? "View performance" : "Connect GSC"}
-            </Link>
-          </div>
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="relative h-20 w-20">
+                <svg className="h-20 w-20 -rotate-90" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="16" fill="none" stroke="#e5e7eb" strokeWidth="3" />
+                  <circle
+                    cx="18" cy="18" r="16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeDasharray={`${overallPct * 1.005} 100`}
+                    className={scoreColor(overallPct)}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-xl font-bold">
+                  {overallPct}%
+                </span>
+              </div>
+              <div>
+                <p className="text-xl font-semibold">SEO readiness</p>
+                <p className={`text-sm font-medium ${scoreColor(overallPct)}`}>
+                  {doneCount} of {checks.length} items complete
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Quick actions</h2>
+            <div className="mt-4 space-y-2">
+              {!hasPublicProfile ? (
+                <ActionItem label="Enable public profile" detail="Make your profile searchable" href="/profile/settings" />
+              ) : null}
+              {!hasGsc ? (
+                <ActionItem label="Connect Google Search Console" detail="Auto-discover backlinks" href="/backlinks" />
+              ) : null}
+              {profilePct < 100 ? (
+                <ActionItem label="Complete your profile" detail={`${profilePct}% complete`} href="/profile/settings" />
+              ) : null}
+              <ActionItem label="Add backlinks" detail="Track domains mentioning you" href="/backlinks" />
+              <ActionItem label="Export reputation JWT" detail="Download signed profile data" href="/api/reputation/export" />
+            </div>
+          </section>
         </div>
-      </section>
 
-      <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold">
-          Google Search Essentials — what matters for founders
-        </h2>
-        <div className="mt-5 space-y-4">
-          <article className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-            <div className="flex items-start gap-3">
-              <span className="mt-1 shrink-0 text-lg">{'\u2705'}</span>
-              <div>
-                <h3 className="font-semibold">Helpful content</h3>
-                <p className="mt-2 leading-7 text-[var(--muted)]">
-                  Write for people, not search engines. Detailed founder reviews,
-                  genuine startup stories, and useful public profiles naturally
-                  demonstrate expertise and experience. Google rewards content that
-                  helps users make decisions.
-                </p>
+        <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+          <h2 className="text-xl font-semibold">Checklist</h2>
+          <div className="mt-4 space-y-2">
+            {checks.map((check) => (
+              <div
+                key={check.label}
+                className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition ${check.done ? "border-green-200 bg-green-50/50" : "border-[var(--border)] bg-[var(--panel)]"}`}
+              >
+                <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${check.done ? "bg-green-500 text-white" : "bg-[var(--border)] text-[var(--muted)]"}`}>
+                  {check.done ? "✓" : String(checks.indexOf(check) + 1)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className={`text-sm font-semibold ${check.done ? "text-green-800" : ""}`}>{check.label}</p>
+                  <p className="mt-0.5 text-xs text-[var(--muted)]">{check.hint}</p>
+                </div>
+                {!check.done ? (
+                  <span className="shrink-0 text-xs font-medium text-amber-700">Missing</span>
+                ) : null}
               </div>
-            </div>
-          </article>
-          <article className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-            <div className="flex items-start gap-3">
-              <span className="mt-1 shrink-0 text-lg">{'\u2705'}</span>
-              <div>
-                <h3 className="font-semibold">Expertise and trust (E-E-A-T)</h3>
-                <p className="mt-2 leading-7 text-[var(--muted)]">
-                  Your profile demonstrates experience and expertise through
-                  verifiable cohort membership, named reviews, and genuine startup
-                  context. Structured data helps search engines surface this
-                  information in knowledge panels and rich results.
-                </p>
-              </div>
-            </div>
-          </article>
-          <article className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-            <div className="flex items-start gap-3">
-              <span className="mt-1 shrink-0 text-lg">{'\u2705'}</span>
-              <div>
-                <h3 className="font-semibold">Editorial links</h3>
-                <p className="mt-2 leading-7 text-[var(--muted)]">
-                  Links to your startup from your founder profile are editorial
-                  attribution — they help people find your work. Avoid schemes that
-                  require reciprocal links, paid placements, or link exchanges.
-                  Legitimate directories and genuine recommendations are the durable
-                  approach.
-                </p>
-              </div>
-            </div>
-          </article>
-          <article className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-            <div className="flex items-start gap-3">
-              <span className="mt-1 shrink-0 text-lg">{'\u274C'}</span>
-              <div>
-                <h3 className="font-semibold">What to avoid</h3>
-                <p className="mt-2 leading-7 text-[var(--muted)]">
-                  Link spam, reciprocal-link requirements, paid badges, thin
-                  AI-generated content, keyword stuffing, and automated link
-                  exchanges all violate Google Search Essentials. These tactics
-                  can lead to manual actions or ranking drops. The ethical path is
-                  also the durable path.
-                </p>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold">Track your backlinks</h2>
-        <p className="mt-2 max-w-2xl leading-7 text-[var(--muted)]">
-          Monitor where your startup is mentioned online. This is informational
-          tracking — not a guarantee of ranking improvement.
-        </p>
-        <Link
-          href="/backlinks"
-          className="mt-4 inline-flex rounded-full bg-[var(--accent)] px-5 py-3 font-semibold text-white"
-        >
-          Go to backlink dashboard
-        </Link>
-      </section>
+        <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+          <h2 className="text-xl font-semibold">Resources</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Link href="/backlinks" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
+              <p className="font-semibold">Backlinks</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">Manage verified backlinks and view velocity</p>
+            </Link>
+            <Link href="/grow" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
+              <p className="font-semibold">Public profile</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">View your grow hub with badges and points</p>
+            </Link>
+            <Link href="/profile/settings" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
+              <p className="font-semibold">Profile settings</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">Edit name, bio, startup info, and slug</p>
+            </Link>
+            <Link href="/api/reputation/export" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
+              <p className="font-semibold">Export reputation</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">Download signed JWT of your profile data</p>
+            </Link>
+          </div>
+        </section>
+      </div>
     </AppShell>
+  );
+}
+
+function ActionItem({ label, detail, href }: { label: string; detail: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-3 transition hover:border-[var(--accent)]"
+    >
+      <div>
+        <p className="text-sm font-semibold">{label}</p>
+        <p className="text-xs text-[var(--muted)]">{detail}</p>
+      </div>
+      <span className="text-sm text-[var(--accent)]">→</span>
+    </Link>
   );
 }

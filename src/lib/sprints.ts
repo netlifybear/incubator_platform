@@ -1,4 +1,5 @@
 import { prisma } from "./prisma.ts";
+import { createNotification } from "./notifications.ts";
 
 export type SprintWithProgress = {
   id: string;
@@ -144,6 +145,55 @@ export async function autoManageAllCohorts() {
 
   for (const cohort of cohorts) {
     const result = await autoManageSprints(cohort.id);
+    results.push({ cohortId: cohort.id, ...result });
+  }
+
+  return results;
+}
+
+export async function notifySprintEnd(cohortId: string) {
+  const now = new Date();
+  const recent = await prisma.sprint.findFirst({
+    where: {
+      cohortId,
+      endsAt: { lt: now, gte: new Date(now.getTime() - 48 * 60 * 60 * 1000) },
+      notifiedAt: null,
+    },
+    orderBy: { endsAt: "desc" },
+  });
+
+  if (!recent) return { notified: false, reason: "No recently ended sprint." };
+
+  const sprint = await enrichSprint(recent);
+  const baseUrl = process.env.NEXTAUTH_URL ?? "";
+
+  for (const contributor of sprint.contributors) {
+    const metGoal = contributor.reviewCount >= sprint.goalReviewCount;
+    await createNotification({
+      userId: contributor.userId,
+      type: "sprint_end",
+      title: `${sprint.name} is complete`,
+      body: metGoal
+        ? `You wrote ${contributor.reviewCount} review${contributor.reviewCount === 1 ? "" : "s"} — goal met!`
+        : `You wrote ${contributor.reviewCount} of ${sprint.goalReviewCount} goal reviews.`,
+      link: `${baseUrl}/sprints`,
+    });
+  }
+
+  await prisma.sprint.update({
+    where: { id: sprint.id },
+    data: { notifiedAt: now },
+  });
+
+  return { notified: true, sprintName: sprint.name, contributorCount: sprint.contributors.length };
+}
+
+export async function notifyAllSprintEnds() {
+  const cohorts = await prisma.cohort.findMany({ select: { id: true } });
+  const results: Array<{ cohortId: string; notified: boolean; sprintName?: string; contributorCount?: number; reason?: string }> = [];
+
+  for (const cohort of cohorts) {
+    const result = await notifySprintEnd(cohort.id);
     results.push({ cohortId: cohort.id, ...result });
   }
 

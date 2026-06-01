@@ -23,7 +23,7 @@ const publicFounderProfileSelect = {
   publicProfileEnabled: true,
 };
 
-export async function listPublicFounders() {
+export async function listPublicFounders(sort?: "name" | "recent") {
   return prisma.user.findMany({
     where: {
       role: "founder",
@@ -38,14 +38,17 @@ export async function listPublicFounders() {
       startupUrl: true,
       bio: true,
       profileCompletePercentage: true,
+      lastReviewDate: true,
       cohort: {
         select: { name: true, slug: true },
       },
       _count: {
-        select: { badges: true },
+        select: { badges: true, reviews: true },
       },
     },
-    orderBy: { name: "asc" },
+    orderBy: sort === "recent"
+      ? [{ lastReviewDate: "desc" }, { name: "asc" }]
+      : [{ name: "asc" }],
   });
 }
 

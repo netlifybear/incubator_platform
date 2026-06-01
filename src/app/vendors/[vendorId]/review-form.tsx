@@ -30,6 +30,7 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
   const [disclosed, setDisclosed] = useState(false);
   const [showChecklist, setShowChecklist] = useState(false);
   const [displayName, setDisplayName] = useState("");
+  const [images, setImages] = useState<File[]>([]);
 
   const rules = MODE_RULES[mode];
   const activeText = guided ? composeFromTemplate(template) : text;
@@ -45,13 +46,16 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
       formData.set("comment", finalText);
       formData.set("disclosedIncentive", (disclosed || template.disclosedIncentive) ? "on" : "");
       formData.set("displayName", displayName);
+      images.forEach((file, i) => {
+        formData.set(`image-${i}`, file);
+      });
       if (mode === "founder" && checklist.length > 0 && !checklist.every((c) => c.passed)) {
         setShowChecklist(true);
         return;
       }
       formAction(formData);
     },
-    [formAction, disclosed, mode, checklist, guided, template, text, displayName],
+    [formAction, disclosed, mode, checklist, guided, template, text, displayName, images],
   );
 
   const handleFormSubmit = useCallback(
@@ -309,6 +313,29 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
           className="mt-2 w-full rounded-2xl border border-[var(--border)] bg-white px-4 py-3"
           placeholder="SAFE financing, monthly bookkeeping, brand design..."
         />
+
+        <div className="mt-5">
+          <label className="block text-sm font-semibold" htmlFor="images">
+            Screenshots <span className="font-normal text-[var(--muted)]">(optional, up to 4)</span>
+          </label>
+          <input
+            id="images"
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            multiple
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? []).slice(0, 4);
+              setImages(files);
+            }}
+            className="mt-2 w-full rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-[var(--accent)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
+          />
+          {images.length > 0 ? (
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              {images.length} file{images.length === 1 ? "" : "s"} selected
+              {images.reduce((sum, f) => sum + f.size, 0) > 5 * 1024 * 1024 ? " (total exceeds 5MB — some may be skipped)" : ""}
+            </p>
+          ) : null}
+        </div>
 
         {state.error ? <p className="mt-4 text-sm font-medium text-red-700">{state.error}</p> : null}
         {state.celebration ? (

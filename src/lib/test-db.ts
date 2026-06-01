@@ -80,6 +80,8 @@ export async function cleanupTestData(input: {
     });
     const userIds = users.map((u) => u.id);
     if (userIds.length) {
+      await prisma.notification.deleteMany({ where: { userId: { in: userIds } } });
+      await prisma.activityEvent.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.backlinkSnapshot.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.backlinkLog.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.badge.deleteMany({ where: { userId: { in: userIds } } });
@@ -107,6 +109,10 @@ export async function cleanupTestData(input: {
       await prisma.badgeNomination.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.sprint.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.guestPostExchange.deleteMany({ where: { cohortId: { in: cohortIds } } });
+      await prisma.activityEvent.deleteMany({ where: { cohortId: { in: cohortIds } } });
+      await prisma.notification.deleteMany({
+        where: { user: { cohortId: { in: cohortIds } } },
+      });
       await prisma.vendor.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.user.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.cohort.deleteMany({ where: { id: { in: cohortIds } } });

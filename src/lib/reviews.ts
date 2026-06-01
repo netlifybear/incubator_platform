@@ -4,6 +4,7 @@ import {
   validateReviewRating,
 } from "@/lib/review-validation";
 import { prisma } from "@/lib/prisma";
+import { recordActivity } from "@/lib/activity";
 
 export type CreateReviewInput = {
   vendorId: string;
@@ -14,6 +15,7 @@ export type CreateReviewInput = {
   usedVendor: boolean;
   workType: string;
   disclosedIncentive?: boolean;
+  images?: string[];
 };
 
 export async function createReviewForCohort(input: CreateReviewInput) {
@@ -24,6 +26,7 @@ export async function createReviewForCohort(input: CreateReviewInput) {
     },
     select: {
       id: true,
+      name: true,
     },
   });
 
@@ -35,8 +38,8 @@ export async function createReviewForCohort(input: CreateReviewInput) {
   const comment = normalizeReviewComment(input.comment);
   const workType = normalizeReviewWorkType(input.workType);
 
-  return prisma.$transaction(async (tx) => {
-    const review = await tx.review.create({
+  const review = await prisma.$transaction(async (tx) => {
+    const r = await tx.review.create({
       data: {
         vendorId: input.vendorId,
         userId: input.userId,
@@ -46,6 +49,7 @@ export async function createReviewForCohort(input: CreateReviewInput) {
         usedVendor: input.usedVendor,
         workType,
         disclosedIncentive: input.disclosedIncentive ?? false,
+        images: input.images ?? [],
       },
     });
 
@@ -54,6 +58,15 @@ export async function createReviewForCohort(input: CreateReviewInput) {
       data: { lastReviewDate: new Date() },
     });
 
-    return review;
+    return r;
   });
+
+  recordActivity({
+    userId: input.userId,
+    cohortId: input.cohortId,
+    type: "review_written",
+    metadata: { vendorName: vendor.name },
+  }).catch(() => {});
+
+  return review;
 }

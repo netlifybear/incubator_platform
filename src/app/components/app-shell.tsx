@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getFounderDisplayName } from "@/lib/tenant-policy";
 import { SignOutButton } from "./sign-out-button";
+import { NotificationBell } from "./notification-bell";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -12,41 +13,26 @@ type AppShellProps = {
   } | null;
 };
 
-const coreLinks = [
-  { href: "/", label: "Dashboard" },
-  { href: "/vendors", label: "Vendors" },
-  { href: "/top-vendors", label: "Top vendors" },
-  { href: "/requests", label: "Requests" },
-];
-
-const reputationLinks = [
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/badges", label: "Badges" },
-  { href: "/rewards", label: "Rewards" },
-  { href: "/nominations", label: "Nominations" },
-  { href: "/profile/settings", label: "Profile" },
-];
-
-const growthLinks = [
-  { href: "/exchanges", label: "Exchanges" },
-  { href: "/sprints", label: "Sprints" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/seo", label: "SEO" },
-  { href: "/backlinks", label: "Backlinks" },
+const hubLinks = [
+  { href: "/", label: "Write" },
+  { href: "/connect", label: "Connect" },
+  { href: "/grow", label: "Grow" },
 ];
 
 function NavGroup({
   title,
   links,
 }: {
-  title: string;
+  title?: string;
   links: Array<{ href: string; label: string }>;
 }) {
   return (
     <div className="space-y-1">
-      <p className="px-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-        {title}
-      </p>
+      {title ? (
+        <p className="px-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+          {title}
+        </p>
+      ) : null}
       {links.map((link) => (
         <Link
           key={link.href}
@@ -68,14 +54,11 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
           <Link href="/" className="block rounded-xl px-3 py-2 text-lg font-semibold">
             Incubator Trust
           </Link>
-          <nav className="mt-6 grid gap-6">
-            <NavGroup title="Core" links={coreLinks} />
-            <NavGroup title="Reputation" links={reputationLinks} />
-            <NavGroup title="Growth" links={growthLinks} />
+          <nav className="mt-6 grid gap-1">
+            <NavGroup links={hubLinks} />
             {founder?.role === "admin" ? (
               <NavGroup
-                title="Admin"
-                links={[{ href: "/admin/requests", label: "Admin requests" }]}
+                links={[{ href: "/admin", label: "Admin" }]}
               />
             ) : null}
           </nav>
@@ -90,6 +73,7 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <span className="text-[var(--muted)]">{founder ? getFounderDisplayName(founder) : "Guest"}</span>
+              {founder ? <NotificationBell /> : null}
               {founder ? <SignOutButton /> : null}
             </div>
           </header>

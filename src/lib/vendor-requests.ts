@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { sendNotificationEmail } from "@/lib/email";
 import { escapeHtml, escapeHtmlAttribute } from "@/lib/html";
+import { createNotification } from "@/lib/notifications";
 import type { Prisma } from "@prisma/client";
 import {
   normalizeVendorRequestEdit,
@@ -53,6 +54,14 @@ export async function createTargetedVendorRequest(input: CreateTargetedRequestIn
       to: targetUser.email,
       subject: `${requester.name} asked about ${description} — Incubator Trust`,
       body: `<p><strong>${safeRequesterName}</strong> has asked for more details about a vendor you reviewed.</p><p>${safeMessage}</p><p><a href="${requestsUrl}">View and respond on your requests page</a></p><p style="color:#666;font-size:12px">Request: ${safeDescription}</p>`,
+    }).catch(() => {});
+
+    createNotification({
+      userId: input.targetUserId,
+      type: "targeted_request",
+      title: `${requester.name} asked about ${description}`,
+      body: safeMessage,
+      link: "/requests",
     }).catch(() => {});
   }
 
