@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
-import { getFounderPoints } from "@/lib/points";
-import { computeTierProgress, computeReviewStreak } from "@/lib/rewards";
+import { computeReviewStreak } from "@/lib/rewards";
 import { getBacklinkSnapshots } from "@/lib/backlinks";
 import { BacklinkVelocityChart } from "@/app/components/backlink-velocity-chart";
 import { prisma } from "@/lib/prisma";
@@ -21,14 +20,17 @@ export default async function GrowPage() {
     redirect("/");
   }
 
-  const [points, badges, snapshots, backlinkCount] = await Promise.all([
-    getFounderPoints(founder.id),
+  const [reviewCount, badgeCount, snapshots, backlinkCount] = await Promise.all([
+    prisma.review.count({ where: { userId: founder.id } }),
     prisma.badge.count({ where: { userId: founder.id } }),
     getBacklinkSnapshots(founder.id),
     prisma.backlinkLog.count({ where: { userId: founder.id } }),
   ]);
 
-  const tier = computeTierProgress(points.total);
+  const helpfulVoteCount = await prisma.helpfulVote.count({
+    where: { review: { userId: founder.id }, value: true },
+  });
+
   const streak = computeReviewStreak(founder.lastReviewDate);
   const profilePublic = founder.publicProfileEnabled;
   const profileViews = founder.profileViewCount;
@@ -63,8 +65,8 @@ export default async function GrowPage() {
         </section>
 
         <div className="grid gap-3 sm:grid-cols-4">
-          <MetricCard label="Total points" value={points.total} />
-          <MetricCard label="Current tier" value={tier?.current.title ?? "New"} />
+          <MetricCard label="Reviews written" value={reviewCount} />
+          <MetricCard label="Helpful votes" value={helpfulVoteCount} />
           <MetricCard label="Profile views" value={profileViews} />
           <MetricCard label="Backlinks" value={backlinkCount} />
         </div>
@@ -93,29 +95,12 @@ export default async function GrowPage() {
                 <span className="text-sm font-semibold">{streak > 0 ? `${streak} week${streak === 1 ? "" : "s"}` : "None"}</span>
               </div>
               <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
-                <span className="text-sm text-[var(--muted)]">Badges earned</span>
-                <span className="text-sm font-semibold">{badges}</span>
+                <span className="text-sm text-[var(--muted)]">Badges</span>
+                <span className="text-sm font-semibold">{badgeCount}</span>
               </div>
-              {tier && (
-                <div className="rounded-xl bg-[var(--panel)] px-4 py-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-[var(--muted)]">Next tier</span>
-                    <span className="text-sm font-semibold">{tier.next?.title ?? "Max"}</span>
-                  </div>
-                  {tier.next && (
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--border)]">
-                      <div
-                        className="h-full rounded-full bg-[var(--accent)]"
-                        style={{ width: `${Math.round(tier.progress * 100)}%` }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/leaderboard" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Leaderboard</Link>
-              <Link href="/rewards" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Rewards</Link>
               <Link href="/badges" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Badges</Link>
               <Link href="/nominations" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Nominations</Link>
             </div>
@@ -123,33 +108,29 @@ export default async function GrowPage() {
 
           <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">SEO</h2>
-              <Link href="/seo" className="text-sm font-semibold text-[var(--accent)]">
-                Guide
-              </Link>
+              <h2 className="text-xl font-semibold">Impact</h2>
             </div>
             <div className="mt-4 space-y-3">
               <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium">{founder.gscEmail ? "Google Search Console" : "GSC not connected"}</p>
-                  {founder.gscEmail ? <p className="text-xs text-[var(--muted)]">{founder.gscEmail}</p> : null}
-                </div>
-                <Link href="/backlinks" className="text-sm font-semibold text-[var(--accent)]">
-                  {founder.gscEmail ? "Manage" : "Connect"}
-                </Link>
+                <span className="text-sm text-[var(--muted)]">Vendors evaluated</span>
+                <span className="text-sm font-semibold">{reviewCount}</span>
               </div>
               <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
-                <span className="text-sm text-[var(--muted)]">Verified backlinks</span>
-                <span className="text-sm font-semibold">
-                  {snapshots.length > 0 ? snapshots[snapshots.length - 1].verifiedCount : 0}
-                </span>
+                <span className="text-sm text-[var(--muted)]">Founders helped by your reviews</span>
+                <span className="text-sm font-semibold">{helpfulVoteCount}</span>
               </div>
-              <Link
-                href="/backlinks"
-                className="mt-2 inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
-              >
-                Manage backlinks
-              </Link>
+              {streak > 0 ? (
+                <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
+                  <span className="text-sm text-[var(--muted)]">Active streak</span>
+                  <span className="text-sm font-semibold">{streak} week{streak === 1 ? "" : "s"}</span>
+                </div>
+              ) : null}
+              {badgeCount > 0 ? (
+                <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
+                  <span className="text-sm text-[var(--muted)]">Badges earned</span>
+                  <span className="text-sm font-semibold">{badgeCount}</span>
+                </div>
+              ) : null}
             </div>
           </section>
         </div>
@@ -169,7 +150,7 @@ export default async function GrowPage() {
             {streak === 0 ? (
               <ActionItem
                 label="Write a review this week"
-                detail="Keep your streak alive and earn points"
+                detail="Keep your streak alive and help other founders evaluate vendors"
                 href="/"
               />
             ) : null}
@@ -189,13 +170,13 @@ export default async function GrowPage() {
             ) : null}
             <ActionItem
               label="Export your reputation"
-              detail="Download a signed JWT of your profile, points, and badges"
+              detail="Download a signed JWT of your profile and badges"
               href="/api/reputation/export"
             />
             {founder.profileSlug ? (
               <ActionItem
                 label="Your credibility report"
-                detail="Verifiable reputation report for investors and partners"
+                detail="Verifiable report for investors and partners"
                 href={`/founder/${founder.profileSlug}/credibility`}
               />
             ) : null}

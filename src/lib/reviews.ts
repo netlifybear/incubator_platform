@@ -5,6 +5,7 @@ import {
 } from "@/lib/review-validation";
 import { prisma } from "@/lib/prisma";
 import { recordActivity } from "@/lib/activity";
+import { computeAndAwardBadges } from "@/lib/badges";
 
 export type CreateReviewInput = {
   vendorId: string;
@@ -67,6 +68,8 @@ export async function createReviewForCohort(input: CreateReviewInput) {
     type: "review_written",
     metadata: { vendorName: vendor.name },
   }).catch(() => {});
+
+  computeAndAwardBadges(input.userId).catch(() => {});
 
   return review;
 }

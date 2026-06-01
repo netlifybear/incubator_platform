@@ -64,8 +64,8 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 
 | Promise | Status | Gap |
 |---------|--------|-----|
-| Auto-badges for achievement | Manual/admin-only | No compute engine for `computable: true` badges |
-| Rewards for contribution | Celebration toast only | Points/tiers don't unlock anything |
+| Auto-badges for achievement | Compute engine running on review submit, profile update, and cron | Computable badges now auto-award with notifications |
+| Rewards for contribution | Celebration toast + impact UX on grow/rewards pages | Points/tiers don't unlock anything (by design — impact over points) |
 
 ## Full Implementation Roadmap
 
@@ -95,12 +95,12 @@ The platform needs alumni participation to keep the directory current and expand
 - [ ] Public cohort aggregate pages
 - [ ] Invite/referral system
 
-### Phase 4: Close the Auto-Badge Gap (~3h)
-Computable badge types should auto-award without admin intervention.
+### Phase 4: Close the Auto-Badge Gap ✅
+Computable badge types now auto-award without admin intervention. Run on review submit, profile update, and daily cron.
 
-- [ ] Badge compute engine (runs on review submit, profile update, and cron)
-- [ ] Triggers for: `reviewer`, `profile_complete`, `verified`, `quality_reviewer`, `detailed_reviewer`, `balanced_reviewer`, `trusted_reviewer`, `top_contributor`
-- [ ] Notification on auto-badge award
+- [x] Badge compute engine (runs on review submit, profile update, and cron)
+- [x] Triggers for: `reviewer`, `profile_complete`, `verified`, `quality_reviewer`, `detailed_reviewer`, `balanced_reviewer`, `trusted_reviewer`, `top_contributor`
+- [x] Notification on auto-badge award
 
 ## Effort Summary
 
@@ -109,6 +109,6 @@ Computable badge types should auto-award without admin intervention.
 | 1. Public structured data | Mostly done | High (unlocks structured public review data) | Optional refinements only |
 | 2. Reputation portability governance | ~4-6h | High (defensibility) | Export/import baseline already built |
 | 3. Network effects | ~6-10h | Medium-high (growth) | Alumni role needs schema change |
-| 4. Auto-badges | ~3h | Medium (engagement) | Badge definitions exist |
+| 4. Auto-badges | ✅ Done | Badge definitions existed |
 
-Remaining total: ~13-19h to fully deliver the reciprocity promise in `docs/product.md`, depending on portability governance depth and how far network effects are taken.
+Remaining total: ~10-16h to fully deliver the reciprocity promise in `docs/product.md`, depending on portability governance depth and how far network effects are taken.

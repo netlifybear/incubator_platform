@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import {
   normalizeFounderProfileSlug,
 } from "@/lib/founder-profile-presenter";
+import { computeAndAwardBadges } from "@/lib/badges";
 
 export type ProfileActionState = {
   error?: string;
@@ -87,6 +88,8 @@ export async function updateProfileAction(
 
     revalidatePath("/profile/settings");
     revalidatePath(`/founder/${profileSlug}`);
+
+    computeAndAwardBadges(founder.id).catch(() => {});
 
     return { success: "Profile updated." };
   } catch (error) {

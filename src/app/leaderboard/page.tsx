@@ -89,8 +89,8 @@ export default async function LeaderboardPage() {
                 Cohort contributions
               </h1>
               <p className="mt-3 max-w-2xl leading-7 text-[var(--muted)]">
-                Ranked by quality-adjusted review points, badges, and helpful votes. Use it
-                to see participation patterns, not just who is in first place.
+                See who has contributed the most reviews, helpful votes, and badges to the
+                cohort. Use it to spot participation patterns and celebrate impact.
               </p>
             </div>
             {currentRank > 0 ? (
@@ -119,7 +119,7 @@ export default async function LeaderboardPage() {
             <div>
               <h2 className="text-2xl font-semibold">Rankings</h2>
               <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                Scores combine contribution quality and peer recognition.
+                Rankings reflect review quality, badges earned, and helpful votes from peers.
               </p>
             </div>
             <Link

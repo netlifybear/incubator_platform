@@ -57,6 +57,7 @@ Implemented features:
 
 - Points, tiers, leaderboard, public leaderboard threshold, rewards page.
 - Badges, nominations, multi-issuer badge APIs, admin award flow.
+- Auto-badge compute engine (runs on review submit, profile update, and cron).
 - Sprints, notifications, weekly digest, and cohort activity.
 
 Patent/spec coverage:
@@ -65,8 +66,8 @@ Patent/spec coverage:
 
 Current gap:
 
-- Computable badge definitions exist, but no runtime auto-award engine applies them from behavior.
-- Points/tier UI still needs impact-over-points refinement.
+- Points/tier UI has basic impact-over-points changes applied; deeper refinement awaits product/UX design.
+- Milestone tiers are purely decorative (titles only, no unlocks).
 
 ## 5. Portable Credibility
 

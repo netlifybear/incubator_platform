@@ -84,7 +84,7 @@ See `../OPERATING.md` for the detailed route map and verification commands.
 The strongest next steps are:
 
 - Add governance to imported reputation packets.
-- Build automatic computable badge awards.
-- Reframe points and tiers toward impact/credibility.
+- Automatic computable badge awards are live; monitor and iterate on thresholds.
+- Impact/credibility reframe applied to grow/rewards/leaderboard; deeper work needs product design.
 - Scope alumni/cross-cohort network effects into a small first milestone.
 - Treat public-only `llms.txt`, public Q&A schema, and citation refinements as optional structured-data experiments, not required AI visibility levers.

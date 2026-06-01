@@ -1,17 +1,28 @@
 # Gamification Rethink: Impact Over Points
 
+## Status
+
+Basic impact-over-points changes have been applied to `/grow`, `/rewards`, and `/leaderboard`. Computable badges now auto-award through the badge computation engine on review submit, profile update, and the badge cron route.
+
+Remaining work is product/UX design rather than a direct implementation queue:
+
+- Decide how far to demote or replace the leaderboard.
+- Shape a fuller impact dashboard with meaningful cohort and personal feedback.
+- Convert badges from achievement framing toward contribution context where appropriate.
+- Decide whether points remain visible anywhere or only power internal ordering/export signals.
+
 ## Current State
 
-The platform has gamification scaffolding but no real game loop:
+The platform has gamification scaffolding and an initial impact-oriented pass, but still no fully designed game loop:
 
-- **Points**: Computed per review + helpful votes + badges, displayed on /grow, feeds leaderboard rank. Not consumed by anything.
-- **Tiers**: `computeTierProgress()` converts points into Bronze/Silver/Gold/Platinum with a progress bar. Visual only — no unlocks, no rewards, no perks. The tier descriptions promise features (custom slug, featured highlight, share buttons, early-access badge) that don't exist.
-- **Badges**: Awarded manually by admins, vendors, investors, or via nominations. The `computable` flag exists on several badge types, but there is no runtime engine to auto-award them from behavior.
-- **Leaderboard**: Rank-only. No reward for top positions.
+- **Points**: Computed per review + helpful votes + badges, still feeds leaderboard rank and reputation export, but is no longer the primary /grow or /rewards narrative.
+- **Tiers**: `computeTierProgress()` still exists for legacy logic/tests, but tier progress is no longer the main /grow or /rewards surface. Tier titles remain cosmetic and do not unlock features.
+- **Badges**: Awarded by admins, vendors, investors, nominations, and the auto-badge compute engine for computable badge types.
+- **Leaderboard**: Still rank-oriented, but copy now frames it as cohort contribution and participation patterns.
 - **Streak**: `computeReviewStreak()` exists but just returns 0 or 1 — no streak milestones, no rewards.
-- **Activity/notifications**: Newer activity and notification primitives make impact feedback easier to show, but the main points/tier UI still presents contribution as a score chase.
+- **Activity/notifications**: Auto-badge awards create notifications and activity events. Broader "your contribution mattered" feedback still needs design.
 
-The result: a points system that feels hollow because points don't unlock anything, and badges that feel mostly manual because computable badges are defined but not yet awarded by an engine.
+The result: the most confusing points/tier surfaces have been softened, but the product still needs a coherent impact model so the remaining leaderboard, points, badges, and streak concepts feel intentional.
 
 ## Reframe: Review Credibility, Not Reputation
 

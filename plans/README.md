@@ -7,8 +7,8 @@ This folder contains implementation proposals and product direction notes. It is
 | Plan | Status | Next Agent Guidance |
 |------|--------|---------------------|
 | `ai-seo-geo-reviews.md` | Implemented | Public vendor review JSON-LD completed. llms.txt remains optional/experimental. |
-| `reciprocity-pipeline.md` | Partially Implemented | Public vendor JSON-LD and import reputation UI completed. Remaining: governance (~4-6h), network effects (~6-10h), auto-badges (~3h). |
-| `gamification-rethink.md` | Product direction | Needs UX/product design before implementation. |
+| `reciprocity-pipeline.md` | Partially Implemented | Phase 4 (auto-badges) completed. Remaining: portability governance (~4-6h), network effects (~6-10h). |
+| `gamification-rethink.md` | Product direction | Impact-over-points changes applied to grow/rewards/leaderboard pages. Review wants UX/product design before deeper work. |
 | `founder-credit-report.md` | Implemented | Founder credit report page and API endpoint completed. |
 | `nav-regroup-hubs.md` | Implemented | Reference only. Do not execute. |
 
@@ -44,30 +44,26 @@ This folder contains implementation proposals and product direction notes. It is
 ## Remaining Work
 
 From reciprocity-pipeline.md:
-1. **Phase 4**: Close the Auto-Badge Gap (~3h)
-   - Best next small executable task
-   - Badge compute engine (runs on review submit, profile update, cron)
-   - Triggers for: reviewer, profile_complete, verified, quality_reviewer, detailed_reviewer, balanced_reviewer, trusted_reviewer, top_contributor
-   - Notification on auto-badge award
 
-2. **Phase 2 (cont.)**: Govern the Portability Layer (~4-6h)
+1. **Phase 2 (cont.)**: Govern the Portability Layer (~4-6h)
    - Admin approval queue for imported packets
    - Trust policy configuration
    - Cross-instance verification (public-key based preferred)
    - Requires schema/admin workflow design before coding
 
-3. **Gamification rethink**: Impact-over-points redesign
+2. **Gamification rethink**: Impact-over-points refinements
+   - Basic UX changes applied (grow/rewards/leaderboard pages)
+   - Deeper work needs UX/product design first: impact dashboard, contribution capsules, full board demotion
    - Product/UX design first; do not start as a broad code task
-   - Replace leaderboard-first motivation with contribution impact and credible progress signals
 
-4. **Phase 3**: Close the Network Effects Gap (~6-10h)
+3. **Phase 3**: Close the Network Effects Gap (~6-10h)
    - Alumni role with read-only + limited write access
    - Cross-cohort vendor recommendations
    - Public cohort aggregate pages
    - Invite/referral system
    - Split before execution; this is roadmap-scale
 
-5. **Optional AI/SEO refinements**
+4. **Optional AI/SEO refinements**
    - `llms.txt`
    - Q&A schema only if public Q&A exists
    - Citation optimization and richer founder/startup structured data

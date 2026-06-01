@@ -30,6 +30,12 @@ Omitting `cohortId` sends to all cohorts sequentially.
 Auto-creates a monthly sprint for each cohort on the 1st of the month at 6 AM UTC.
 Same `CRON_SECRET` auth as the digest endpoint.
 
+### `badges` — GET `/api/cron/badges`
+
+Batch auto-badge computation for all founders. Checks each `computable: true` badge type
+and awards any the founder qualifies for. Idempotent — skips already-earned badges.
+Same `CRON_SECRET` auth as the digest endpoint.
+
 ## Routes
 
 | Route | Purpose | Auth |
@@ -37,16 +43,16 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/` | Write hub — vendor directory, request form, sprint/review context, onboarding banner | Founder |
 | `/signin` | Magic-link sign-in (demo collapsed) | None |
 | `/connect` | Connect hub — incoming questions, open requests, exchanges, cohort activity | Founder |
-| `/grow` | Grow hub — profile, points, tier, backlinks, SEO actions, reputation export link | Founder |
+| `/grow` | Grow hub — profile, impact, backlinks, SEO actions, reputation export link | Founder |
 | `/vendors` | Vendor directory with search, category filter, sort by name/rating/trending/reviews | Founder |
 | `/vendors/[id]` | Vendor detail + founder/consumer review modes + quality engine + optional images | Founder/public hybrid |
 | `/top-vendors` | Vendor ranking page by authority score with tier badges | Founder |
 | `/requests` | My request history (open/fulfilled/closed) | Founder |
 | `/founders` | Public founder directory for opted-in profiles | None |
 | `/nominations` | Nominate a peer for a badge + see my nominations | Founder |
-| `/leaderboard` | Cohort leaderboard by points (reviews, badges, helpful votes) | Founder |
+| `/leaderboard` | Cohort leaderboard ranked by reviews, badges, and helpful votes | Founder |
 | `/leaderboard/public` | Public cohort leaderboard (anonymous, accessible without auth) | None |
-| `/rewards` | Point rules, personal breakdown, milestone tiers with progress bar | Founder |
+| `/rewards` | Contribution measurement, impact summary, and review streak | Founder |
 | `/badges` | Badge overview and earned badge context | Founder |
 | `/sprints` | Active sprint progress bar + leaderboard; past sprint history | Founder |
 | `/exchanges` | Guest-post exchange requests (propose, accept/decline, mark published) | Founder |
@@ -54,7 +60,7 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/profile/settings` | Edit profile + quality dashboard + reputation portability (export/import JWT) | Founder |
 | `/seo` | SEO education guidance | Founder |
 | `/backlinks` | Backlink tracker + validation analysis panel + spam policy comparison UI (Google, Bing) | Founder |
-| `/founder/[slug]` | Public founder profile (name, bio, badges, points, rank, Schema.org, copy link, portable badge embed) | None |
+| `/founder/[slug]` | Public founder profile (name, bio, badges, cohort rank, Schema.org, copy link, portable badge embed) | None |
 | `/founder/[slug]/credibility` | Public founder credibility report with aggregate reputation and verification data | None |
 | `/invite/[token]` | Accept a cohort invite | None |
 | `/notifications` | Notification inbox and mark-read controls | Founder |
@@ -71,6 +77,7 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/api/credibility/[slug]` | Signed machine-readable founder credibility report | None |
 | `/api/cron/weekly-digest` | Weekly cohort digest cron endpoint | Cron secret |
 | `/api/cron/sprints` | Monthly sprint auto-creation and sprint-end notification cron endpoint | Cron secret |
+| `/api/cron/badges` | Batch auto-badge computation for all founders | Cron secret |
 | `/api/notifications` | Unread notification count API | Founder |
 | `/api/reputation/export` | Export reputation as signed JWT | Founder |
 | `/api/reputation/import` | Import reputation from JWT (verified + stored) | Founder |
@@ -96,7 +103,7 @@ Creates:
 ## Verification
 
 ```bash
-npm test          # 95 tests across 28 test files (node:test, node:assert/strict)
+npm test          # 103 tests across 29 test files (node:test, node:assert/strict)
 npm run build     # Next.js production build
 ```
 
@@ -109,20 +116,20 @@ npm run build     # Next.js production build
 5. Click a vendor → detail page with review(s), review form, helpful vote buttons
 6. `/vendors` — search, filter by category, sort by name/rating/trending/most reviews; vendor cards show authority tier badges (Top Rated, Highly Rated, etc.)
 7. `/top-vendors` — ranked leaderboard of vendors by authority score
-8. `/leaderboard` — ranked by quality-adjusted review points, badges, and helpful votes
-9. `/rewards` — point rules, personal breakdown, milestone tiers (Bronze→Platinum) with progress bar
+8. `/leaderboard` — ranked by reviews, badges, and helpful votes
+9. `/rewards` — contribution measurement, impact summary, and review streak
 10. `/sprints` — active Q2 sprint with progress bar, sprint leaderboard
 11. `/exchanges` — incoming/outgoing guest-post requests, propose new exchange
 12. `/analytics` — review quality, backlink, and founder stats
 13. `/nominations` — nominate `jordan@example.com` for Community Contributor
 14. `/profile/settings` — edit public profile fields; use "Export reputation" to generate a signed JWT
 15. `/profile/settings` → "Import reputation" — paste the JWT to verify cross-incubator portability
-16. `/founder/maya` — public profile (unauthenticated), badges, points, cohort rank, Schema.org JSON-LD, copy profile link, portable badge embed
+16. `/founder/maya` — public profile (unauthenticated), badges, cohort rank, Schema.org JSON-LD, copy profile link, portable badge embed
 17. `/leaderboard/public?cohort=demo-incubator` — public leaderboard (no auth, anonymous entries)
 18. `/seo` — guidance page
 19. `/backlinks` — add `example.com`, status badges, reachability checks, GSC connect, view link profile analysis (anchor text breakdown, velocity, natural link score)
 20. `/connect` — incoming questions, open requests, pending exchanges, and cohort activity
-21. `/grow` — profile status, points/tier, backlinks, SEO actions, and reputation export link
+21. `/grow` — profile status, impact metrics, backlinks, SEO actions, and reputation export link
 22. `/notifications` — notification inbox and mark-read controls
 23. Sign in as `admin@example.com` / `password`
 24. `/admin` — admin home and links to requests, vendors, reviews, and cohorts

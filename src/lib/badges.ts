@@ -13,6 +13,150 @@ export type FounderBadge = {
 
 export const listAwardableBadgeTypes = listAwardable;
 
+export async function computeAndAwardBadges(userId: string): Promise<string[]> {
+  const newlyAwarded: string[] = [];
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      bio: true,
+      startupUrl: true,
+      startupName: true,
+      cohortId: true,
+      profileSlug: true,
+    },
+  });
+
+  if (!user) return [];
+
+  const reviews = await prisma.review.findMany({
+    where: { userId },
+    select: { comment: true },
+  });
+
+  const existing = await prisma.badge.findMany({
+    where: { userId },
+    select: { type: true },
+  });
+  const existingTypes = new Set(existing.map((b) => b.type));
+
+  const profileFieldsFilled = [
+    Boolean(user.name),
+    Boolean(user.bio),
+    Boolean(user.startupUrl),
+    Boolean(user.startupName),
+    Boolean(user.profileSlug),
+  ].filter(Boolean).length;
+
+  const reviewCount = reviews.length;
+  const comments = reviews.map((r) => r.comment ?? "").filter((c) => c.length > 0);
+
+  const checks: Array<{ type: string; eligible: boolean; description?: string }> = [
+    {
+      type: "verified",
+      eligible: !!user.cohortId,
+      description: "Founder belongs to an incubator cohort.",
+    },
+    {
+      type: "profile_complete",
+      eligible: profileFieldsFilled >= 4,
+      description: "Founder has filled out most public profile fields.",
+    },
+    {
+      type: "reviewer",
+      eligible: reviewCount >= 1,
+      description: "Submitted at least 1 review on the platform.",
+    },
+    {
+      type: "top_contributor",
+      eligible: reviewCount >= 5,
+      description: "Contributed 5 or more reviews to the directory.",
+    },
+    {
+      type: "quality_reviewer",
+      eligible: reviewCount >= 10 &&
+        comments.length > 0 &&
+        comments.reduce((sum, c) => sum + c.split(/\s+/).filter(Boolean).length, 0) / comments.length >= 50,
+      description: "10+ reviews with average word count above 50 across all reviews.",
+    },
+    {
+      type: "detailed_reviewer",
+      eligible: reviewCount >= 5 &&
+        comments.filter((c) => /\d/.test(c)).length >= 5,
+      description: "5+ reviews that contain numbers (dates, dollar amounts, timeframes).",
+    },
+    {
+      type: "balanced_reviewer",
+      eligible: (() => {
+        if (reviewCount < 5) return false;
+        const withBoth = comments.filter((c) => {
+          const words = c.toLowerCase().match(/\b[a-z]+\b/g) || [];
+          const hasPos = words.some((w) => POSITIVE_WORDS.has(w));
+          const hasNeg = words.some((w) => NEGATIVE_WORDS.has(w));
+          return hasPos && hasNeg;
+        });
+        return withBoth.length >= 5;
+      })(),
+      description: "5+ reviews containing both positive and negative sentiment.",
+    },
+    {
+      type: "trusted_reviewer",
+      eligible: (() => {
+        if (reviewCount === 0) return false;
+        const recent = reviews.slice(-20);
+        return !recent.some((r) => {
+          const text = r.comment ?? "";
+          if (text.length < 20) return true;
+          const words = text.split(/\s+/);
+          const hasUpper = words.some((w) => w.length >= 3 && w === w.toUpperCase() && /[A-Z]/.test(w));
+          return /[!?]{3,}/.test(text) || hasUpper;
+        });
+      })(),
+      description: "No spam or quality warnings triggered in last 20 reviews.",
+    },
+  ];
+
+  for (const check of checks) {
+    if (!check.eligible) continue;
+    if (existingTypes.has(check.type)) continue;
+
+    await prisma.badge.create({
+      data: {
+        userId,
+        type: check.type,
+        description: check.description,
+        issuerType: "auto",
+      },
+    });
+
+    const def = badgeDefinition(check.type);
+    const badgeLabel = def?.label ?? check.type;
+
+    createNotification({
+      userId,
+      type: "badge_earned",
+      title: `You earned the ${badgeLabel} badge`,
+      body: check.description,
+      link: "/grow",
+    }).catch(() => {});
+
+    if (user.cohortId) {
+      recordActivity({
+        userId,
+        cohortId: user.cohortId,
+        type: "badge_earned",
+        metadata: { badgeType: check.type },
+      }).catch(() => {});
+    }
+
+    newlyAwarded.push(check.type);
+  }
+
+  return newlyAwarded;
+}
+
 async function computeAutoBadges(userId: string): Promise<FounderBadge[]> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -53,6 +197,11 @@ async function computeAutoBadges(userId: string): Promise<FounderBadge[]> {
   const reviewerDef = badgeDefinition("reviewer");
   if (reviewerDef && reviewCount >= 1) {
     badges.push({ type: reviewerDef.type, label: reviewerDef.label, icon: reviewerDef.icon });
+  }
+
+  const topContributorDef = badgeDefinition("top_contributor");
+  if (topContributorDef && reviewCount >= 5) {
+    badges.push({ type: topContributorDef.type, label: topContributorDef.label, icon: topContributorDef.icon });
   }
 
   const qualityDefs = await computeQualityBadges(userId, reviewCount);
