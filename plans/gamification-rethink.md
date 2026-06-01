@@ -12,6 +12,34 @@ The platform has gamification scaffolding but no real game loop:
 
 The result: a points system that feels hollow because points don't unlock anything, and badges that feel absent because they require an admin to notice you.
 
+## Reframe: Review Credibility, Not Reputation
+
+The core question the platform answers: **"Can I trust this founder's review?"**
+
+The three hubs already map to a credibility pipeline:
+
+| Hub | Signal | What it measures |
+|-----|--------|-----------------|
+| **Write** | Experience + Detail | Did they use the vendor? Is the review substantive? (quality score %, `usedVendor` flag, work type) |
+| **Connect** | Social Proof | Did peers find it helpful? (helpful vote ratio, exchange activity, community engagement) |
+| **Grow** | Track Record | Aggregate credibility summary (review count, streak, badge types, helpfulness %) |
+
+### Naming
+
+"Reputation" is vague — it implies general social standing. More precise options:
+
+| Term | Vibe | Fit |
+|------|------|-----|
+| **Credibility** | Professional, B2B | "How credible is this review?" — matches the use case |
+| **Cred** | Short, informal | Colloquial shorthand for credibility |
+| **Trust signal** | Clinical, data-y | Describes what it is — a signal, not a score |
+| **Weight** | Simple, intuitive | "This review carries more weight because..." |
+| **Standing** | Formal, community | "Good standing in the cohort" |
+
+### Gap
+
+The current messaging frames this as "earning points" rather than "building credibility." The `/grow` page shows "Your reputation" but doesn't explicitly connect back to "here's why you should trust this founder's reviews" on vendor pages. The credibility signal exists in the data but isn't surfaced as the primary narrative.
+
 ## Inspiration: Slack's Anti-Gamification
 
 Slack deliberately avoids points, badges, and leaderboards. Instead:
