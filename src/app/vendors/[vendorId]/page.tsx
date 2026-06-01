@@ -4,40 +4,52 @@ import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { getFounderDisplayName } from "@/lib/tenant-policy";
 import { formatAverageRating } from "@/lib/vendor-presenter";
-import { getAverageRating, getVendorForCohort } from "@/lib/vendors";
-import { createReviewAction } from "./actions";
+import { getAverageRating, getConsumerReviewsForVendor, getPublicVendor, getVendorForCohort } from "@/lib/vendors";
+import { createReviewAction, askForDetailsAction, createConsumerReviewAction } from "./actions";
 import { ReviewForm } from "./review-form";
 import { HelpfulVoteButton } from "@/app/components/helpful-vote-button";
+import { AskForDetailsButton } from "./ask-for-details-button";
+import { QuickReviewForm } from "./quick-review-form";
 
 type VendorPageProps = {
   params: Promise<{
     vendorId: string;
   }>;
+  searchParams?: Promise<{
+    mode?: string;
+  }>;
 };
 
-export default async function VendorPage({ params }: VendorPageProps) {
+export default async function VendorPage({ params, searchParams }: VendorPageProps) {
   const founder = await getCurrentFounder();
+  const { vendorId } = await params;
+  const { mode } = (await searchParams) ?? {};
+  const reviewMode = mode === "founder" ? "founder" : "consumer";
 
-  if (!founder) {
+  if (reviewMode === "founder" && !founder) {
     redirect("/signin");
   }
 
-  if (!founder.cohortId || !founder.cohort) {
+  if (founder && !founder.cohortId) {
     notFound();
   }
 
-  const { vendorId } = await params;
-  const vendor = await getVendorForCohort(vendorId, founder.cohortId);
+  const privateVendor = founder?.cohortId ? await getVendorForCohort(vendorId, founder.cohortId) : null;
+  const vendor = privateVendor ?? (await getPublicVendor(vendorId));
+  if (!vendor) notFound();
 
-  if (!vendor) {
-    notFound();
-  }
-
-  const averageRating = getAverageRating(vendor.reviews);
-  const action = createReviewAction.bind(null, vendor.id);
+  const cohortName = founder?.cohort?.name ?? vendor.cohort?.name ?? "Vendors";
+  const consumerReviews = await getConsumerReviewsForVendor(vendorId);
+  const founderReviews = privateVendor?.reviews ?? [];
+  const averageRating = privateVendor ? getAverageRating(founderReviews) : getAverageRating(consumerReviews);
+  const action = privateVendor && founder ? createReviewAction.bind(null, vendor.id, reviewMode) : null;
+  const consumerAction = createConsumerReviewAction.bind(null, vendor.id, vendor.cohortId);
+  const boundAskForDetails = founder && founder.cohortId
+    ? askForDetailsAction.bind(null, vendor.category, vendor.name, vendor.id, founder.cohortId, founder.id)
+    : null;
 
   return (
-    <AppShell founder={founder} cohortName={founder.cohort.name}>
+    <AppShell founder={founder} cohortName={cohortName}>
       <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
         <section>
         <Link href="/" className="text-sm font-semibold text-[var(--accent)]">
@@ -63,18 +75,22 @@ export default async function VendorPage({ params }: VendorPageProps) {
 
         <div className="mt-8 space-y-4">
           <h2 className="text-2xl font-semibold">Named founder reviews</h2>
-          {vendor.reviews.length === 0 ? (
+          {!founder ? (
+            <p className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 text-[var(--muted)]">
+              Sign in as a cohort founder to view named founder reviews.
+            </p>
+          ) : founderReviews.length === 0 ? (
             <p className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 text-[var(--muted)]">
               No reviews yet. Be the first founder to leave useful context.
             </p>
           ) : (
-            vendor.reviews.map((review) => {
+            founderReviews.map((review) => {
               const upCount = review.helpfulVotes.filter((v) => v.value).length;
               const downCount = review.helpfulVotes.filter((v) => !v.value).length;
-              const userVote = review.helpfulVotes.find(
-                (v) => v.userId === founder.id,
-              );
-              const isOwn = review.user.id === founder.id;
+              const isOwn = founder ? review.user.id === founder.id : false;
+              const userVote = founder
+                ? review.helpfulVotes.find((v) => v.userId === founder.id)
+                : undefined;
 
               return (
               <article
@@ -86,9 +102,18 @@ export default async function VendorPage({ params }: VendorPageProps) {
                     <p className="font-semibold">{getFounderDisplayName(review.user)}</p>
                     <p className="text-sm text-[var(--muted)]">Verified cohort member</p>
                   </div>
-                  <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold">
-                    {review.rating}/5
-                  </p>
+                  <div className="flex items-center gap-2">
+                    {boundAskForDetails && !isOwn ? (
+                      <AskForDetailsButton
+                        action={boundAskForDetails.bind(null, review.user.id)}
+                        reviewerName={getFounderDisplayName(review.user)}
+                        vendorName={vendor.name}
+                      />
+                    ) : null}
+                    <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold">
+                      {review.rating}/5
+                    </p>
+                  </div>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {review.usedVendor ? (
@@ -121,7 +146,7 @@ export default async function VendorPage({ params }: VendorPageProps) {
                     year: "numeric",
                   })}
                 </p>
-                {!isOwn ? (
+                {founder && !isOwn ? (
                   <HelpfulVoteButton
                     reviewId={review.id}
                     userId={founder.id}
@@ -136,10 +161,71 @@ export default async function VendorPage({ params }: VendorPageProps) {
             })
           )}
         </div>
+
+        <div className="mt-12 space-y-4">
+          <h2 className="text-2xl font-semibold">Consumer reviews</h2>
+          {consumerReviews.length === 0 ? (
+            <p className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 text-[var(--muted)]">
+              No consumer reviews yet.
+            </p>
+          ) : (
+            consumerReviews.map((review) => (
+              <article
+                key={review.id}
+                className="rounded-3xl border border-[var(--border)] bg-white/70 p-6"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="font-semibold">{review.displayName ?? "Anonymous"}</p>
+                  <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold">
+                    {review.rating}/5
+                  </p>
+                </div>
+                {review.comment ? (
+                  <p className="mt-4 leading-7 text-[var(--foreground)]">{review.comment}</p>
+                ) : null}
+                <p className="mt-4 text-sm text-[var(--muted)]">
+                  {review.createdAt.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              </article>
+            ))
+          )}
+        </div>
       </section>
 
         <aside className="lg:sticky lg:top-8 lg:self-start">
-          <ReviewForm action={action} mode="founder" />
+          <div className="mb-3 flex gap-2">
+            <a
+              href={`/vendors/${vendor.id}?mode=founder`}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${reviewMode === "founder" ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-strong)] text-[var(--muted)] hover:bg-[var(--panel-strong)]"}`}
+            >
+              Founder review
+            </a>
+            <a
+              href={`/vendors/${vendor.id}?mode=consumer`}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${reviewMode === "consumer" ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-strong)] text-[var(--muted)] hover:bg-[var(--panel-strong)]"}`}
+            >
+              Quick review
+            </a>
+          </div>
+          {reviewMode === "founder" && action ? (
+            <ReviewForm action={action} mode="founder" />
+          ) : (
+            <>
+              <ReviewForm action={consumerAction} mode="consumer" />
+              <details className="mt-4 rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-4">
+                <summary className="cursor-pointer text-sm font-semibold text-[var(--muted)]">
+                  One-click rating
+                </summary>
+                <div className="mt-3">
+                  <QuickReviewForm action={consumerAction} />
+                </div>
+              </details>
+            </>
+          )}
         </aside>
       </div>
     </AppShell>

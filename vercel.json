@@ -3,6 +3,16 @@
   "buildCommand": "npx prisma generate && npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/cron/sprints",
+      "schedule": "0 6 1 * *"
+    },
+    {
+      "path": "/api/cron/weekly-digest",
+      "schedule": "0 9 * * 1"
+    }
+  ],
   "env": {
     "NEXTAUTH_URL": "https://your-domain.vercel.app"
   }

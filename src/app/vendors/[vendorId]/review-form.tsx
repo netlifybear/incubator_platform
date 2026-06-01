@@ -29,6 +29,7 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
   const [text, setText] = useState("");
   const [disclosed, setDisclosed] = useState(false);
   const [showChecklist, setShowChecklist] = useState(false);
+  const [displayName, setDisplayName] = useState("");
 
   const rules = MODE_RULES[mode];
   const activeText = guided ? composeFromTemplate(template) : text;
@@ -43,13 +44,14 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
       const finalText = guided ? composeFromTemplate(template) : text;
       formData.set("comment", finalText);
       formData.set("disclosedIncentive", (disclosed || template.disclosedIncentive) ? "on" : "");
+      formData.set("displayName", displayName);
       if (mode === "founder" && checklist.length > 0 && !checklist.every((c) => c.passed)) {
         setShowChecklist(true);
         return;
       }
       formAction(formData);
     },
-    [formAction, disclosed, mode, checklist, guided, template, text],
+    [formAction, disclosed, mode, checklist, guided, template, text, displayName],
   );
 
   const handleFormSubmit = useCallback(
@@ -66,9 +68,10 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
       const fd = new FormData(form);
       fd.set("disclosedIncentive", (disclosed || template.disclosedIncentive) ? "on" : "");
       fd.set("comment", guided ? composeFromTemplate(template) : text);
+      fd.set("displayName", displayName);
       formAction(fd);
     }
-  }, [formAction, disclosed, guided, template, text]);
+  }, [formAction, disclosed, guided, template, text, displayName]);
 
   return (
     <>
@@ -77,7 +80,7 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
         className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-6"
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Add a named review</h2>
+          <h2 className="text-2xl font-semibold">{mode === "founder" ? "Add a named review" : "Add a review"}</h2>
           <button
             type="button"
             onClick={() => setGuided((g) => !g)}
@@ -87,8 +90,27 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
           </button>
         </div>
         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          Your name will appear with this review so other founders can judge context and credibility.
+          {mode === "founder"
+            ? "Your name will appear with this review so other founders can judge context and credibility."
+            : "Help others decide. Your review will appear alongside any name you leave."}
         </p>
+
+        {mode === "consumer" ? (
+          <label className="mt-5 block text-sm font-semibold" htmlFor="displayName">
+            Your name <span className="font-normal text-[var(--muted)]">(optional)</span>
+          </label>
+        ) : null}
+        {mode === "consumer" ? (
+          <input
+            id="displayName"
+            name="displayName"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="e.g., Sarah from Acme"
+            maxLength={60}
+            className="mt-2 w-full rounded-2xl border border-[var(--border)] bg-white px-4 py-3"
+          />
+        ) : null}
 
         <label className="mt-6 block text-sm font-semibold" htmlFor="rating">
           Rating

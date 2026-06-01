@@ -63,8 +63,22 @@ function VerifyButton({ id }: { id: string }) {
 function StatusBadge({ status }: { status: string }) {
   if (status === "verified") {
     return (
-      <span className="inline-block rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">
+      <span className="inline-block rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700" title="Page contains a link to your target URL">
         Verified
+      </span>
+    );
+  }
+  if (status === "reachable_no_link") {
+    return (
+      <span className="inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700" title="Domain is reachable but no link to your target URL was found on the page">
+        Reachable, no link
+      </span>
+    );
+  }
+  if (status === "reachable") {
+    return (
+      <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700" title="Domain is reachable">
+        Reachable
       </span>
     );
   }
@@ -101,6 +115,8 @@ export function BacklinkList({
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm text-[var(--muted)]">
           {backlinks.filter((b) => b.status === "verified").length} verified,
+          {" "}{backlinks.filter((b) => b.status === "reachable_no_link").length} reachable no link,
+          {" "}{backlinks.filter((b) => b.status === "reachable").length} reachable,
           {" "}{backlinks.filter((b) => b.status === "lost").length} lost,
           {" "}{backlinks.filter((b) => b.status === "pending").length} pending
         </p>
@@ -110,7 +126,7 @@ export function BacklinkList({
             disabled={verifyAllPending}
             className="cursor-pointer rounded-full border border-[var(--border)] bg-white px-4 py-1.5 text-sm font-medium transition hover:bg-[var(--panel)] disabled:opacity-50"
           >
-            {verifyAllPending ? "Checking all..." : "Check reachability"}
+            {verifyAllPending ? "Checking all..." : "Verify all"}
           </button>
         </form>
       </div>

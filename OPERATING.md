@@ -1,5 +1,26 @@
 # Operating Guide
 
+### `weekly-digest` — GET `/api/cron/weekly-digest`
+
+Weekly email digest for all cohort founders. Requires `CRON_SECRET` env var.
+
+**Manual trigger (admin dashboard):**
+`/admin/requests` → "Weekly digest" section → "Send digest now" button sends to the admin's cohort.
+
+**Vercel (auto):** Cron is configured in `vercel.json` — every Monday at 9 AM UTC.
+Set `CRON_SECRET` in Vercel project environment variables.
+
+**Other providers (cron-job.org, GitHub Actions, etc.):**
+```
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain.com/api/cron/weekly-digest
+```
+Omitting `cohortId` sends to all cohorts sequentially.
+
+### `sprints` — GET `/api/cron/sprints`
+
+Auto-creates a monthly sprint for each cohort on the 1st of the month at 6 AM UTC.
+Same `CRON_SECRET` auth as the digest endpoint.
+
 ## Routes
 
 | Route | Purpose | Auth |

@@ -5,7 +5,12 @@ import { publicFounderDisplayName } from "@/lib/founder-profile-presenter";
 import { getPublicFounderProfile } from "@/lib/founder-profiles";
 import { getFounderBadges } from "@/lib/badges";
 import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { CopyLinkButton } from "@/app/components/copy-link-button";
+import { ShareProfileButton } from "./share-profile-button";
+import { ProfileViewTracker } from "./profile-view-tracker";
 
 type FounderProfilePageProps = {
   params: Promise<{
@@ -26,17 +31,27 @@ export async function generateMetadata({
   }
 
   const displayName = publicFounderDisplayName(founder);
-
+  const baseUrl = process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app";
   const cohortTag = founder.cohort?.name ?? "an incubator cohort";
+  const description = founder.bio ?? `${displayName} is a verified founder in ${cohortTag} with portable cohort reputation.`;
 
   return {
     title: `${displayName} | Founder Profile`,
-    description: founder.bio ?? `${displayName} is a verified founder in ${cohortTag}.`,
+    description,
+    metadataBase: new URL(baseUrl),
+    alternates: { canonical: `/founder/${slug}` },
     openGraph: {
       title: `${displayName} | ${cohortTag}`,
-      description: founder.bio ?? `Verified founder in ${cohortTag} with portable cohort reputation.`,
+      description,
       type: "profile",
       siteName: "Incubator Trust",
+      url: `/founder/${slug}`,
+      username: slug,
+    },
+    twitter: {
+      card: "summary",
+      title: `${displayName} | ${cohortTag}`,
+      description,
     },
   };
 }
@@ -51,9 +66,15 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
 
   const displayName = publicFounderDisplayName(founder);
   const badges = await getFounderBadges(founder.email);
-  const [points, rank] = await Promise.all([
+  const [points, rank, reviewStats, session] = await Promise.all([
     getFounderPoints(founder.id),
     founder.cohort?.id ? getFounderCohortRank(founder.id, founder.cohort.id) : Promise.resolve(null),
+    prisma.review.aggregate({
+      where: { userId: founder.id },
+      _avg: { rating: true },
+      _count: true,
+    }),
+    getServerSession(authOptions),
   ]);
 
   const jsonLd: Record<string, unknown> = {
@@ -77,8 +98,27 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
     jsonLd.url = founder.startupUrl;
   }
 
+  if (founder.startupName && founder.startupUrl) {
+    jsonLd.memberOf = {
+      "@type": "Organization",
+      name: founder.startupName,
+      url: founder.startupUrl,
+    };
+  }
+
+  if (reviewStats._count > 0 && reviewStats._avg.rating !== null) {
+    jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: Math.round(reviewStats._avg.rating * 10) / 10,
+      bestRating: 5,
+      worstRating: 1,
+      reviewCount: reviewStats._count,
+    };
+  }
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-8 px-6 py-10">
+      <ProfileViewTracker slug={slug} disabled={session?.user?.id === founder.id} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -116,8 +156,9 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
             {founder.profileCompletePercentage}% profile complete
           </span>
         </div>
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap gap-3">
           <CopyLinkButton url={`${process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app"}/founder/${slug}`} />
+          <ShareProfileButton name={displayName} slug={slug} />
         </div>
       </section>
 
@@ -196,9 +237,33 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
         />
       </section>
 
-      <Link href="/" className="text-sm font-semibold text-[var(--accent)]">
-        Sign in to view the private vendor directory
-      </Link>
+      {session?.user ? (
+        <Link href="/" className="text-sm font-semibold text-[var(--accent)] hover:underline">
+          Browse the private vendor directory
+        </Link>
+      ) : (
+        <section className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
+          <h2 className="text-xl font-semibold">Join your cohort&apos;s trust network</h2>
+          <p className="mt-2 leading-7 text-[var(--muted)]">
+            Incubator Trust turns cohort knowledge into portable reputation. Sign in to find
+            trusted vendor recommendations from founders in your incubator.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href="/signin"
+              className="inline-flex rounded-full bg-[var(--accent)] px-6 py-3 font-semibold text-white"
+            >
+              Sign in with your incubator email
+            </Link>
+            <Link
+              href="/founders"
+              className="inline-flex rounded-full bg-[var(--panel-strong)] px-6 py-3 font-semibold"
+            >
+              Browse all founders
+            </Link>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

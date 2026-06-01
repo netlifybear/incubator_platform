@@ -34,6 +34,11 @@ export default async function ProfileSettingsPage() {
           Your public profile is visible to anyone who finds your founder page.
           Private reviews and cohort activity never appear publicly.
         </p>
+        <div className="mt-4 flex flex-wrap gap-4 text-sm">
+          <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-medium text-[var(--accent-strong)]">
+            {founder.profileViewCount} profile view{founder.profileViewCount === 1 ? "" : "s"}
+          </span>
+        </div>
       </section>
 
       <ProfileSettingsForm

@@ -9,7 +9,7 @@ import {
   requestCountLabel,
   requestStatusLabel,
 } from "@/lib/vendor-request-presenter";
-import { listFounderVendorRequests } from "@/lib/vendor-requests";
+import { listFounderVendorRequests, listIncomingTargetedRequests } from "@/lib/vendor-requests";
 
 export default async function FounderRequestsPage() {
   const founder = await getCurrentFounder();
@@ -37,7 +37,10 @@ export default async function FounderRequestsPage() {
     );
   }
 
-  const requests = await listFounderVendorRequests(founder.id, founder.cohortId);
+  const [requests, incomingTargeted] = await Promise.all([
+    listFounderVendorRequests(founder.id, founder.cohortId),
+    listIncomingTargetedRequests(founder.id),
+  ]);
 
   return (
     <AppShell founder={founder} cohortName={founder.cohort.name}>
@@ -53,6 +56,52 @@ export default async function FounderRequestsPage() {
           link directly to the vendor that was added for you.
         </p>
       </section>
+
+      {incomingTargeted.length > 0 ? (
+        <section className="rounded-3xl border border-[var(--border)] bg-amber-50/70 p-6 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <h2 className="text-2xl font-semibold">Incoming questions</h2>
+            <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-800">
+              {incomingTargeted.length} open
+            </span>
+          </div>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+            Other founders have asked you for more details about your vendor experience.
+          </p>
+          <div className="mt-5 space-y-4">
+            {incomingTargeted.map((request) => (
+              <article
+                key={request.id}
+                className="rounded-2xl border border-[var(--border)] bg-white p-5"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
+                      {request.category}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[var(--accent-strong)]">
+                      From: {request.user.name ?? request.user.email}
+                    </p>
+                    <p className="mt-1 leading-7">{request.description}</p>
+                    {request.message ? (
+                      <p className="mt-3 rounded-xl bg-[var(--panel)] p-3 text-sm leading-6 italic text-[var(--muted)]">
+                        &ldquo;{request.message}&rdquo;
+                      </p>
+                    ) : null}
+                    <p className="mt-3 text-sm text-[var(--muted)]">
+                      {request.createdAt.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">

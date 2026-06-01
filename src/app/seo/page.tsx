@@ -58,6 +58,20 @@ export default async function SEOPage() {
               Browse vendors
             </Link>
           </div>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
+            <p className="text-lg font-semibold">Google Search Console</p>
+            <p className="mt-2 leading-7 text-[var(--muted)]">
+              {founder.gscEmail
+                ? `Connected as ${founder.gscEmail}. See your search performance and top linking domains on the backlink dashboard.`
+                : "Connect Google Search Console to see search queries, clicks, and impressions for your startup site."}
+            </p>
+            <Link
+              href={founder.gscEmail ? "/backlinks" : "/api/auth/gsc"}
+              className="mt-4 inline-flex rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+            >
+              {founder.gscEmail ? "View performance" : "Connect GSC"}
+            </Link>
+          </div>
         </div>
       </section>
 

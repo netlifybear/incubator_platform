@@ -5,11 +5,11 @@ import { SignOutButton } from "./sign-out-button";
 type AppShellProps = {
   children: React.ReactNode;
   cohortName?: string;
-  founder: {
+  founder?: {
     name?: string | null;
     email?: string | null;
     role?: string | null;
-  };
+  } | null;
 };
 
 const coreLinks = [
@@ -21,6 +21,7 @@ const coreLinks = [
 
 const reputationLinks = [
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/badges", label: "Badges" },
   { href: "/rewards", label: "Rewards" },
   { href: "/nominations", label: "Nominations" },
   { href: "/profile/settings", label: "Profile" },
@@ -71,7 +72,7 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
             <NavGroup title="Core" links={coreLinks} />
             <NavGroup title="Reputation" links={reputationLinks} />
             <NavGroup title="Growth" links={growthLinks} />
-            {founder.role === "admin" ? (
+            {founder?.role === "admin" ? (
               <NavGroup
                 title="Admin"
                 links={[{ href: "/admin/requests", label: "Admin requests" }]}
@@ -88,8 +89,8 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
               <p className="mt-1 font-medium">{cohortName ?? "No cohort assigned"}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="text-[var(--muted)]">{getFounderDisplayName(founder)}</span>
-              <SignOutButton />
+              <span className="text-[var(--muted)]">{founder ? getFounderDisplayName(founder) : "Guest"}</span>
+              {founder ? <SignOutButton /> : null}
             </div>
           </header>
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>

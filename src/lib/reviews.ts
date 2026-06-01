@@ -35,16 +35,25 @@ export async function createReviewForCohort(input: CreateReviewInput) {
   const comment = normalizeReviewComment(input.comment);
   const workType = normalizeReviewWorkType(input.workType);
 
-  return prisma.review.create({
-    data: {
-      vendorId: input.vendorId,
-      userId: input.userId,
-      cohortId: input.cohortId,
-      rating: input.rating,
-      comment,
-      usedVendor: input.usedVendor,
-      workType,
-      disclosedIncentive: input.disclosedIncentive ?? false,
-    },
+  return prisma.$transaction(async (tx) => {
+    const review = await tx.review.create({
+      data: {
+        vendorId: input.vendorId,
+        userId: input.userId,
+        cohortId: input.cohortId,
+        rating: input.rating,
+        comment,
+        usedVendor: input.usedVendor,
+        workType,
+        disclosedIncentive: input.disclosedIncentive ?? false,
+      },
+    });
+
+    await tx.user.update({
+      where: { id: input.userId },
+      data: { lastReviewDate: new Date() },
+    });
+
+    return review;
   });
 }

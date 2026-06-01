@@ -23,6 +23,32 @@ const publicFounderProfileSelect = {
   publicProfileEnabled: true,
 };
 
+export async function listPublicFounders() {
+  return prisma.user.findMany({
+    where: {
+      role: "founder",
+      cohortId: { not: null },
+      publicProfileEnabled: true,
+      profileSlug: { not: null },
+    },
+    select: {
+      name: true,
+      profileSlug: true,
+      startupName: true,
+      startupUrl: true,
+      bio: true,
+      profileCompletePercentage: true,
+      cohort: {
+        select: { name: true, slug: true },
+      },
+      _count: {
+        select: { badges: true },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+}
+
 export async function getPublicFounderProfile(slug: string) {
   const normalizedSlug = normalizeFounderProfileSlug(slug);
 

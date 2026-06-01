@@ -21,6 +21,7 @@ model Cohort {
   users              User[]
   vendors            Vendor[]
   reviews            Review[]
+  consumerReviews    ConsumerReview[]
   requests           VendorRequest[]
   invites            Invite[]
   badgeNominations   BadgeNomination[]
@@ -41,6 +42,8 @@ model User {
   role                      String              @default("founder")
   publicProfileEnabled      Boolean             @default(false)
   profileCompletePercentage Int                 @default(0)
+  profileViewCount          Int                 @default(0)
+  lastReviewDate            DateTime?
   gscAccessToken            String?
   gscRefreshToken           String?
   gscEmail                  String?
@@ -51,8 +54,10 @@ model User {
   reviews                   Review[]
   helpfulVotesGiven         HelpfulVote[]
   vendorRequests            VendorRequest[]
+  targetedRequests          VendorRequest[] @relation("TargetedVendorRequests")
   badges                    Badge[]
   backlinkLogs              BacklinkLog[]
+  backlinkSnapshots         BacklinkSnapshot[]
   nominationsGiven          BadgeNomination[]   @relation("NominationsGiven")
   nominationsReceived       BadgeNomination[]   @relation("NominationsReceived")
   guestPostsRequested       GuestPostExchange[] @relation("GuestPostsRequested")
@@ -73,6 +78,7 @@ model Vendor {
   cohortId          String
   cohort            Cohort          @relation(fields: [cohortId], references: [id])
   reviews           Review[]
+  consumerReviews   ConsumerReview[]
   fulfilledRequests VendorRequest[] @relation("FulfilledRequestVendor")
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
@@ -134,6 +140,9 @@ model VendorRequest {
   adminNote         String?
   userId            String
   user              User      @relation(fields: [userId], references: [id])
+  targetUserId      String?
+  targetUser        User?     @relation("TargetedVendorRequests", fields: [targetUserId], references: [id])
+  message           String?
   cohortId          String
   cohort            Cohort    @relation(fields: [cohortId], references: [id])
   fulfilledVendorId String?
@@ -222,6 +231,19 @@ model BacklinkLog {
   user            User      @relation(fields: [userId], references: [id])
 }
 
+model BacklinkSnapshot {
+  id              String   @id @default(cuid())
+  verifiedCount   Int      @default(0)
+  lostCount       Int      @default(0)
+  reachableCount  Int      @default(0)
+  pendingCount    Int      @default(0)
+  snapshotAt      DateTime @default(now())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, snapshotAt])
+}
+
 model ReputationImport {
   id             String   @id @default(cuid())
   sourceInstance String
@@ -278,6 +300,21 @@ model GscState {
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+model ConsumerReview {
+  id           String   @id @default(cuid())
+  rating       Int
+  comment      String?
+  displayName  String?
+  createdAt    DateTime @default(now())
+  vendorId     String
+  vendor       Vendor   @relation(fields: [vendorId], references: [id])
+  cohortId     String
+  cohort       Cohort   @relation(fields: [cohortId], references: [id])
+
+  @@index([vendorId, createdAt])
+  @@index([cohortId])
 }
 
 model Account {

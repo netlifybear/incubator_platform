@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "./prisma.ts";
 
 export type SprintWithProgress = {
   id: string;
@@ -93,4 +93,111 @@ async function enrichSprint(sprint: {
     .sort((a, b) => b.reviewCount - a.reviewCount);
 
   return { ...sprint, contributors };
+}
+
+function monthName(d: Date) {
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+function startOfMonth(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+
+function endOfMonth(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+}
+
+export async function autoManageSprints(cohortId: string) {
+  const now = new Date();
+  const monthStart = startOfMonth(now);
+  const monthEnd = endOfMonth(now);
+
+  const existing = await prisma.sprint.findFirst({
+    where: {
+      cohortId,
+      startsAt: { gte: monthStart },
+    },
+    orderBy: { startsAt: "asc" },
+  });
+
+  if (existing) return { created: false, reason: "Sprint already exists for this month." };
+
+  const name = `${monthName(now)} Sprint`;
+
+  await prisma.sprint.create({
+    data: {
+      name,
+      description: `Monthly push to fill gaps in the vendor directory.`,
+      goalReviewCount: 3,
+      startsAt: monthStart,
+      endsAt: monthEnd,
+      cohortId,
+    },
+  });
+
+  return { created: true, name };
+}
+
+export async function autoManageAllCohorts() {
+  const cohorts = await prisma.cohort.findMany({ select: { id: true } });
+  const results: Array<{ cohortId: string; created: boolean; name?: string; reason?: string }> = [];
+
+  for (const cohort of cohorts) {
+    const result = await autoManageSprints(cohort.id);
+    results.push({ cohortId: cohort.id, ...result });
+  }
+
+  return results;
+}
+
+export type SprintDigestInfo = {
+  activeName?: string;
+  activeMyReviews: number;
+  activeGoal: number;
+  recentName?: string;
+  recentTotalReviews: number;
+  recentParticipants: number;
+};
+
+export async function getSprintDigestInfo(cohortId: string, userId: string): Promise<SprintDigestInfo | null> {
+  const now = new Date();
+  const active = await prisma.sprint.findFirst({
+    where: { cohortId, startsAt: { lte: now }, endsAt: { gte: now } },
+    orderBy: { endsAt: "asc" },
+  });
+
+  const recent = await prisma.sprint.findFirst({
+    where: { cohortId, endsAt: { lt: now } },
+    orderBy: { endsAt: "desc" },
+  });
+
+  let activeName: string | undefined;
+  let activeMyReviews = 0;
+  let activeGoal = 3;
+
+  if (active) {
+    activeName = active.name;
+    activeGoal = active.goalReviewCount;
+    activeMyReviews = await prisma.review.count({
+      where: { userId, cohortId, createdAt: { gte: active.startsAt, lte: active.endsAt } },
+    });
+  }
+
+  let recentName: string | undefined;
+  let recentTotalReviews = 0;
+  let recentParticipants = 0;
+
+  if (recent) {
+    recentName = recent.name;
+    const reviews = await prisma.review.findMany({
+      where: { cohortId, createdAt: { gte: recent.startsAt, lte: recent.endsAt } },
+      select: { userId: true },
+    });
+    recentTotalReviews = reviews.length;
+    recentParticipants = new Set(reviews.map((r) => r.userId)).size;
+  }
+
+  if (!active && !recent) return null;
+
+  return { activeName, activeMyReviews, activeGoal, recentName, recentTotalReviews, recentParticipants };
 }

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "./prisma.ts";
 
 export async function listVendorsForCohort(cohortId: string, category?: string) {
   return prisma.vendor.findMany({
@@ -74,6 +74,22 @@ export async function listVendorCategoriesForCohort(cohortId: string) {
   return vendors.map((vendor) => vendor.category);
 }
 
+export async function getPublicVendor(vendorId: string) {
+  return prisma.vendor.findUnique({
+    where: { id: vendorId },
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      contact: true,
+      cohortId: true,
+      cohort: {
+        select: { name: true },
+      },
+    },
+  });
+}
+
 export async function getVendorForCohort(vendorId: string, cohortId: string) {
   return prisma.vendor.findFirst({
     where: {
@@ -81,6 +97,9 @@ export async function getVendorForCohort(vendorId: string, cohortId: string) {
       cohortId,
     },
     include: {
+      cohort: {
+        select: { name: true },
+      },
       reviews: {
         include: {
           user: {
@@ -102,6 +121,13 @@ export async function getVendorForCohort(vendorId: string, cohortId: string) {
         },
       },
     },
+  });
+}
+
+export async function getConsumerReviewsForVendor(vendorId: string) {
+  return prisma.consumerReview.findMany({
+    where: { vendorId },
+    orderBy: { createdAt: "desc" },
   });
 }
 

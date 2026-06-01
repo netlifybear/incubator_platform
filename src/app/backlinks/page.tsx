@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
-import { listBacklinksForFounder } from "@/lib/backlinks";
+import { listBacklinksForFounder, getBacklinkSnapshots } from "@/lib/backlinks";
 import { analyzeBacklinks } from "@/lib/backlink-analysis";
 import { BacklinkForm } from "./backlink-form";
 import { BacklinkList } from "./backlink-list";
 import { GscSection } from "./gsc-section";
 import { BacklinkAnalysisPanel } from "@/app/components/backlink-analysis-panel";
+import { BacklinkVelocityChart } from "@/app/components/backlink-velocity-chart";
 
 export default async function BacklinksPage() {
   const founder = await getCurrentFounder();
@@ -17,6 +18,7 @@ export default async function BacklinksPage() {
 
   const backlinks = await listBacklinksForFounder(founder.id);
   const analysis = analyzeBacklinks(backlinks);
+  const snapshots = await getBacklinkSnapshots(founder.id);
 
   return (
     <AppShell founder={founder} cohortName={founder.cohort?.name ?? undefined}>
@@ -32,6 +34,8 @@ export default async function BacklinksPage() {
           Google Search Console to auto-discover referring domains.
         </p>
       </section>
+
+      <BacklinkVelocityChart snapshots={snapshots} />
 
       <GscSection
         gscConnected={!!founder.gscAccessToken}

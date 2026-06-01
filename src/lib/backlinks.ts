@@ -1,5 +1,5 @@
 import type { BacklinkLog } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "./prisma.ts";
 
 export type BacklinkEntry = {
   id: string;
@@ -75,20 +75,49 @@ export async function verifyBacklink(id: string, userId: string) {
 
   try {
     const res = await fetch(url, { method: "HEAD", signal: AbortSignal.timeout(8000) });
-    status = res.ok ? "verified" : "lost";
+    status = res.ok ? "reachable" : "lost";
   } catch {
     try {
       const res = await fetch(url, { method: "GET", signal: AbortSignal.timeout(8000) });
-      status = res.ok ? "verified" : "lost";
+      status = res.ok ? "reachable" : "lost";
     } catch {
       status = "lost";
     }
+  }
+
+  if (status === "reachable" && entry.targetUrl) {
+    const linkFound = await checkPageForLink(url, entry.targetUrl);
+    status = linkFound ? "verified" : "reachable_no_link";
   }
 
   return prisma.backlinkLog.update({
     where: { id },
     data: { status, lastCheckedAt: new Date() },
   });
+}
+
+async function checkPageForLink(pageUrl: string, targetUrl: string): Promise<boolean> {
+  try {
+    const res = await fetch(pageUrl, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return false;
+
+    const html = await res.text();
+    const normalizedTarget = targetUrl.toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+    const linkRegex = /<a[^>]+href=["']([^"']*)["'][^>]*>/gi;
+    let match: RegExpExecArray | null;
+
+    while ((match = linkRegex.exec(html)) !== null) {
+      const href = match[1].toLowerCase();
+      if (href.includes(normalizedTarget)) {
+        return true;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 function normalizeReferringDomain(value: string) {
@@ -130,5 +159,30 @@ export async function verifyAllBacklinks(userId: string) {
     }
   }
 
+  await snapshotBacklinks(userId);
   return results;
+}
+
+export async function snapshotBacklinks(userId: string) {
+  const counts = await prisma.backlinkLog.groupBy({
+    by: ["status"],
+    where: { userId },
+    _count: { id: true },
+  });
+
+  const verifiedCount = counts.find((c) => c.status === "verified")?._count.id ?? 0;
+  const lostCount = counts.find((c) => c.status === "lost")?._count.id ?? 0;
+  const reachableCount = counts.filter((c) => c.status === "reachable" || c.status === "reachable_no_link").reduce((s, c) => s + c._count.id, 0);
+  const pendingCount = counts.find((c) => c.status === "pending")?._count.id ?? 0;
+
+  return prisma.backlinkSnapshot.create({
+    data: { userId, verifiedCount, lostCount, reachableCount, pendingCount },
+  });
+}
+
+export async function getBacklinkSnapshots(userId: string) {
+  return prisma.backlinkSnapshot.findMany({
+    where: { userId },
+    orderBy: { snapshotAt: "asc" },
+  });
 }

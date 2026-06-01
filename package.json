@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "node prisma/seed.mjs",
-    "test": "node --test src/**/*.test.ts"
+    "test": "node --test --test-concurrency=1 src/**/*.test.ts"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"

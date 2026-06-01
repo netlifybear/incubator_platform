@@ -80,6 +80,8 @@ export async function cleanupTestData(input: {
     });
     const userIds = users.map((u) => u.id);
     if (userIds.length) {
+      await prisma.backlinkSnapshot.deleteMany({ where: { userId: { in: userIds } } });
+      await prisma.backlinkLog.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.badge.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.helpfulVote.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.vendorRequest.deleteMany({ where: { userId: { in: userIds } } });
@@ -95,6 +97,7 @@ export async function cleanupTestData(input: {
     });
     const cohortIds = cohorts.map((c) => c.id);
     if (cohortIds.length) {
+      await prisma.consumerReview.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.helpfulVote.deleteMany({
         where: { review: { cohortId: { in: cohortIds } } },
       });

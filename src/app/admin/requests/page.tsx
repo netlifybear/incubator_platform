@@ -10,6 +10,7 @@ import {
   AdminClosedRequestsSection,
 } from "./requests-section";
 import { AdminBadgesSection, BadgesFallback } from "./badges-section";
+import { AdminFlywheelSection, FlywheelFallback } from "./flywheel-section";
 import {
   AdminNominationsSection,
   NominationsFallback,
@@ -19,6 +20,7 @@ import {
   FoundersBadgesFallback,
 } from "./founders-section";
 import { AdminSprintsSection } from "./sprints-section";
+import { AdminDigestSection } from "./digest-section";
 import {
   AdminBadgeAttemptsSection,
   BadgeAttemptsFallback,
@@ -59,6 +61,10 @@ export default async function AdminRequestsPage() {
         <AdminMetricsSection cohortId={admin.cohortId} />
       </Suspense>
 
+      <Suspense fallback={<FlywheelFallback />}>
+        <AdminFlywheelSection cohortId={admin.cohortId} />
+      </Suspense>
+
       <Suspense fallback={<InvitesFallback />}>
         <AdminInvitesSection cohortId={admin.cohortId} />
       </Suspense>
@@ -94,6 +100,8 @@ export default async function AdminRequestsPage() {
       <Suspense fallback={<div className="h-24 animate-pulse rounded-3xl bg-[var(--panel-strong)]" />}>
         <AdminSprintsSection cohortId={admin.cohortId} />
       </Suspense>
+
+      <AdminDigestSection />
     </AppShell>
   );
 }

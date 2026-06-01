@@ -3,34 +3,14 @@ import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
 import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
+import { TIERS, computeTierProgress, computeReviewStreak } from "@/lib/rewards";
+import { prisma } from "@/lib/prisma";
 
 const RULES = [
   { action: "Write a useful review", points: "0-10", description: "Earned based on specificity, useful detail, outcomes, numbers, and natural language." },
   { action: "Earn a badge", points: 25, description: "Earned when an admin awards you a badge or your peer nomination is approved." },
   { action: "Receive a helpful vote", points: 2, description: "Earned for each thumbs up your reviews receive from other cohort members." },
 ];
-
-const TIERS = [
-  { threshold: 0, title: "New Contributor", description: "Start contributing to unlock your first milestone." },
-  { threshold: 25, title: "Bronze Contributor", description: "Earn the ability to set a custom profile slug." },
-  { threshold: 50, title: "Silver Contributor", description: "Your profile gets a featured highlight on the leaderboard." },
-  { threshold: 100, title: "Gold Contributor", description: "Unlock share buttons on your public profile." },
-  { threshold: 200, title: "Platinum Contributor", description: "Earn an exclusive early-access badge." },
-];
-
-function computeProgress(points: number) {
-  const idx = TIERS.findIndex((t, i) => {
-    const next = TIERS[i + 1];
-    return next ? points >= t.threshold && points < next.threshold : points >= t.threshold;
-  });
-  if (idx === -1) return null;
-  const current = TIERS[idx];
-  const next = TIERS[idx + 1];
-  if (!next) return { current, next: null, progress: 1 };
-  const range = next.threshold - current.threshold;
-  const progress = Math.min((points - current.threshold) / range, 1);
-  return { current, next, progress };
-}
 
 export default async function RewardsPage() {
   const founder = await getCurrentFounder();
@@ -43,12 +23,17 @@ export default async function RewardsPage() {
     redirect("/");
   }
 
-  const [points, rank] = await Promise.all([
+  const [points, rank, user] = await Promise.all([
     getFounderPoints(founder.id),
     getFounderCohortRank(founder.id, founder.cohortId),
+    prisma.user.findUnique({
+      where: { id: founder.id },
+      select: { lastReviewDate: true },
+    }),
   ]);
 
-  const progress = computeProgress(points.total);
+  const progress = computeTierProgress(points.total);
+  const streak = computeReviewStreak(user?.lastReviewDate ?? null);
 
   return (
     <AppShell founder={founder} cohortName={founder.cohort.name}>
@@ -186,6 +171,18 @@ export default async function RewardsPage() {
               </p>
             </section>
           )}
+
+          <section className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-sm">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
+              Review streak
+            </h2>
+            <p className="mt-2 text-3xl font-bold">{streak} week{streak === 1 ? "" : "s"}</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              {streak > 0
+                ? "Active — keep it going!"
+                : "Write a review this week to start your streak."}
+            </p>
+          </section>
         </div>
       </div>
     </AppShell>
