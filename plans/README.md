@@ -44,22 +44,33 @@ This folder contains implementation proposals and product direction notes. It is
 ## Remaining Work
 
 From reciprocity-pipeline.md:
-1. **Phase 2 (cont.)**: Govern the Portability Layer (~4-6h)
+1. **Phase 4**: Close the Auto-Badge Gap (~3h)
+   - Best next small executable task
+   - Badge compute engine (runs on review submit, profile update, cron)
+   - Triggers for: reviewer, profile_complete, verified, quality_reviewer, detailed_reviewer, balanced_reviewer, trusted_reviewer, top_contributor
+   - Notification on auto-badge award
+
+2. **Phase 2 (cont.)**: Govern the Portability Layer (~4-6h)
    - Admin approval queue for imported packets
    - Trust policy configuration
    - Cross-instance verification (public-key based preferred)
-   - Optional import UI relocation to /grow
+   - Requires schema/admin workflow design before coding
 
-2. **Phase 3**: Close the Network Effects Gap (~6-10h)
+3. **Gamification rethink**: Impact-over-points redesign
+   - Product/UX design first; do not start as a broad code task
+   - Replace leaderboard-first motivation with contribution impact and credible progress signals
+
+4. **Phase 3**: Close the Network Effects Gap (~6-10h)
    - Alumni role with read-only + limited write access
    - Cross-cohort vendor recommendations
    - Public cohort aggregate pages
    - Invite/referral system
+   - Split before execution; this is roadmap-scale
 
-3. **Phase 4**: Close the Auto-Badge Gap (~3h)
-   - Badge compute engine (runs on review submit, profile update, cron)
-   - Triggers for: reviewer, profile_complete, verified, quality_reviewer, detailed_reviewer, balanced_reviewer, trusted_reviewer, top_contributor
-   - Notification on auto-badge award
+5. **Optional AI/SEO refinements**
+   - `llms.txt`
+   - Q&A schema only if public Q&A exists
+   - Citation optimization and richer founder/startup structured data
 
 ## Notes For Agents
 

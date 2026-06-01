@@ -76,8 +76,10 @@ Implemented features:
 
 - Public founder profiles with stable slugs.
 - `Person` JSON-LD on founder pages.
+- Public vendor review JSON-LD from public consumer reviews.
 - Embeddable SVG badge API.
 - Signed reputation export/import and stored import packets.
+- Founder credibility report page and signed machine-readable API.
 - Backlink tracking and GSC integration.
 
 Patent/spec coverage:
@@ -86,8 +88,8 @@ Patent/spec coverage:
 
 Current gap:
 
-- Public vendor review JSON-LD is still missing.
 - Imported reputation needs governance: admin approval, trust policy, and stronger cross-instance verification.
+- Structured data refinements remain optional: `llms.txt`, Q&A schema if public Q&A exists, and richer founder/startup fields.
 
 ## 6. SEO Ethics
 

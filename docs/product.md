@@ -52,9 +52,11 @@ The current app includes:
 - Founder and consumer reviews, image upload support, quality feedback, and disclosure handling.
 - Vendor requests, targeted questions, admin fulfillment, invite flow, and cohort admin pages.
 - Public founder profiles with `Person` JSON-LD, badge embeds, and profile view tracking.
+- Public vendor pages with `Product`, `AggregateRating`, and public consumer `Review` JSON-LD.
 - Points, badges, nominations, helpful votes, leaderboards, sprints, activity, and notifications.
 - SEO guidance, backlink tracking, GSC OAuth, backlink snapshots, and digest emails.
 - Signed reputation export/import and stored imported reputation packets.
+- Founder credibility reports with signed machine-readable API output.
 
 See `../OPERATING.md` for the detailed route map and verification commands.
 
@@ -81,8 +83,8 @@ See `../OPERATING.md` for the detailed route map and verification commands.
 
 The strongest next steps are:
 
-- Add public vendor review JSON-LD from public consumer reviews only.
-- Treat public-only `llms.txt` as an optional experiment, not a required AI visibility lever.
-- Reframe points and tiers toward impact/credibility.
 - Add governance to imported reputation packets.
 - Build automatic computable badge awards.
+- Reframe points and tiers toward impact/credibility.
+- Scope alumni/cross-cohort network effects into a small first milestone.
+- Treat public-only `llms.txt`, public Q&A schema, and citation refinements as optional structured-data experiments, not required AI visibility levers.

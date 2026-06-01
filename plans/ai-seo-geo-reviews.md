@@ -1,9 +1,20 @@
 # AI SEO / GEO Through Reviews
 
+## Status
+
+Public vendor review JSON-LD has been implemented on `/vendors/[vendorId]` for public consumer reviews. Do not re-execute that first-pass task.
+
+Remaining work is optional/refinement work:
+
+- `llms.txt` remains an experimental content map, not a required SEO/GEO task.
+- Q&A schema is deferred until there are public Q&A or request pages.
+- Citation optimization and richer profile JSON-LD are lower-priority refinements.
+
 ## Current State
 
 - Public vendor pages and founder profiles exist
 - Public vendor pages expose consumer reviews to anonymous crawlers
+- Public vendor pages include `Product`, `AggregateRating`, and `Review` JSON-LD from public consumer reviews only
 - Named founder reviews remain behind the signed-in cohort boundary
 - Founder profile pages already include `Person` JSON-LD
 - Backlinks from founder startups → platform improve domain authority
@@ -12,16 +23,16 @@
 
 ## Gap
 
-- No structured data markup for public vendor reviews (JSON-LD)
+- Public vendor review JSON-LD is implemented
 - No AI-friendly site overview (`llms.txt`), but current industry evidence does not show reliable major-crawler adoption or measurable citation lift
-- No Q&A / FAQ schema on targeted request pages
-- No deliberate citation optimization in review content
+- No Q&A / FAQ schema on targeted request pages, deferred until those pages are public
+- No deliberate citation optimization in review content, lower priority after JSON-LD
 
-## Implementation Plan
+## Implementation Notes
 
-### 1. Review JSON-LD on Vendor Pages
+### 1. Review JSON-LD on Vendor Pages - Implemented
 
-Add `Review` + `AggregateRating` schema markup to public vendor pages, based only on reviews visible to the current audience.
+`Review` + `AggregateRating` schema markup has been added to public vendor pages, based only on reviews visible to the public audience.
 
 - Anonymous/public page: include consumer reviews only
 - Signed-in cohort page: founder reviews can be rendered for users, but should not be treated as public SEO inventory unless the product intentionally exposes them
@@ -54,8 +65,8 @@ This is the highest-impact single change for public vendor pages. It makes publi
 
 **Files:**
 
-- `src/app/vendors/[vendorId]/page.tsx` — add a `<script type="application/ld+json">` block with the JSON-LD, computed server-side from vendor + consumer reviews data.
-- `src/lib/vendors.ts` — either reuse `getConsumerReviewsForVendor` or add a helper that returns the exact public review fields needed by JSON-LD.
+- `src/app/vendors/[vendorId]/page.tsx` includes the `<script type="application/ld+json">` block and computes JSON-LD server-side from vendor + public consumer review data.
+- `src/lib/vendors.ts` exposes the consumer review data used by the page.
 
 **Risk:** Medium if implemented carelessly. JSON-LD is invisible to users, but crawlers may consume it as authoritative. Keep it aligned with visible public content, escape with `JSON.stringify`, do not include private founder reviews for anonymous pages, and omit `aggregateRating` when there are no public reviews.
 
@@ -134,13 +145,13 @@ This is lower priority than public JSON-LD. For founder reviews, prioritize clar
 
 | Item | Effort | Impact |
 |------|--------|--------|
-| Public review JSON-LD on vendor pages | ~1h | High — unlocks structured public consumer review data for crawlers |
+| Public review JSON-LD on vendor pages | Done | High — unlocks structured public consumer review data for crawlers |
 | Profile JSON-LD refinements | ~30min | Low-medium — already implemented; useful if richer public profile fields exist |
 | llms.txt | ~30min | Low/experimental — cheap content map, but not a proven AI visibility signal |
 | Q&A schema | Deferred | Low until public Q&A/request pages exist |
 | Citation optimization | ~2h | Low — nice-to-have after JSON-LD |
 
-Recommended first pass: vendor JSON-LD only. Founder JSON-LD is already in place. Revisit `llms.txt` only after higher-confidence structured data work is complete.
+Recommended next pass: skip vendor JSON-LD because it is done. Revisit `llms.txt` only after higher-confidence product work, and add Q&A schema only if request/Q&A pages become public.
 
 ## Open Questions
 

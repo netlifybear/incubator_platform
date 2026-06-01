@@ -1,6 +1,6 @@
 # Reciprocity Pipeline: Platform ↔ Founder
 
-From `docs/product.md`, the platform's asymmetric advantage is a bilateral exchange. The current implementation delivers the core cohort/private-review loop, public profiles, badges, backlinks/GSC, notifications, activity, reputation export/import, and the Write/Connect/Grow hubs. The remaining gaps are mostly public structured data, governed portability, network effects, and automatic badge computation.
+From `docs/product.md`, the platform's asymmetric advantage is a bilateral exchange. The current implementation delivers the core cohort/private-review loop, public profiles, badges, backlinks/GSC, notifications, activity, reputation export/import, public vendor review JSON-LD, founder credibility reports, and the Write/Connect/Grow hubs. The remaining gaps are mostly governed portability, network effects, automatic badge computation, and impact-over-points product refinement.
 
 ## Platform → Founder
 
@@ -14,16 +14,12 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 | Points + leaderboard rank | `getFounderPoints()`, `/grow` page, `/leaderboard` |
 | Reputation portability baseline | `/api/reputation/export`, `/api/reputation/import`, `ReputationImport`, and profile settings import/export UI |
 | Profile structured data | `Person` JSON-LD on `/founder/[slug]` |
+| Public vendor structured data | `Product`, `AggregateRating`, and public consumer `Review` JSON-LD on `/vendors/[vendorId]` |
+| Founder credibility report | `/founder/[slug]/credibility`, `/api/credibility/[slug]`, and Grow hub CTA |
 
 ### ❌ Not Delivered
 
-**1. Public vendor structured data**
-- Founder profile `Person` JSON-LD exists
-- Public vendor pages still lack `Product`/`AggregateRating`/`Review` JSON-LD for public consumer reviews
-- **Plan:** `plans/ai-seo-geo-reviews.md` — public review JSON-LD on vendor pages first; `llms.txt` is optional/experimental
-- **Effort:** ~1h for vendor JSON-LD; ~30min optional for `llms.txt`
-
-**2. Governed reputation portability**
+**1. Governed reputation portability**
 - JWT export and import exist, and imported packets are stored
 - Missing governance: imported reputation is accepted directly by the signed-in founder; there is no admin approval queue, trust policy, or cross-instance key rotation
 - **Plan:** Needs a governance scope, not a first import implementation
@@ -32,14 +28,13 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
   - Matching logic (email-based plus manual approval)
   - Configurable trust: import everything vs. import only badges/points vs. import only verified reviews
   - Cross-instance verification policy, ideally public-key based instead of shared-secret only
-  - Optional import UI relocation from profile settings into the Grow hub
 - **Effort:** ~4-6h for admin review queue and policy, more for public-key verification
 
 ### 🟡 Partial
 
 | Promise | Status | Gap |
 |---------|--------|-----|
-| SEO benefit for founder's startup | Backlink tracker + `/seo` page exists; founder `Person` JSON-LD can include startup URL | Vendor review JSON-LD and richer founder/startup structured fields are still missing |
+| SEO benefit for founder's startup | Backlink tracker + `/seo` page exists; founder `Person` JSON-LD and public vendor review JSON-LD exist | Richer founder/startup structured fields, `llms.txt`, and Q&A schema are optional refinements |
 
 ## Founder → Platform
 
@@ -53,7 +48,7 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 
 ### ❌ Not Delivered
 
-**3. Network effects**
+**2. Network effects**
 - Currently siloed per cohort — no cross-cohort discovery or interaction
 - An alumni founder can't participate or endorse vendors
 - No mechanism for network growth (no referral loops, no cohort-to-cohort recommendations)
@@ -74,12 +69,13 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 
 ## Full Implementation Roadmap
 
-### Phase 1: Close the Public Structured Data Gap (~1h)
-The highest-leverage missing piece. Without Schema.org, the platform can't deliver on its core SEO promise to founders.
+### Phase 1: Close the Public Structured Data Gap - Mostly Complete
+The highest-leverage missing piece has been completed for public vendor reviews. Remaining structured data work is optional or depends on new public surfaces.
 
-- [ ] Public review JSON-LD on `/vendors/[vendorId]` (Product + AggregateRating + Review from public consumer reviews)
+- [x] Public review JSON-LD on `/vendors/[vendorId]` (Product + AggregateRating + Review from public consumer reviews)
 - [x] Profile JSON-LD on `/founder/[slug]` (Person with affiliation/memberOf fields)
 - [ ] Optional/experimental `llms.txt` after JSON-LD, only if it remains low-cost
+- [ ] Q&A schema only if public Q&A/request pages are created
 
 ### Phase 2: Govern the Portability Layer (~4-6h)
 Founders can already export and import reputation packets. The next work is to make imported reputation trustworthy enough for admins and future investors.
@@ -87,8 +83,8 @@ Founders can already export and import reputation packets. The next work is to m
 - [x] Reputation export API
 - [x] Reputation import API (accepts signed JWT, validates, records packet)
 - [x] Import/export UI in profile settings
+- [x] Import UI on `/grow`
 - [ ] Admin approval queue for imports
-- [ ] Optional import UI on `/grow`
 - [ ] Cross-instance verification (shared secret or public key)
 
 ### Phase 3: Close the Network Effects Gap (~6-10h)
@@ -110,9 +106,9 @@ Computable badge types should auto-award without admin intervention.
 
 | Phase | Effort | Impact | Dependencies |
 |-------|--------|--------|-------------|
-| 1. Public structured data | ~1h | High (unlocks structured public review data) | None |
+| 1. Public structured data | Mostly done | High (unlocks structured public review data) | Optional refinements only |
 | 2. Reputation portability governance | ~4-6h | High (defensibility) | Export/import baseline already built |
 | 3. Network effects | ~6-10h | Medium-high (growth) | Alumni role needs schema change |
 | 4. Auto-badges | ~3h | Medium (engagement) | Badge definitions exist |
 
-Remaining total: ~14.5-20.5h to fully deliver the reciprocity promise in `docs/product.md`, depending on portability governance depth.
+Remaining total: ~13-19h to fully deliver the reciprocity promise in `docs/product.md`, depending on portability governance depth and how far network effects are taken.

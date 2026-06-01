@@ -1,5 +1,15 @@
 # Founder Credit Report: Investor Signal Layer
 
+## Status
+
+Implemented. The app now includes a public credibility report page at `/founder/[slug]/credibility`, a signed machine-readable endpoint at `/api/credibility/[slug]`, and a Grow hub CTA. The report uses a print-friendly browser flow rather than a server-side PDF dependency.
+
+Remaining follow-ups are privacy and verification refinements:
+
+- Add explicit founder disclosure controls before showing backlink domains or richer GSC aggregates.
+- Improve signature verification UX beyond the current signed report/JWT surfaces.
+- Polish print/PDF output if investor sharing becomes a primary workflow.
+
 ## Concept
 
 A public, verifiable credibility page for each founder that investors can use as a due diligence signal. Complements the existing JWT export with a human-readable + machine-readable report.
@@ -17,7 +27,7 @@ Write → Connect → Grow → Investor Signal
 
 Without this, the flywheel stops at "founder feels good about their profile." With this, the platform becomes part of a founder's fundraising toolkit — a direct incentive to contribute.
 
-## What It Would Include
+## What It Includes
 
 ### Public Report Page: `/founder/[slug]/credibility`
 
@@ -46,29 +56,29 @@ A clean, printable page structured like a credit report:
 
 **Section 4: Backlink Authority**
 - Verified backlinks count
-- Referring domains (list)
-- GSC data summary if connected
+- Referring domain count
+- GSC connection status if connected
+- Domain lists and richer GSC metrics should remain explicit opt-in disclosures
 
 **Section 5: Export & Verify**
-- Download PDF
+- Print/save as PDF
 - Download JWT (existing)
-- Verify badge on this page (paste hash to confirm)
+- Signed reputation packet for verification
 
 ### Machine-Readable Endpoint: `/api/credibility/[slug]`
 
 Returns JSON with the same data, signed with `NEXTAUTH_SECRET` (same pattern as JWT export). Enables automated due diligence tools.
 
-## What It Requires
+## Implementation Status
 
-| Component | Effort | Details |
+| Component | Status | Details |
 |-----------|--------|---------|
-| Credibility data function | ~1h | `getFounderCredibility(slug)` querying reviews, badges, backlinks, votes |
-| Public report page | ~2h | Clean printable layout, sections 1-5, server-rendered |
-| JSON API endpoint | ~1h | Signed JSON response, same auth pattern as JWT export |
-| Badge verification hash | ~1h | HMAC over badge data so investors can verify independently |
-| PDF export | ~2h | Server-side render-to-PDF or print stylesheet |
-| Link from /grow | ~0.5h | "Your credibility report" CTA |
-| **Total** | **~7.5h** | |
+| Credibility data | Done | Report data assembled for public page and API |
+| Public report page | Done | Server-rendered report at `/founder/[slug]/credibility` |
+| JSON API endpoint | Done | Signed JSON response at `/api/credibility/[slug]` |
+| Badge/reputation verification | Partial | Signed report/JWT exists; hash-paste UX remains optional refinement |
+| PDF export | Done | Browser print/save flow; no server-side PDF dependency |
+| Link from `/grow` | Done | "Your credibility report" CTA |
 
 ## Privacy & Access
 
