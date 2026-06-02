@@ -2,13 +2,28 @@
 
 Incubator Trust turns cohort knowledge into portable founder credibility.
 
-The product starts as a private, cohort-scoped vendor trust layer. Founders use it because it helps them find credible vendors faster than searching Slack threads. Public reputation, badges, backlinks, structured data, and portability only matter after the private trust loop is useful.
+The first useful product is a private, cohort-scoped vendor trust layer. Founders use it because it helps them find credible vendors faster than searching Slack threads. Public profiles, badges, backlinks, structured data, and portability only matter after the private trust loop is useful.
 
-## Product Thesis
+## Thesis
 
 Private trust comes first. Public authority comes second.
 
 The platform wins if it becomes the persistent memory layer for an incubator's operating knowledge: who founders used, what worked, what failed, and which recommendations are credible because they came from verified cohort members.
+
+## Flywheel
+
+```text
+Private Trust -> Utility -> Contribution Incentives -> Portable Credibility
+      ^                                                       |
+      +-------------------------------------------------------+
+```
+
+| Stage | Product Meaning |
+|-------|-----------------|
+| Private Trust | Cohort-scoped access, named reviews, verified membership, and tenant boundaries. |
+| Utility | Founders find vendors, request missing recommendations, and ask peers for context. |
+| Contribution Incentives | Helpful votes, badges, sprints, notifications, activity, and impact feedback make contribution worthwhile. |
+| Portable Credibility | Public profiles, badge embeds, backlinks, structured data, credibility reports, and signed reputation packets let useful contribution travel. |
 
 ## Reciprocal Authority
 
@@ -25,43 +40,27 @@ What the platform grants founders:
 What founders grant the platform:
 
 - Named, specific, cohort-scoped reviews.
-- Firsthand-use signals, disclosure signals, and work context.
+- Firsthand-use, disclosure, work-type, and quality signals.
 - Helpful votes, requests, exchanges, and activity that improve cohort memory.
 
 That reciprocity justifies stricter quality standards than a general consumer review site can sustain.
 
-## Flywheel
+## Current Product Shape
 
-```text
-Private Trust -> Utility -> Contribution Incentives -> Portable Credibility
-      ^                                                       |
-      +-------------------------------------------------------+
-```
-
-1. Private Trust: cohort-scoped access, named reviews, and tenant boundaries.
-2. Utility: founders find vendors and request missing recommendations.
-3. Contribution Incentives: quality-adjusted points, sprints, badges, helpful votes, notifications, and activity.
-4. Portable Credibility: public profiles, badge embeds, backlinks, structured data, and signed reputation packets.
-
-## Current Implementation
-
-The current app includes:
+The app currently includes:
 
 - Write/Connect/Grow hub navigation.
-- Cohort-scoped vendor directory, vendor search, public vendor pages, and review modes.
-- Founder and consumer reviews, image upload support, quality feedback, and disclosure handling.
-- Vendor requests, targeted questions, admin fulfillment, invite flow, and cohort admin pages.
-- Cross-cohort vendor recommendations, public cohort aggregate pages, alumni helpful voting, and referral loop polish.
-- Public founder profiles with `Person` JSON-LD, badge embeds, and profile view tracking.
-- Public vendor pages with `Product`, `AggregateRating`, and public consumer `Review` JSON-LD.
-- Points, badges, nominations, helpful votes, leaderboards, sprints, activity, and notifications.
-- SEO guidance, backlink tracking, GSC OAuth, backlink snapshots, and digest emails.
-- Signed reputation export/import and stored imported reputation packets.
-- Founder credibility reports with signed machine-readable API output.
+- Cohort-scoped vendor discovery, vendor requests, targeted questions, and admin fulfillment.
+- Founder and consumer review modes with quality feedback and disclosure handling.
+- Cross-cohort recommendations, alumni helpful voting, invite/referral flow, and public cohort aggregates with privacy thresholds.
+- Public founder profiles, badge embeds, public vendor JSON-LD, and founder credibility reports.
+- Backlink tracking, GSC OAuth, SEO guidance, digest emails, notifications, and activity.
+- Signed reputation export/import with governed admin approval.
+- Impact-over-points copy on Grow, Rewards, and the private contribution view.
 
-See `../OPERATING.md` for the detailed route map and verification commands.
+See `../OPERATING.md` for route-level detail.
 
-## Public Authority Guardrails
+## Guardrails
 
 - Public profiles are opt-in.
 - Private cohort reviews, requests, invites, and admin activity must not leak into public profiles or public structured data.
@@ -69,23 +68,22 @@ See `../OPERATING.md` for the detailed route map and verification commands.
 - Badges must represent real criteria or explicit issuers; no paid badges.
 - Do not promise ranking improvements from badges, links, or structured data.
 - Do not automate reciprocal link exchange mechanics.
-- Public leaderboards need privacy thresholds to reduce deanonymization risk.
+- Public cohort aggregates and public leaderboard-like surfaces need privacy thresholds.
+- Points can remain internal, but user-facing language should emphasize contribution, impact, and credibility.
 
 ## Strategic Risks
 
 - Empty directory risk: without seed data and requests, founders will not return.
 - Trust risk: anonymous or unverifiable founder reviews weaken the core promise.
-- Privacy risk: private cohort content leaking into public pages would damage trust.
+- Privacy risk: leaking private cohort content into public surfaces would damage trust.
 - SEO risk: backlink tooling can drift into spam incentives.
 - Gamification risk: points and leaderboards can reward optimization over useful contributions.
 - Scope risk: crawler integrations and broad network effects can distract from the private trust wedge.
 
-## Near-Term Product Direction
+## Near-Term Direction
 
-The strongest next steps are:
-
-- Governance for imported reputation packets is live (admin approval queue + trust policy).
-- Automatic computable badge awards are live; monitor and iterate on thresholds.
-- Impact/credibility reframe applied to grow/rewards/leaderboard; deeper work needs product design.
-- Network effects first pass is live; deeper alumni/cross-cohort interaction should stay policy-backed and small-slice.
+- Execute `../plans/phase-a-credibility-factors.md` to explain founder credibility signals on private and public surfaces.
+- Keep notification and digest feedback improvements as small slices from `../plans/contribution-feedback-loop.md`.
+- Keep badge taxonomy, streak milestones, Connect inline answering, and Grow SEO alignment as product/UX work before implementation.
 - Treat public Q&A schema and citation refinements as optional structured-data experiments, not required AI visibility levers.
+- Keep deeper alumni/cross-cohort interaction policy-backed and scoped.

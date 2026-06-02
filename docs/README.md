@@ -1,17 +1,22 @@
 # Documentation Map
 
-This folder holds durable product and strategy docs for the Incubator Trust Platform. Use `plans/` for execution notes and future slices; use `OPERATING.md` for runtime details.
+This folder holds durable product documentation for the Incubator Trust Platform. Use `../plans/` for execution plans, implemented-plan records, and future slices.
 
-## Sources
+## Source Of Truth
 
 | File | Purpose |
 |------|---------|
-| `../README.md` | Compact setup and verification entry point. |
-| `../OPERATING.md` | Route map, demo accounts, smoke flow, architecture, env vars, DB-backed test setup, and implementation guardrails. |
-| `product.md` | Durable product thesis, flywheel, authority model, public authority guardrails, and strategic risks. |
-| `traceability.md` | Business thesis to implemented features and patent/spec coverage. |
-| `../plans/` | Execution plans, implemented-plan status, and scoped future work. |
+| `../README.md` | Setup, verification, and project entry point. |
+| `../OPERATING.md` | Route map, demo accounts, smoke flow, architecture, env vars, DB-backed tests, and implementation guardrails. |
+| `product.md` | Product thesis, flywheel, authority model, privacy/SEO guardrails, and near-term direction. |
+| `traceability.md` | Compact map from product thesis to implemented features and patent/spec coverage. |
+| `../plans/` | Active handoffs, deferred work, and compact records of implemented plans. |
 
-## Historical Docs
+## Ownership
 
-Workspace-root `doc/` and `docs/` folders are retired. Keep active documentation in this nested repo's `docs/` folder and active/proposed work in `plans/`.
+- Keep durable product truth here.
+- Keep runtime and engineering operations in `../OPERATING.md`.
+- Keep scoped future work and agent handoffs in `../plans/`.
+- Keep setup and verification summary in `../README.md`.
+
+Workspace-root `doc/` and `docs/` folders are retired. Active documentation belongs in this nested repo.

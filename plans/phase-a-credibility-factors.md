@@ -2,6 +2,8 @@
 
 **Status:** Ready to execute
 
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Keep public/private presentation rules explicit; do not add "credit" terminology.
+
 ## Goal
 
 Surface the factors behind a founder's credibility signal with understandable labels, so founders know what to improve and peers know why recommendations carry weight.
@@ -30,7 +32,7 @@ Compute review quality from `reviewContributionPoints(review.comment)` at query 
 | `src/lib/credibility-factors.test.ts` | Create — test factor computation |
 | `src/app/grow/page.tsx` | Modify — add factor breakdown after Impact section |
 | `src/app/founder/[slug]/credibility/page.tsx` | Modify — add public-safe factor summary after Review Credibility section |
-| `plans/README.md` | Modify — add this plan to the execution table |
+| `plans/README.md` | Modify after implementation — update this plan from ready to implemented |
 
 ## Types
 
@@ -38,11 +40,13 @@ Compute review quality from `reviewContributionPoints(review.comment)` at query 
 type FactorLabel = "strong" | "developing" | "needs activity";
 
 type CredibilityFactor = {
-  key: string;
+  key: CredibilityFactorKey;
   label: string;
   value: string | number;
   status: FactorLabel;
-  description: string;
+  privateDescription: string;
+  publicDescription: string;
+  isPublic: boolean;
 };
 
 type CredibilityFactors = {
@@ -51,6 +55,24 @@ type CredibilityFactors = {
   isThinFile: boolean;
 };
 ```
+
+Use a fixed key union so public filtering is deterministic:
+
+```ts
+type CredibilityFactorKey =
+  | "reviewQuality"
+  | "helpfulVotes"
+  | "contributionSignals"
+  | "reviewRecency"
+  | "profileCompleteness"
+  | "verifiedBacklinks";
+```
+
+Public presentation must be generated through a presenter/helper such as `toPublicCredibilityFactors(result)`, not by rendering the raw factor list. The presenter must:
+- remove `reviewRecency`
+- remove numeric `value`
+- render only `publicDescription`
+- omit the overall `summary`
 
 ## Overall Summary Logic
 
@@ -67,10 +89,12 @@ Thin-file override: if total review count is 0, summary is always `needs activit
 ### Review quality
 - label: `Review quality`
 - data: `review.findMany({ userId }, { comment, createdAt })`
-- value: avg `reviewContributionPoints(comment) / 20 * 100`
+- value: avg `reviewContributionPoints(comment) / 10 * 100`
 - private: `Your reviews average {score}% quality.`
 - public: `Reviews show consistent quality.`
 - status: >=80 strong, >=50 developing, else needs activity
+
+Important: `reviewContributionPoints()` currently caps at 10 points in `src/lib/review-quality.ts`. Do not divide by 20. If the scoring helper later exports a max constant, prefer importing that constant instead of hardcoding `10`.
 
 ### Helpful votes
 - label: `Helpful votes`
@@ -118,6 +142,14 @@ Position after the Impact section, before the backlink velocity chart.
 - one row per factor with status dot + description
 - thin file → `Getting started. Write your first review to build your track record.`
 
+`/grow` already calls `getFounderImpactSummary(founder.id)`. To avoid duplicated Prisma reads, call:
+
+```ts
+computeCredibilityFactors(founder.id, { impact })
+```
+
+where `impact` is the existing summary from the page. If no `impact` option is provided, the helper may call `getFounderImpactSummary(userId)` internally.
+
 ## Public UI: `/founder/[slug]/credibility`
 
 Position after the Review Credibility section, before Badge Proof.
@@ -127,6 +159,7 @@ Rules:
 - no numeric factor values
 - no review recency factor
 - no private review text
+- render only `publicDescription`; never render `privateDescription` or `value`
 - thin file → `This founder is building their track record. Check back after they share more reviews.`
 - heading: `Why this founder's recommendations carry weight`
 
@@ -141,6 +174,8 @@ Rules:
 | Single review, zero helpful | 1 detailed review, 0 helpful votes, 80% profile, 0 backlinks | reviewQuality strong, helpfulVotes needs activity, summary developing |
 | Very old last review | 5 detailed reviews, last review 200 days ago | reviewRecency needs activity |
 | Boundary thin file | 1 review, no helpful votes, no badges, no backlinks | no thin-file override |
+| Public presenter strips private data | Any non-thin result with all factors | no `summary`, no `value`, no `privateDescription`, no `reviewRecency` |
+| Review quality max score | One review that earns the current max from `reviewContributionPoints()` | reviewQuality value is 100 and status strong |
 
 ## Edge Cases
 
@@ -157,7 +192,7 @@ Rules:
 
 `computeCredibilityFactors()` makes small Prisma queries (review comments + dates, user profile, badge count, backlink count, helpful vote count).
 
-Acceptable on `/grow`. For public `/credibility`, use 60s in-memory TTL cache via `opts.useCache` (avoid repeated queries on page reloads).
+Acceptable on `/grow` when the existing `impact` summary is passed into the helper. For public `/credibility`, use 60s in-memory TTL cache via `opts.useCache` (avoid repeated queries on page reloads).
 
 ## Verification
 

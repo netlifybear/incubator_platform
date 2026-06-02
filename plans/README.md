@@ -1,96 +1,42 @@
 # Plans
 
-This folder contains implementation proposals and product direction notes. It is not a single execution queue.
+This folder contains execution plans, product direction notes, and historical implementation records. It is not a single backlog. Before executing any plan, check the current code and keep durable project truth in `../README.md`, `../OPERATING.md`, and `../docs/`.
 
-## Recommended Execution Order
+## Active Handoff
 
 | Plan | Status | Next Agent Guidance |
 |------|--------|---------------------|
-| `ai-seo-geo-reviews.md` | Implemented | Public vendor review JSON-LD completed. |
-| `reciprocity-pipeline.md` | Mostly implemented | Network effects first pass is live: cross-cohort recommendations, alumni helpful voting policy, cohort privacy refinements, and referral loop polish. |
-| `gamification-rethink.md` | Product direction | Impact dashboard slice implemented. Remaining badge/contribution-signal taxonomy, contribution feedback loop, and deeper UX work deferred (see deferral notes below). |
-| `impact-dashboard-implementation.md` | Implemented | `/grow` uses personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible points; `/rewards` shows credibility ingredients without rank. |
-| `contribution-feedback-loop.md` | Implemented (Slice A+B) | `getContributionFeedback()` helper + "Recent contribution impact" section on `/grow`. Slice C (notification copy) and D (digest) remain deferred pending UX design. |
-| `founder-credit-report.md` | Implemented | Founder credit report page and API endpoint completed; credit report verification UX polish remains optional and deferred until after impact dashboard. |
-| `phase-a-credibility-factors.md` | Ready to execute | Credibility factor explainability on `/grow` and `/credibility`. Uses `reviewContributionPoints()` for quality computation. Factor labels only, no numeric score. |
-| `nav-regroup-hubs.md` | Implemented | Reference only. Do not execute. |
+| `phase-a-credibility-factors.md` | Ready to execute | Build credibility factor explainability for `/grow` and `/founder/[slug]/credibility`. Use `reviewContributionPoints()` with the current 10-point max, keep public/private presenter rules explicit, and avoid all "credit" terminology. |
 
-## Completed Work Summary
+## Deferred Work
 
-✅ **ai-seo-geo-reviews.md**: Public Vendor Review JSON-LD
-- Added Product, AggregateRating, and Review schema markup to public vendor pages
-- Only includes consumer reviews (founder reviews kept private)
-- JSON-LD only shown in consumer mode or when not signed in
-- Reused existing getConsumerReviewsForVendor function
+| Area | Source Plan | Status | Next Agent Guidance |
+|------|-------------|--------|---------------------|
+| Contribution feedback notifications and digest | `contribution-feedback-loop.md` | Deferred after Slice A+B | Slice A+B are implemented: `getContributionFeedback()` and the `/grow` "Recent contribution impact" recap are live. Plan notification copy/links and digest language before implementation. |
+| Badge/contribution-signal taxonomy | `gamification-rethink.md` | Product direction | Consider renaming badge presentation from achievement-style labels to contribution tags. Requires UX/product design before code changes. |
+| Streak milestones | `gamification-rethink.md` | Product direction | Scope separately after the impact dashboard has been observed in local or production usage. |
+| Credit report verification polish | `founder-credit-report.md` | Optional polish | Existing `/founder/[slug]/credibility` page and API work. Optional follow-up: PDF/export polish, richer verification badges, and inquiry-history display. |
+| Connect inline answering | `gamification-rethink.md` | Optional UX optimization | Let founders answer open vendor requests from `/connect` without navigating away. Design the workflow before implementation. |
+| Grow SEO alignment | `gamification-rethink.md` | Deferred | Revisit after Grow's data model settles. Consider metadata, semantic structure, and JSON-LD only where the public surface supports it. |
+| Portability hardening | `reciprocity-pipeline.md` | Optional hardening | Shared-secret verification works and public-key endpoint exists when configured. Full cross-instance public-key policy and key rotation remain future work. |
+| AI/SEO refinements | `ai-seo-geo-reviews.md` | Optional | Q&A schema only if public Q&A exists; richer founder/startup structured data can be scoped separately. |
 
-✅ **reciprocity-pipeline.md Phase 2**: Import Reputation UI in Grow Hub
-- Added import reputation functionality to Grow hub's "Recommended actions" section
-- Added state management, import handler, and UI form for JWT import
-- Links to existing /api/reputation/import endpoint
+## Implemented References
 
-✅ **founder-credit-report.md**: Founder Credit Report
-- Created public report page at `/founder/[slug]/credibility`
-- Includes all 5 sections: Header, Identity Verification, Review Credibility, Badge Proof, Backlink Authority, Export & Verify
-- Created machine-readable endpoint at `/api/credibility/[slug]` returning signed JSON
-- Added "Your credibility report" CTA to Grow hub recommended actions
-- Implemented print-friendly report (client-side print alternative to PDF)
+| Plan | Implementation Summary |
+|------|------------------------|
+| `ai-seo-geo-reviews.md` | Public vendor review JSON-LD is implemented for consumer-visible reviews. Founder reviews remain private. |
+| `reciprocity-pipeline.md` | Network-effects first pass is implemented: cross-cohort recommendations, alumni helpful-voting policy, cohort privacy refinements, referral loop polish, governed reputation imports, and optional public-key endpoint. |
+| `impact-dashboard-implementation.md` | `/grow` uses personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible points; `/rewards` shows credibility ingredients without cohort rank. |
+| `contribution-feedback-loop.md` | Slice A+B are implemented: helper plus `/grow` contribution impact recap. |
+| `founder-credit-report.md` | Founder credibility report page and machine-readable endpoint are implemented. |
+| `nav-regroup-hubs.md` | Sidebar regrouped into Write, Connect, Grow, and Admin links; `/connect` and `/grow` exist. Reference only. |
 
-✅ **nav-regroup-hubs.md**: Already implemented
-- Sidebar changed to Write/Connect/Grow + Admin links
-- `/connect` and `/grow` pages created
+## Agent Guardrails
 
-✅ **reciprocity-pipeline.md Phase 2**: Governed Reputation Imports
-- Added pending import queue at `/admin/imports`
-- Added approve/reject actions with founder/admin notifications
-- Added cohort trust policy configuration for import scope
-- Added optional public-key endpoint for future asymmetric verification
-
-## Current Open Work
-
-From reciprocity-pipeline.md:
-
-1. **Network effects**
-   - Cross-cohort vendor recommendation signal: done
-   - Alumni participation rules: done for helpful votes; other writes remain blocked
-   - Public cohort aggregate refinements: privacy threshold first pass done
-   - Referral loop polish: duplicate invite guard, referral attribution, and invite-accepted notification/activity done
-   - Remaining: observe usage and scope any deeper cross-cohort or alumni write feature as a separate policy-backed task
-
-2. **Gamification rethink**: Impact-over-points refinements
-   - Impact dashboard implementation is complete: `/grow` uses `getFounderImpactSummary()` for personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible point totals or rank positions; `/rewards` shows credibility ingredients without cohort rank
-   - Points remain internal for ordering, reputation export, and credibility API compatibility
-   - Contribution feedback Slice A+B are complete: `getContributionFeedback()` and the `/grow` "Recent contribution impact" recap are live.
-   - Contribution feedback Slice C+D remain deferred: notification copy/links and weekly digest language should be planned separately before implementation.
-   - Remaining after that: deeper badge/contribution-signal taxonomy and streak milestones — each requires UX/product design before implementation
-
-3. **Optional portability hardening**
-   - Shared-secret reputation verification works
-   - Public-key endpoint exists when configured
-   - Remaining: full cross-instance public-key verification policy/key rotation
-
-4. **Optional AI/SEO refinements**
-   - Q&A schema only if public Q&A exists
-   - Citation optimization and richer founder/startup structured data
-
-## Secondary UX Deferral Notes
-
-The following items were identified during the impact dashboard implementation. **Do not execute until after the impact dashboard is stable and observed in production:**
-
-1. **Badge/Contribution-signal taxonomy** — converting badges from "achievements" to descriptive "contribution tags" (e.g. `reviewer` → "Has written reviews"). Requires UX design for naming, display treatment on profiles, and impact on badge computation engine. Deferred because the current badge system works and this is purely a presentation change.
-
-2. **Contribution feedback loop** — Slice A+B are implemented. Keep notification and digest copy as later slices, with a short UX plan before implementation.
-
-3. **Credit report verification UX** — optional polish to the `/founder/[slug]/credibility` page: export-as-PDF, richer verification badges, inquiry history display. Deferred because the current page is functional and this is a nice-to-have.
-
-4. **Connect inline answering** — allowing founders to answer open vendor requests directly from the Connect hub without navigating to a separate page. Deferred because it's a UX optimization, not a missing feature.
-
-5. **Grow SEO alignment** — optimizing the Grow page for search engines (JSON-LD, meta descriptions, semantic HTML). Deferred until Grow's data model settles after the impact dashboard changes land.
-
-These items should be revisited after the impact dashboard has been live for at least one sprint cycle (2 weeks) and usage patterns have been observed.
-
-## Notes For Agents
-
-- Check the current code before following any plan. Some plans intentionally document completed or deferred work.
-- Prefer `docs/product.md`, `docs/traceability.md`, `README.md`, and `OPERATING.md` for durable project truth; this folder is for execution history and future slices.
-- Do not implement roadmap-scale items from a plan without first extracting a small, verifiable task.
-- For deeper network effects, write a policy-backed slice first and keep private founder content out of public surfaces.
+- Check the current code before following any plan. Several files here document completed or deferred work.
+- Prefer `../docs/product.md`, `../docs/traceability.md`, `../README.md`, and `../OPERATING.md` for durable project truth.
+- Extract a small, verifiable task before implementing roadmap-scale items.
+- Keep private founder content out of public surfaces.
+- For deeper network effects, write a policy-backed slice first.
+- For implementation handoff, prefer `superpowers:subagent-driven-development` or `superpowers:executing-plans` when a plan calls for it.
