@@ -7,6 +7,7 @@ import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
 import { getBacklinkSnapshots, listBacklinksForFounder } from "@/lib/backlinks";
 import { reviewContributionPoints } from "@/lib/review-quality";
 import { computeCredibilityFactors, toPublicCredibilityFactors } from "@/lib/credibility-factors";
+import { getFounderImpactSummary } from "@/lib/impact";
 import { prisma } from "@/lib/prisma";
 import crypto from "node:crypto";
 import { CredibilityActions } from "./credibility-actions";
@@ -26,7 +27,10 @@ async function getFounderCredibilityData(slug: string) {
     return null;
   }
 
-  const [points, badges, rank, reviewStats, backlinkSnapshots, backlinks] = await Promise.all([
+  const [
+    points, badges, rank, reviewStats, impact,
+    backlinkSnapshots, backlinks,
+  ] = await Promise.all([
     getFounderPoints(founder.id),
     getFounderBadges(founder.email),
     founder.cohort?.id ? getFounderCohortRank(founder.id, founder.cohort.id) : Promise.resolve(null),
@@ -35,6 +39,7 @@ async function getFounderCredibilityData(slug: string) {
       _avg: { rating: true },
       _count: true,
     }),
+    getFounderImpactSummary(founder.id),
     getBacklinkSnapshots(founder.id),
     listBacklinksForFounder(founder.id),
   ]);
@@ -42,7 +47,7 @@ async function getFounderCredibilityData(slug: string) {
   // Calculate used vendor percentage
   const founderReviews = await prisma.review.findMany({
     where: { userId: founder.id },
-    select: { id: true, usedVendor: true },
+    select: { id: true, usedVendor: true, comment: true, createdAt: true },
   });
   const usedVendorCount = founderReviews.filter(r => r.usedVendor).length;
   const usedVendorPercentage = founderReviews.length > 0 
@@ -60,16 +65,34 @@ async function getFounderCredibilityData(slug: string) {
     ? Math.round((helpfulVotes.filter(v => v.value).length / helpfulVotes.length) * 100)
     : 0;
 
-  // Calculate quality score trend (simplified as average quality %)
-  const qualityScores = await prisma.review.findMany({
-    where: { userId: founder.id },
-    select: { comment: true }
+  // Distinct founders who cast helpful votes on this founder's reviews
+  const helpfulVoters = await prisma.helpfulVote.findMany({
+    where: {
+      reviewId: { in: founderReviews.map(r => r.id) },
+      value: true,
+    },
+    distinct: ["userId"],
+    select: { userId: true },
   });
-  const qualityScorePercentage = qualityScores.length > 0
+  const helpfulVoterCount = helpfulVoters.length;
+
+  // Calculate quality score trend (simplified as average quality %)
+  const qualityScorePercentage = founderReviews.length > 0
     ? Math.round(
-        (qualityScores.reduce((sum, r) => sum + (reviewContributionPoints(r.comment) / 20 * 100), 0) / qualityScores.length)
+        (founderReviews.reduce((sum, r) => sum + (reviewContributionPoints(r.comment) / 20 * 100), 0) / founderReviews.length)
       )
     : 0;
+
+  // Reviews with detailed comments
+  const detailedCommentCount = founderReviews.filter(r => reviewContributionPoints(r.comment) > 0).length;
+
+  // Review freshness
+  const newestReview = founderReviews.length > 0
+    ? founderReviews.reduce((newest, r) => r.createdAt > newest.createdAt ? r : newest, founderReviews[0])
+    : null;
+  const reviewFreshnessLabel = newestReview
+    ? formatRelativeDate(newestReview.createdAt)
+    : null;
 
   // Create badge verification hash (HMAC of badge data)
   const badgeData = badges.map(b => ({
@@ -95,11 +118,15 @@ async function getFounderCredibilityData(slug: string) {
     badges,
     rank,
     reviewStats,
+    impact,
     backlinkSnapshots,
     backlinks,
     usedVendorPercentage,
     helpfulVoteRatio,
+    helpfulVoterCount,
     qualityScorePercentage,
+    detailedCommentCount,
+    reviewFreshnessLabel,
     credibility,
     publicFactors,
     badgeVerificationHash,
@@ -151,6 +178,17 @@ async function getFounderCredibilityData(slug: string) {
   };
 }
 
+function formatRelativeDate(date: Date): string {
+  const diffMs = Date.now() - date.getTime();
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+  return `${Math.floor(diffDays / 365)} years ago`;
+}
+
 function base64UrlEncode(data: string): string {
   return Buffer.from(data)
     .toString("base64")
@@ -177,11 +215,15 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
     displayName,
     badges,
     reviewStats,
+    impact,
     backlinkSnapshots,
     backlinks,
     usedVendorPercentage,
     helpfulVoteRatio,
+    helpfulVoterCount,
     qualityScorePercentage,
+    detailedCommentCount,
+    reviewFreshnessLabel,
     badgeVerificationHash,
     credibility,
     publicFactors,
@@ -267,45 +309,17 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
               Last updated: {lastUpdatedLabel}
             </span>
           </div>
-          
-          {/* Verifiable contribution tag section */}
-          <div className="mt-6 text-center">
-            <div className="inline-block">
-              {/* This would normally be the actual tag SVG */}
-              <div className="flex h-24 w-24 items-center justify-center rounded-[50%] bg-[var(--accent)] text-lg font-semibold text-white">
-                {(founder.name ?? "F").charAt(0)}
-              </div>
-              <p className="mt-2 text-sm text-[var(--muted)]">
-                Verifiable tag • Hash: {badgeVerificationHash.slice(0, 8)}...
-              </p>
-            </div>
-          </div>
         </section>
 
         {/* Sections */}
         <div className="grid gap-6">
-          {/* Section 1: Identity Verification */}
-          <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
-            <h2 className="text-xl font-semibold">Identity Verification</h2>
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Cohort Membership</span>
-                <span className="text-sm font-semibold">{founder.cohort?.name ?? "N/A"} ({founder.cohort?.slug ?? "N/A"})</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Profile Completeness</span>
-                <span className="text-sm font-semibold">{founder.profileCompletePercentage}%</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Account Age</span>
-                <span className="text-sm font-semibold">{accountAgeDays} days</span>
-              </div>
-            </div>
-          </section>
 
-          {/* Section 2: Credibility Factor Summary */}
+          {/* Section 1: Credibility Summary */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Credibility Summary</h2>
+            <p className="mt-2 text-sm text-[var(--muted)]">
+              An overview of {displayName}&apos;s contribution track record on {founder.cohort?.name ?? "the platform"}.
+            </p>
             <div className="mt-4 space-y-3">
               {credibility.isThinFile ? (
                 <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
@@ -335,18 +349,56 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
                 </div>
               ))}
               <p className="text-xs text-[var(--muted)]">
-                Based on {credibility.factors.find(f => f.key === "reviewQuality")?.value ?? "0"} average review quality
+                {reviewStats._count ?? 0} total review{reviewStats._count === 1 ? "" : "s"} —Based on {credibility.factors.find(f => f.key === "reviewQuality")?.value ?? "0"} average review quality
               </p>
             </div>
           </section>
 
-          {/* Section 3: Review Credibility */}
+          {/* Section 2: Identity & Cohort Verification */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
-            <h2 className="text-xl font-semibold">Review Credibility</h2>
+            <h2 className="text-xl font-semibold">Identity & Cohort Verification</h2>
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Cohort Membership</span>
+                <span className="text-sm font-semibold">{founder.cohort?.name ?? "N/A"} ({founder.cohort?.slug ?? "N/A"})</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Email Verified</span>
+                <span className="text-sm font-semibold text-green-700">Yes</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Profile Completeness</span>
+                <span className="text-sm font-semibold">{founder.profileCompletePercentage}%</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Account Age</span>
+                <span className="text-sm font-semibold">{accountAgeDays} days</span>
+              </div>
+            </div>
+            {/* Verifiable tag */}
+            <div className="mt-6 border-t border-[var(--border)] pt-6 text-center">
+              <div className="inline-block">
+                <div className="flex h-16 w-16 items-center justify-center rounded-[50%] bg-[var(--accent)] text-lg font-semibold text-white mx-auto">
+                  {(founder.name ?? "F").charAt(0)}
+                </div>
+                <p className="mt-2 text-xs text-[var(--muted)]">
+                  Verifiable tag • Hash: {badgeVerificationHash.slice(0, 8)}...
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 3: Review History */}
+          <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
+            <h2 className="text-xl font-semibold">Review History</h2>
             <div className="mt-4 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--muted)]">Total Reviews Written</span>
                 <span className="text-sm font-semibold">{reviewStats._count ?? 0}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Reviews With Detailed Comments</span>
+                <span className="text-sm font-semibold">{detailedCommentCount}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--muted)]">Average Rating Given</span>
@@ -355,26 +407,24 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Used Vendor % (Firsthand Experience)</span>
+                <span className="text-sm text-[var(--muted)]">Firsthand Experience Rate</span>
                 <span className="text-sm font-semibold">{usedVendorPercentage}%</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Helpful Vote Ratio</span>
-                <span className="text-sm font-semibold">{helpfulVoteRatio}%</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Quality Score Trend</span>
-                <span className="text-sm font-semibold">{qualityScorePercentage}%</span>
-              </div>
+              {reviewFreshnessLabel && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[var(--muted)]">Last Review</span>
+                  <span className="text-sm font-semibold">{reviewFreshnessLabel}</span>
+                </div>
+              )}
             </div>
           </section>
 
-          {/* Section 4: Contribution Tag Proof */}
+          {/* Section 4: Contribution Signals */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
-            <h2 className="text-xl font-semibold">Contribution Tag Proof</h2>
+            <h2 className="text-xl font-semibold">Contribution Signals</h2>
             <div className="mt-4">
               <p className="text-sm text-[var(--muted)] mb-2">
-                All cryptographically verifiable contribution tags with issuance details:
+                Contribution markers and tags earned on the platform:
               </p>
               {badges.length > 0 ? (
                 <div className="space-y-2">
@@ -402,7 +452,30 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </div>
           </section>
 
-          {/* Section 5: Backlink Authority */}
+          {/* Section 5: Helpfulness & Peer Validation */}
+          <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
+            <h2 className="text-xl font-semibold">Helpfulness & Peer Validation</h2>
+            <div className="mt-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Helpful Vote Ratio</span>
+                <span className="text-sm font-semibold">{helpfulVoteRatio}%</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Quality Score Trend</span>
+                <span className="text-sm font-semibold">{qualityScorePercentage}%</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Helpful Votes Received</span>
+                <span className="text-sm font-semibold">{impact.helpfulVoteCount}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--muted)]">Peers Who Found Reviews Helpful</span>
+                <span className="text-sm font-semibold">{helpfulVoterCount}</span>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 6: Backlink Authority */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Backlink Authority</h2>
             <div className="mt-4 space-y-4">
@@ -427,9 +500,9 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </div>
           </section>
 
-          {/* Section 6: Export & Verify */}
+          {/* Section 7: Export & Verification */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
-            <h2 className="text-xl font-semibold">Export & Verify</h2>
+            <h2 className="text-xl font-semibold">Export & Verification</h2>
             <div className="mt-4 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--muted)]">Download Report (PDF)</span>

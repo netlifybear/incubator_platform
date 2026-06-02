@@ -6,7 +6,7 @@ This folder contains execution plans, product direction notes, and historical im
 
 | Plan | Status | Next Agent Guidance |
 |------|--------|---------------------|
-| `phase-b-structured-report.md` | Plan ready | Reorganize `/founder/[slug]/credibility` into 7 formal report sections (Summary → Identity → Review History → Contribution Signals → Helpfulness → Backlink Authority → Export). New Section 5 requires `getFounderImpactSummary()` call and distinct helpful-voter query. |
+| `phase-b-structured-report.md` | Implemented | 7-section report: Credibility Summary → Identity & Cohort Verification → Review History → Contribution Signals → Helpfulness & Peer Validation → Backlink Authority → Export & Verification. Verifiable tag moved into Identity section. Added review freshness, detailed-comment count, helpful voter count. |
 
 ## Deferred Work
 
@@ -30,6 +30,7 @@ This folder contains execution plans, product direction notes, and historical im
 | `contribution-feedback-loop.md` | Full loop implemented: Slice A+B (feedback helper + `/grow` recap) + Slice C (outcome-language notifications for helpful votes and targeted requests) + Slice D (digest shows founders helped with impact section). |
 | `founder-credit-report.md` | Founder credibility report page and machine-readable endpoint are implemented. |
 | `phase-a-credibility-factors.md` | 6-factor computation with `computeCredibilityFactors()`, public presenter `toPublicCredibilityFactors()`, 9 tests, `/grow` card, `/credibility` summary section. |
+| `phase-b-structured-report.md` | 7-section credibility report: Summary → Identity → Review History → Contribution Signals → Helpfulness → Backlink Authority → Export. Added review freshness, detailed comments, helpful voter count. Verifiable tag in Identity section. |
 | `nav-regroup-hubs.md` | Sidebar regrouped into Write, Connect, Grow, and Admin links; `/connect` and `/grow` exist. Reference only. |
 
 ## Agent Guardrails
