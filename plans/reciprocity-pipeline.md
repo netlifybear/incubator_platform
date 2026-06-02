@@ -7,7 +7,7 @@ Mostly implemented. Remaining work is optional hardening or future product exper
 ## Delivered Platform To Founder
 
 - Verified cohort status and cohort-scoped founder identity.
-- Public founder profiles with badges and structured data.
+- Public founder profiles with contribution tags and structured data.
 - Backlink tracking, GSC integration, and SEO/backlink surfaces.
 - Reputation export/import baseline and governed import approval flow.
 - Public vendor structured data for consumer reviews.
@@ -30,7 +30,7 @@ Mostly implemented. Remaining work is optional hardening or future product exper
 | Public-key portability | Optional hardening | Shared-secret verification works. Full cross-instance public-key policy and key rotation remain future work. |
 | Deeper network effects | Product-dependent | Scope a policy-backed slice before allowing broader cross-cohort or alumni write interactions. |
 | Public structured data refinements | Optional | Add Q&A schema only if Q&A/request pages become public. |
-| Impact/product UX | Product direction | Use `gamification-rethink.md`, `contribution-feedback-loop.md`, and `phase-a-credibility-factors.md` for scoped follow-ups. |
+| Impact/product UX | Product direction | Use `gamification-rethink.md` for future UX scope. Treat `contribution-feedback-loop.md` and `phase-a-credibility-factors.md` as implemented references. |
 
 ## Guardrails
 
