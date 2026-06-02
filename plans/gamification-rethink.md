@@ -14,7 +14,7 @@ Remaining work is product/UX design rather than a direct implementation queue:
 
 - **Keep deeper badge/contribution-signal taxonomy changes** — do not execute until after impact dashboard is stable (see `plans/README.md` for deferral details)
 - **Keep public profile and credibility report changes** out of the dashboard pass
-- **Keep contribution feedback loop design** as a separate UX/product exercise after the dashboard settles
+- **Use `contribution-feedback-loop.md`** for the next UX/product slice: turn helpful votes, targeted requests, activity, and digest into a coherent "your contribution mattered" loop
 - **Keep credit report verification UX polish** optional and deferred
 - **Keep Connect inline answering** as a separate UX exercise
 - **Keep Grow SEO alignment** deferred until Grow's data model is settled
@@ -28,7 +28,7 @@ The platform has gamification scaffolding and an initial impact-oriented pass, b
 - **Badges**: Awarded by admins, vendors, investors, nominations, and the auto-badge compute engine for computable badge types.
 - **Leaderboard**: Still rank/order-oriented, but copy now frames it as cohort contribution patterns.
 - **Streak**: `computeReviewStreak()` exists but just returns 0 or 1 — no streak milestones, no rewards.
-- **Activity/notifications**: Auto-badge awards create notifications and activity events. Broader "your contribution mattered" feedback still needs design.
+- **Activity/notifications**: Auto-badge awards create notifications and activity events. `contribution-feedback-loop.md` defines the next step for broader "your contribution mattered" feedback.
 
 The result: the most confusing points/tier surfaces have been softened, but the product still needs a coherent impact model so the remaining leaderboard, points, badges, and streak concepts feel intentional.
 
