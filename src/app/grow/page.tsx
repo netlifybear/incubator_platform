@@ -46,8 +46,8 @@ export default async function GrowPage() {
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-normal">Grow</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            Your portable reputation. Track backlinks, earn badges, and let the world
-            find your founder profile.
+            Your credibility and contribution trail. Track what you have shared, who it
+            helped, and how your public founder profile is showing up.
           </p>
           {profilePublic ? (
             <Link
@@ -106,7 +106,7 @@ export default async function GrowPage() {
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href="/leaderboard" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Leaderboard</Link>
+              <Link href="/leaderboard" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Contribution view</Link>
               <Link href="/badges" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Badges</Link>
               <Link href="/nominations" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Nominations</Link>
             </div>
@@ -133,7 +133,7 @@ export default async function GrowPage() {
               ) : null}
               {badgeCount > 0 ? (
                 <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
-                  <span className="text-sm text-[var(--muted)]">Badges earned</span>
+                  <span className="text-sm text-[var(--muted)]">Contribution signals</span>
                   <span className="text-sm font-semibold">{badgeCount}</span>
                 </div>
               ) : null}
@@ -156,7 +156,7 @@ export default async function GrowPage() {
             {streak === 0 ? (
               <ActionItem
                 label="Write a review this week"
-                detail="Keep your streak alive and help other founders evaluate vendors"
+                detail="Add fresh context that helps other founders evaluate vendors"
                 href="/"
               />
             ) : null}
@@ -175,8 +175,8 @@ export default async function GrowPage() {
               />
             ) : null}
             <ActionItem
-              label="Export your reputation"
-              detail="Download a signed JWT of your profile and badges"
+              label="Export your credibility packet"
+              detail="Download a signed JWT of your profile, badges, and contribution signals"
               href="/api/reputation/export"
             />
             {founder.profileSlug ? (

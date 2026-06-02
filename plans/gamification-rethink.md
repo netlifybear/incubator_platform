@@ -2,7 +2,7 @@
 
 ## Status
 
-Basic impact-over-points changes have been applied to `/grow`, `/rewards`, and `/leaderboard`. Computable badges now auto-award through the badge computation engine on review submit, profile update, and the badge cron route.
+Basic impact-over-points changes have been applied to `/grow`, `/rewards`, and `/leaderboard`. Computable badges now auto-award through the badge computation engine on review submit, profile update, and the badge cron route. A second text-only pass softened remaining reputation, rewards, and leaderboard language toward credibility, contribution signals, and cohort contribution patterns.
 
 Remaining work is product/UX design rather than a direct implementation queue:
 
@@ -18,7 +18,7 @@ The platform has gamification scaffolding and an initial impact-oriented pass, b
 - **Points**: Computed per review + helpful votes + badges, still feeds leaderboard rank and reputation export, but is no longer the primary /grow or /rewards narrative.
 - **Tiers**: `computeTierProgress()` still exists for legacy logic/tests, but tier progress is no longer the main /grow or /rewards surface. Tier titles remain cosmetic and do not unlock features.
 - **Badges**: Awarded by admins, vendors, investors, nominations, and the auto-badge compute engine for computable badge types.
-- **Leaderboard**: Still rank-oriented, but copy now frames it as cohort contribution and participation patterns.
+- **Leaderboard**: Still rank/order-oriented, but copy now frames it as cohort contribution patterns.
 - **Streak**: `computeReviewStreak()` exists but just returns 0 or 1 — no streak milestones, no rewards.
 - **Activity/notifications**: Auto-badge awards create notifications and activity events. Broader "your contribution mattered" feedback still needs design.
 
@@ -50,7 +50,7 @@ The three hubs already map to a credibility pipeline:
 
 ### Gap
 
-The current messaging frames this as "earning points" rather than "building credibility." The `/grow` page shows "Your reputation" but doesn't explicitly connect back to "here's why you should trust this founder's reviews" on vendor pages. The credibility signal exists in the data but isn't surfaced as the primary narrative.
+Earlier messaging framed this as "earning points" rather than "building credibility." The `/grow` page now uses credibility and contribution language, but the app still does not explicitly connect the founder track record back to "here's why you should trust this founder's reviews" on vendor pages. The credibility signal exists in the data but is not fully surfaced as the primary narrative.
 
 ## Inspiration: Slack's Anti-Gamification
 

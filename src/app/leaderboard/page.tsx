@@ -18,7 +18,7 @@ function AccessMessage({
   return (
     <section className="mx-auto max-w-3xl rounded-3xl border border-[var(--border)] bg-white p-8 shadow-[var(--shadow-ambient)]">
       <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
-        Leaderboard
+        Contribution view
       </p>
       <h1 className="mt-3 text-3xl font-semibold tracking-normal">{title}</h1>
       <p className="mt-3 leading-7 text-[var(--muted)]">{body}</p>
@@ -39,8 +39,8 @@ export default async function LeaderboardPage() {
     return (
       <AppShell founder={null} cohortName="Guest">
         <AccessMessage
-          title="Sign in to view your cohort leaderboard."
-          body="The private leaderboard is only available inside a verified cohort workspace, so founder names and contribution activity stay cohort-scoped."
+          title="Sign in to view cohort contributions."
+          body="The private contribution view is only available inside a verified cohort workspace, so founder names and contribution activity stay cohort-scoped."
           ctaHref="/signin?callbackUrl=/leaderboard"
           ctaLabel="Sign in"
         />
@@ -52,8 +52,8 @@ export default async function LeaderboardPage() {
     return (
       <AppShell founder={founder} cohortName="No cohort assigned">
         <AccessMessage
-          title="Join a cohort before ranking contributions."
-          body="Leaderboard points come from reviews, badges, and helpful votes inside a cohort. Ask your incubator admin for an invite to activate this workspace."
+          title="Join a cohort before viewing contribution patterns."
+          body="Contribution signals come from reviews, badges, and helpful votes inside a cohort. Ask your incubator admin for an invite to activate this workspace."
           ctaHref="/"
           ctaLabel="Back to dashboard"
         />
@@ -73,7 +73,7 @@ export default async function LeaderboardPage() {
     { label: "Founders ranked", value: entries.length },
     { label: "Active contributors", value: activeFounders },
     { label: "Cohort reviews", value: totalReviews },
-    { label: "Points earned", value: totalPoints },
+    { label: "Contribution signal", value: totalPoints },
   ];
 
   return (
@@ -83,19 +83,19 @@ export default async function LeaderboardPage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
-                Leaderboard
+                Contribution view
               </p>
               <h1 className="mt-3 text-4xl font-semibold tracking-normal">
                 Cohort contributions
               </h1>
               <p className="mt-3 max-w-2xl leading-7 text-[var(--muted)]">
-                See who has contributed the most reviews, helpful votes, and badges to the
-                cohort. Use it to spot participation patterns and celebrate impact.
+                See where reviews, helpful votes, and badges are strengthening the cohort
+                knowledge base. Use it to spot participation patterns and celebrate impact.
               </p>
             </div>
             {currentRank > 0 ? (
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-strong)] px-5 py-4 text-left lg:text-right">
-                <p className="text-sm text-[var(--muted)]">Your rank</p>
+                <p className="text-sm text-[var(--muted)]">Your position</p>
                 <p className="mt-1 text-2xl font-semibold">#{currentRank}</p>
               </div>
             ) : null}
@@ -117,16 +117,16 @@ export default async function LeaderboardPage() {
         <section className="rounded-3xl border border-[var(--border)] bg-white p-6 shadow-[var(--shadow-ambient)]">
           <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--border)] pb-4">
             <div>
-              <h2 className="text-2xl font-semibold">Rankings</h2>
+              <h2 className="text-2xl font-semibold">Contribution patterns</h2>
               <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                Rankings reflect review quality, badges earned, and helpful votes from peers.
+                Ordering reflects review quality, contribution signals, and helpful votes from peers.
               </p>
             </div>
             <Link
               href="/rewards"
               className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition hover:border-[var(--accent)]"
             >
-              View rewards
+              View contribution
             </Link>
           </div>
 
@@ -147,7 +147,7 @@ export default async function LeaderboardPage() {
                   >
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-                        Rank
+                        Position
                       </p>
                       <p className="mt-1 text-xl font-semibold">#{index + 1}</p>
                     </div>
@@ -170,7 +170,7 @@ export default async function LeaderboardPage() {
                     </div>
                     <div className="sm:text-right">
                       <p className="text-xl font-semibold">{entry.points}</p>
-                      <p className="text-xs text-[var(--muted)]">points</p>
+                      <p className="text-xs text-[var(--muted)]">signal</p>
                     </div>
                   </div>
                 );
@@ -181,9 +181,9 @@ export default async function LeaderboardPage() {
 
         <section className="grid gap-4 lg:grid-cols-3">
           <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-ambient)]">
-            <p className="text-sm font-semibold text-[var(--accent)]">How ranking works</p>
+            <p className="text-sm font-semibold text-[var(--accent)]">How ordering works</p>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              Detailed reviews earn more than low-effort volume. Badges and helpful votes
+              Detailed reviews carry more weight than low-effort volume. Badges and helpful votes
               add signal when peers find a contribution useful.
             </p>
           </div>

@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 
 const RULES = [
   { action: "Write a useful review", description: "Measured by specificity, useful detail, outcomes, numbers, and natural language." },
-  { action: "Earn a badge", description: "Awarded by admin approval or peer nomination for meaningful contributions." },
+  { action: "Receive a contribution signal", description: "Badges and nominations add context about the kind of help you have provided." },
   { action: "Receive a helpful vote", description: "Each thumbs up from a cohort member signals peer validation." },
 ];
 
@@ -38,13 +38,14 @@ export default async function RewardsPage() {
     <AppShell founder={founder} cohortName={founder.cohort.name}>
       <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
-          Rewards
+          Contribution
         </p>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight">
-          Your contribution, recognized.
+          Your impact, made visible.
         </h1>
         <p className="mt-4 max-w-2xl leading-7 text-[var(--muted)]">
-          Contributions are measured by review quality, badges, and peer recognition. Together they build your portable credibility.
+          Review quality, contribution signals, and peer recognition help other founders
+          understand why your recommendations carry weight.
         </p>
       </section>
 
@@ -109,12 +110,12 @@ export default async function RewardsPage() {
             <h2 className="text-xl font-semibold">Contribution breakdown</h2>
             <div className="mt-6 space-y-3">
               <BreakdownRow label="Review quality score" value={points.breakdown.reviews} />
-              <BreakdownRow label="Badges" value={points.breakdown.badges} />
+              <BreakdownRow label="Contribution signals" value={points.breakdown.badges} />
               <BreakdownRow label="Helpful votes received" value={points.breakdown.helpfulVotes} />
             </div>
             {rank && (
               <p className="mt-4 text-center text-sm text-[var(--muted)]">
-                #{rank.rank} of {rank.total} in cohort
+                Contribution position: #{rank.rank} of {rank.total}
               </p>
             )}
           </section>
