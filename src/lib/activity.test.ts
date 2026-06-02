@@ -34,10 +34,10 @@ describe("activity events", () => {
   });
 
   it("getCohortActivity returns events most recent first", async () => {
-    await recordActivity({ userId, cohortId, type: "badge_earned", metadata: { badgeType: "early-adopter" } });
+    await recordActivity({ userId, cohortId, type: "tag_earned", metadata: { tagType: "early-adopter" } });
     const events = await getCohortActivity(cohortId);
     assert.ok(events.length >= 2);
-    assert.equal(events[0].type, "badge_earned");
+    assert.equal(events[0].type, "tag_earned");
     assert.equal(events[1].type, "review_written");
   });
 

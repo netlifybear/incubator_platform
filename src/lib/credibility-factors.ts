@@ -153,7 +153,7 @@ export async function computeCredibilityFactors(
       value: `${impact.contributionSignalCount}`,
       status: factorLabel(impact.contributionSignalCount, 3, 1),
       privateDescription: `${impact.contributionSignalCount} contribution signals earned.`,
-      publicDescription: "Has contribution signals from badges.",
+      publicDescription: "Has contribution signals from earned tags.",
       isPublic: true,
     },
     {

@@ -96,14 +96,15 @@ describe("badge computation engine", () => {
       await computeAndAwardBadges(user.id);
 
       const notif = await prisma.notification.findFirst({
-        where: { userId: user.id, type: "badge_earned" },
+        where: { userId: user.id, type: "tag_earned" },
       });
-      assert.ok(notif, "should create a notification for awarded badge");
+      assert.ok(notif, "should create a notification for awarded contribution tag");
+      assert.equal(notif.link, "/badges");
 
       const activity = await prisma.activityEvent.findFirst({
-        where: { userId: user.id, type: "badge_earned" },
+        where: { userId: user.id, type: "tag_earned" },
       });
-      assert.ok(activity, "should create an activity event for awarded badge");
+      assert.ok(activity, "should create an activity event for awarded contribution tag");
     } finally {
       await cleanupTestData({ cohortSlugs: [`notif-${newRun}`], emails: [`notif-${newRun}@test.com`] });
     }

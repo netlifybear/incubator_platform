@@ -3,7 +3,7 @@ export const TIERS = [
   { threshold: 25, title: "Bronze Contributor", description: "Earn the ability to set a custom profile slug." },
   { threshold: 50, title: "Silver Contributor", description: "Your profile gets a featured highlight on the leaderboard." },
   { threshold: 100, title: "Gold Contributor", description: "Unlock share buttons on your public profile." },
-  { threshold: 200, title: "Platinum Contributor", description: "Earn an exclusive early-access badge." },
+  { threshold: 200, title: "Platinum Contributor", description: "Earn an exclusive early-access contribution tag." },
 ] as const;
 
 export type TierProgress = {

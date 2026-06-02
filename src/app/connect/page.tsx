@@ -203,7 +203,8 @@ function MetricCard({ label, value }: { label: string; value: number }) {
 function activityIcon(type: string) {
   switch (type) {
     case "review_written": return "✍️";
-    case "badge_earned": return "🏅";
+    case "badge_earned":
+    case "tag_earned": return "🏅";
     case "exchange_completed": return "📝";
     case "request_answered": return "💬";
     default: return "•";
@@ -216,7 +217,8 @@ function activityLabel(event: { type: string; metadata: Prisma.JsonValue }) {
     case "review_written":
       return <>reviewed <span className="font-medium">{m.vendorName ?? "a vendor"}</span></>;
     case "badge_earned":
-      return <>earned the <span className="font-medium">{badgeLabel(m.badgeType ?? "")}</span> contribution tag</>;
+    case "tag_earned":
+      return <>earned the <span className="font-medium">{badgeLabel(m.tagType ?? m.badgeType ?? "")}</span> contribution tag</>;
     case "exchange_completed":
       return <>published a guest post{m.topic ? `: "${m.topic}"` : ""}</>;
     case "request_answered":

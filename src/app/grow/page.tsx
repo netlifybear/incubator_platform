@@ -162,7 +162,7 @@ export default async function GrowPage() {
             {credibility.isThinFile ? (
               <div className="mt-4 space-y-2">
                 <p className="text-sm leading-6 text-[var(--muted)]">
-                  You're getting started. Complete these steps to build your track record:
+                  You&apos;re getting started. Complete these steps to build your track record:
                 </p>
                 <ChecklistItem done={impact.reviewCount > 0} label="Write your first review" href="/" />
                 <ChecklistItem done={founder.profileCompletePercentage >= 80} label="Complete your profile" href="/profile/settings" />

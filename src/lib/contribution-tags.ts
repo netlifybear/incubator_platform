@@ -148,7 +148,7 @@ export async function computeAndAwardTags(userId: string): Promise<string[]> {
       type: "tag_earned",
       title: `You earned the ${tagLabel} contribution tag`,
       body: check.description,
-      link: "/contribution-tags",
+      link: "/badges",
     }).catch(() => {});
 
     if (user.cohortId) {
@@ -391,7 +391,7 @@ export async function awardTag(
     type: "tag_earned",
     title: `You earned the ${tagLabel} contribution tag`,
     body: description ?? undefined,
-    link: "/contribution-tags",
+    link: "/badges",
   }).catch(() => {});
 
   const user = await prisma.user.findUnique({

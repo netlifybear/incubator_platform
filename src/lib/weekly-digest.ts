@@ -77,8 +77,9 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
           const vendor = meta?.vendorName ? escapeHtml(meta.vendorName) : "a vendor";
           return `<li style="margin-bottom:6px">${name} reviewed ${vendor}</li>`;
         }
-        case "badge_earned": {
-          return `<li style="margin-bottom:6px">${name} earned a badge</li>`;
+        case "badge_earned":
+        case "tag_earned": {
+          return `<li style="margin-bottom:6px">${name} earned a contribution tag</li>`;
         }
         case "exchange_completed": {
           return `<li style="margin-bottom:6px">${name} completed a guest post exchange</li>`;

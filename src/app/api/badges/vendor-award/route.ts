@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result.body, { status: result.status });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not award badge.";
+    const message = error instanceof Error ? error.message : "Could not award contribution tag.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
