@@ -63,11 +63,33 @@ export default async function GrowPage() {
           )}
         </section>
 
+        {credibility.isThinFile ? (
+          <section className="rounded-3xl border border-[var(--border)] bg-gradient-to-br from-blue-50 to-white p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Welcome to Grow</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              This is your contribution hub. As you review vendors and participate in your cohort,
+              your track record builds here. Start by writing your first review.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/" className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]">
+                Browse vendors
+              </Link>
+              <Link href="/profile/settings" className="rounded-xl border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold transition hover:border-[var(--accent)]">
+                Complete your profile
+              </Link>
+            </div>
+          </section>
+        ) : null}
+
         <div className="grid gap-3 sm:grid-cols-4">
           <MetricCard label="Reviews shared" value={impact.reviewCount} />
           <MetricCard label="Helpful votes received" value={impact.helpfulVoteCount} />
-          <MetricCard label="Profile views" value={impact.profileViewCount} />
-          <MetricCard label="Verified backlinks" value={impact.verifiedBacklinkCount} />
+          {!credibility.isThinFile ? (
+            <>
+              <MetricCard label="Profile views" value={impact.profileViewCount} />
+              <MetricCard label="Verified backlinks" value={impact.verifiedBacklinkCount} />
+            </>
+          ) : null}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
@@ -138,9 +160,15 @@ export default async function GrowPage() {
           <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
             <h2 className="text-xl font-semibold">Credibility factors</h2>
             {credibility.isThinFile ? (
-              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
-                Getting started. Write your first review to build your track record.
-              </p>
+              <div className="mt-4 space-y-2">
+                <p className="text-sm leading-6 text-[var(--muted)]">
+                  You're getting started. Complete these steps to build your track record:
+                </p>
+                <ChecklistItem done={impact.reviewCount > 0} label="Write your first review" href="/" />
+                <ChecklistItem done={founder.profileCompletePercentage >= 80} label="Complete your profile" href="/profile/settings" />
+                <ChecklistItem done={Boolean(founder.gscEmail)} label="Connect Google Search Console" href="/backlinks" />
+                <ChecklistItem done={founder.publicProfileEnabled} label="Enable your public profile" href="/profile/settings" />
+              </div>
             ) : (
               <div className="mt-4 space-y-2">
                 <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
@@ -283,6 +311,23 @@ function ActionItem({ label, detail, href }: { label: string; detail: string; hr
         <p className="text-xs text-[var(--muted)]">{detail}</p>
       </div>
       <span className="text-sm text-[var(--accent)]">→</span>
+    </Link>
+  );
+}
+
+function ChecklistItem({ done, label, href }: { done: boolean; label: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${done ? "bg-green-50 text-green-700" : "bg-[var(--panel)] hover:border-[var(--accent)]"}`}
+    >
+      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+        done ? "bg-green-500 text-white" : "border border-[var(--muted)]"
+      }`}>
+        {done ? "✓" : ""}
+      </span>
+      <span className={done ? "" : "font-medium"}>{label}</span>
+      {!done && <span className="ml-auto text-[var(--accent)]">→</span>}
     </Link>
   );
 }

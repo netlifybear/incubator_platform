@@ -322,9 +322,13 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </p>
             <div className="mt-4 space-y-3">
               {credibility.isThinFile ? (
-                <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
-                  Establishing presence
-                </span>
+                <div className="rounded-xl bg-gray-50 p-4 text-sm leading-6 text-[var(--muted)]">
+                  <p className="font-semibold text-gray-700">Establishing presence</p>
+                  <p className="mt-2">
+                    {displayName} is building their track record on {founder.cohort?.name ?? "the platform"}.
+                    Check back after they share more reviews.
+                  </p>
+                </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
@@ -391,32 +395,38 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
           {/* Section 3: Review History */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Review History</h2>
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Total Reviews Written</span>
-                <span className="text-sm font-semibold">{reviewStats._count ?? 0}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Reviews With Detailed Comments</span>
-                <span className="text-sm font-semibold">{detailedCommentCount}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Average Rating Given</span>
-                <span className="text-sm font-semibold">
-                  {(reviewStats._avg.rating ?? 0).toFixed(1)} / 5
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Firsthand Experience Rate</span>
-                <span className="text-sm font-semibold">{usedVendorPercentage}%</span>
-              </div>
-              {reviewFreshnessLabel && (
+            {credibility.isThinFile ? (
+              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+                No reviews shared yet. As {displayName} reviews vendors, their history will appear here.
+              </p>
+            ) : (
+              <div className="mt-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-[var(--muted)]">Last Review</span>
-                  <span className="text-sm font-semibold">{reviewFreshnessLabel}</span>
+                  <span className="text-sm text-[var(--muted)]">Total Reviews Written</span>
+                  <span className="text-sm font-semibold">{reviewStats._count ?? 0}</span>
                 </div>
-              )}
-            </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[var(--muted)]">Reviews With Detailed Comments</span>
+                  <span className="text-sm font-semibold">{detailedCommentCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[var(--muted)]">Average Rating Given</span>
+                  <span className="text-sm font-semibold">
+                    {(reviewStats._avg.rating ?? 0).toFixed(1)} / 5
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[var(--muted)]">Firsthand Experience Rate</span>
+                  <span className="text-sm font-semibold">{usedVendorPercentage}%</span>
+                </div>
+                {reviewFreshnessLabel && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-[var(--muted)]">Last Review</span>
+                    <span className="text-sm font-semibold">{reviewFreshnessLabel}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </section>
 
           {/* Section 4: Contribution Signals */}

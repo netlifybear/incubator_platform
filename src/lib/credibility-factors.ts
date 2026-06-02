@@ -102,7 +102,10 @@ export async function computeCredibilityFactors(
   ]);
 
   const reviewCount = reviews.length;
-  const isThinFile = reviewCount === 0;
+  const isThinFile = reviewCount === 0
+    && impact.contributionSignalCount === 0
+    && impact.helpfulVoteCount === 0
+    && impact.verifiedBacklinkCount === 0;
 
   const avgQuality =
     reviewCount > 0

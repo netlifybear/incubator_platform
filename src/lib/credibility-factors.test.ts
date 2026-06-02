@@ -149,8 +149,8 @@ test("high badges no reviews", async () => {
 
   const result = await computeCredibilityFactors(founder.id);
 
-  assert.equal(result.isThinFile, true);
-  assert.equal(result.summary, "needs activity");
+  assert.equal(result.isThinFile, false);
+  assert.equal(result.summary, "developing");
   const cs = result.factors.find((f) => f.key === "contributionSignals");
   assert.equal(cs?.status, "strong");
 
