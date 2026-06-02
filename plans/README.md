@@ -9,6 +9,7 @@ This folder contains implementation proposals and product direction notes. It is
 | `ai-seo-geo-reviews.md` | Implemented | Public vendor review JSON-LD completed. |
 | `reciprocity-pipeline.md` | Mostly implemented | Network effects first pass is live: cross-cohort recommendations, alumni helpful voting policy, cohort privacy refinements, and referral loop polish. |
 | `gamification-rethink.md` | Product direction | Basic impact-over-points changes applied. Needs UX/product design before deeper work. |
+| `impact-dashboard-implementation.md` | Ready to execute | Concrete next slice for demoting leaderboard scores and making `/grow`, `/rewards`, and `/leaderboard` impact-first. |
 | `founder-credit-report.md` | Implemented | Founder credit report page and API endpoint completed; privacy/verification polish remains optional. |
 | `nav-regroup-hubs.md` | Implemented | Reference only. Do not execute. |
 
@@ -55,8 +56,8 @@ From reciprocity-pipeline.md:
 
 2. **Gamification rethink**: Impact-over-points refinements
    - Basic UX changes applied (grow/rewards/leaderboard pages)
-   - Deeper work needs UX/product design first: impact dashboard, contribution capsules, full board demotion
-   - Product/UX design first; do not start as a broad code task
+   - `impact-dashboard-implementation.md` defines the next executable slice: impact summary metrics, Grow dashboard, Contribution view demotion, and Rewards copy cleanup
+   - Execute the new plan task-by-task; do not expand into unrelated badge, export, or public profile redesign
 
 3. **Optional portability hardening**
    - Shared-secret reputation verification works

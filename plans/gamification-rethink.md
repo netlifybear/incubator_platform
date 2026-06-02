@@ -4,18 +4,19 @@
 
 Basic impact-over-points changes have been applied to `/grow`, `/rewards`, and `/leaderboard`. Computable badges now auto-award through the badge computation engine on review submit, profile update, and the badge cron route. A second text-only pass softened remaining reputation, rewards, and leaderboard language toward credibility, contribution signals, and cohort contribution patterns.
 
+The next executable slice is now defined in `impact-dashboard-implementation.md`. It keeps points internal, turns `/leaderboard` into a private cohort contribution dashboard, strengthens `/grow` around personal impact metrics, and removes visible rank emphasis from `/rewards`.
+
 Remaining work is product/UX design rather than a direct implementation queue:
 
-- Decide how far to demote or replace the leaderboard.
-- Shape a fuller impact dashboard with meaningful cohort and personal feedback.
-- Convert badges from achievement framing toward contribution context where appropriate.
-- Decide whether points remain visible anywhere or only power internal ordering/export signals.
+- Execute `impact-dashboard-implementation.md` task-by-task.
+- Keep deeper badge taxonomy changes for a later slice after the dashboard pass lands.
+- Keep public profile and credibility report changes out of this slice unless they are needed to preserve copy consistency.
 
 ## Current State
 
 The platform has gamification scaffolding and an initial impact-oriented pass, but still no fully designed game loop:
 
-- **Points**: Computed per review + helpful votes + badges, still feeds leaderboard rank and reputation export, but is no longer the primary /grow or /rewards narrative.
+- **Points**: Computed per review + helpful votes + badges, still feeds internal ordering and reputation export, but is no longer the primary /grow or /rewards narrative.
 - **Tiers**: `computeTierProgress()` still exists for legacy logic/tests, but tier progress is no longer the main /grow or /rewards surface. Tier titles remain cosmetic and do not unlock features.
 - **Badges**: Awarded by admins, vendors, investors, nominations, and the auto-badge compute engine for computable badge types.
 - **Leaderboard**: Still rank/order-oriented, but copy now frames it as cohort contribution patterns.
