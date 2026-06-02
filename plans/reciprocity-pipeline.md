@@ -84,7 +84,7 @@ Founders can already export and import reputation packets. Admin approval queue 
 - [x] Public-key endpoint for configured instances
 - [ ] Cross-instance public-key verification policy/key rotation — deferred; shared-secret in place
 
-### Phase 3: Close the Network Effects Gap (~4-8h remaining)
+### Phase 3: Close the Network Effects Gap ✅
 The network-effects first pass is live: alumni role/read-only access plus helpful voting, founder invite/referral flow, public cohort aggregate pages, and cross-cohort vendor discovery.
 
 - [x] Alumni role with read-only access

@@ -51,6 +51,7 @@ The current app includes:
 - Cohort-scoped vendor directory, vendor search, public vendor pages, and review modes.
 - Founder and consumer reviews, image upload support, quality feedback, and disclosure handling.
 - Vendor requests, targeted questions, admin fulfillment, invite flow, and cohort admin pages.
+- Cross-cohort vendor recommendations, public cohort aggregate pages, alumni helpful voting, and referral loop polish.
 - Public founder profiles with `Person` JSON-LD, badge embeds, and profile view tracking.
 - Public vendor pages with `Product`, `AggregateRating`, and public consumer `Review` JSON-LD.
 - Points, badges, nominations, helpful votes, leaderboards, sprints, activity, and notifications.
@@ -86,5 +87,5 @@ The strongest next steps are:
 - Governance for imported reputation packets is live (admin approval queue + trust policy).
 - Automatic computable badge awards are live; monitor and iterate on thresholds.
 - Impact/credibility reframe applied to grow/rewards/leaderboard; deeper work needs product design.
-- Scope alumni/cross-cohort network effects into a small first milestone.
+- Network effects first pass is live; deeper alumni/cross-cohort interaction should stay policy-backed and small-slice.
 - Treat public Q&A schema and citation refinements as optional structured-data experiments, not required AI visibility levers.

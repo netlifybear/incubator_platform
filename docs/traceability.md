@@ -16,7 +16,7 @@ Implemented features:
 Patent/spec coverage:
 
 - Platform claim coverage: tenant management, cohort scoping, verification engine.
-- Open product gap: richer alumni/cross-cohort participation without breaking tenant trust.
+- Network-effects first pass: cross-cohort recommendations, alumni helpful voting, cohort privacy thresholds, and referral loop polish.
 
 ## 2. Reciprocal Authority
 
@@ -44,6 +44,7 @@ Implemented features:
 - Vendor detail pages with founder and consumer reviews.
 - Helpful votes and ask-for-details actions.
 - Top vendors by authority score.
+- Cross-cohort recommendations using public-safe aggregate vendor signals.
 
 Patent/spec coverage:
 
