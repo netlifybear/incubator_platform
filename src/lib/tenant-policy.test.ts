@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  canVoteOnReview,
   canWriteToCohort,
   canAccessCohortResource,
   getFounderDisplayName,
@@ -26,6 +27,14 @@ test("cohort writes require active founder or admin role", () => {
   assert.equal(canWriteToCohort({ cohortId: "cohort-1", role: "alumni" }), false);
   assert.equal(canWriteToCohort({ cohortId: null, role: "founder" }), false);
   assert.equal(canWriteToCohort(null), false);
+});
+
+test("review helpful voting allows alumni but still requires a cohort", () => {
+  assert.equal(canVoteOnReview({ cohortId: "cohort-1", role: "founder" }), true);
+  assert.equal(canVoteOnReview({ cohortId: "cohort-1", role: "admin" }), true);
+  assert.equal(canVoteOnReview({ cohortId: "cohort-1", role: "alumni" }), true);
+  assert.equal(canVoteOnReview({ cohortId: null, role: "alumni" }), false);
+  assert.equal(canVoteOnReview(null), false);
 });
 
 test("founder display name falls back to email then unknown founder", () => {

@@ -139,6 +139,7 @@ export async function createInviteAction(
     const invite = await createInviteForCohort({
       cohortId: admin.cohortId,
       email: String(formData.get("email") ?? ""),
+      invitedById: admin.id,
     });
 
     revalidatePath("/admin/requests");

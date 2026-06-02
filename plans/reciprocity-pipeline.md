@@ -1,6 +1,6 @@
 # Reciprocity Pipeline: Platform ↔ Founder
 
-From `docs/product.md`, the platform's asymmetric advantage is a bilateral exchange. The current implementation delivers the core cohort/private-review loop, public profiles, badges, auto-badge computation, backlinks/GSC, notifications, activity, reputation export/import governance, public vendor review JSON-LD, founder credibility reports, first-pass alumni/invite/cohort network surfaces, and the Write/Connect/Grow hubs. The remaining gaps are mostly cross-cohort recommendations, richer alumni participation, optional portability hardening, and impact-over-points product refinement.
+From `docs/product.md`, the platform's asymmetric advantage is a bilateral exchange. The current implementation delivers the core cohort/private-review loop, public profiles, badges, auto-badge computation, backlinks/GSC, notifications, activity, reputation export/import governance, public vendor review JSON-LD, founder credibility reports, cross-cohort vendor recommendations, first-pass alumni/invite/cohort network surfaces, and the Write/Connect/Grow hubs. The remaining gaps are mostly deeper network-effect product design, optional portability hardening, and impact-over-points product refinement.
 
 ## Platform → Founder
 
@@ -50,12 +50,11 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 - Alumni role exists with read-only restrictions.
 - Founder invite/referral flow exists.
 - Public cohort aggregate pages exist.
-- Still siloed per cohort for vendor recommendations and interaction.
+- Cross-cohort vendor recommendations are live using public-safe aggregate fields.
 - **Remaining work:**
-  - Cross-cohort vendor recommendations ("Founders in Summer 2025 also liked...")
-  - Richer alumni participation rules beyond read-only access
-  - Public cohort aggregate refinements and privacy thresholds if usage grows
-- **Effort:** ~4-8h depending on how much cross-cohort ranking/recommendation logic is added.
+  - Deeper cross-cohort interaction only if product policy calls for it
+  - Alumni write expansion beyond helpful votes only as a separate policy-backed task
+- **Effort:** TBD by future product scope.
 
 ### 🟡 Partial
 
@@ -86,15 +85,15 @@ Founders can already export and import reputation packets. Admin approval queue 
 - [ ] Cross-instance public-key verification policy/key rotation — deferred; shared-secret in place
 
 ### Phase 3: Close the Network Effects Gap (~4-8h remaining)
-The first pass is live: alumni role/read-only access, founder invite/referral flow, and public cohort aggregate pages. The platform still needs cross-cohort discovery to make the network effect meaningful across cohorts.
+The network-effects first pass is live: alumni role/read-only access plus helpful voting, founder invite/referral flow, public cohort aggregate pages, and cross-cohort vendor discovery.
 
 - [x] Alumni role with read-only access
 - [x] Public cohort aggregate pages
 - [x] Invite/referral system
-- [ ] Cross-cohort vendor recommendations
-- [ ] Richer alumni participation rules
+- [x] Cross-cohort vendor recommendations
+- [x] Alumni helpful voting policy
 
-#### Phase 3A: Cross-Cohort Vendor Recommendation Signal (~2-3h)
+#### Phase 3A: Cross-Cohort Vendor Recommendation Signal ✅
 
 Goal: add a small, verifiable recommendation signal without opening cross-cohort write access.
 
@@ -111,52 +110,43 @@ Suggested files:
 - `src/app/vendors/[vendorId]/page.tsx`
 - `src/app/cohorts/[slug]/page.tsx`
 
-Acceptance criteria:
+Delivered:
 
 - Recommendations exclude the current cohort.
 - Recommendations are deterministic and rank by public-safe aggregate signal.
 - Anonymous users see only public-safe fields.
 - Existing vendor page tests/build still pass.
 
-#### Phase 3B: Alumni Participation Rules (~1-2h design, ~2-4h implementation)
+#### Phase 3B: Alumni Participation Rules ✅
 
-Goal: decide what alumni can contribute after graduation without weakening cohort trust.
+Decision: alumni can cast helpful votes on cohort reviews, but cannot create reviews, vendor requests, exchanges, nominations, or invites.
 
 Current state:
 
 - Alumni can retain read-only access.
-- Write actions are blocked by `canWriteToCohort`.
+- Helpful voting is governed by `canVoteOnReview`.
+- All broader cohort writes remain blocked by `canWriteToCohort`.
 
-Open decision:
+Rationale:
 
-- Keep alumni read-only, or allow limited actions such as helpful votes, request replies, or alumni-only vendor endorsements.
+- Helpful votes improve content ranking without exposing private text or creating new vendor/review/request records.
+- Broader alumni contribution needs a separate policy-backed task.
 
-Recommended next step:
+#### Phase 3C: Public Cohort Aggregate Refinements ✅
 
-- Write a small policy note before coding. Do not broaden write access until the policy is explicit.
-- If implementation proceeds, add tests around each allowed alumni action and blocked founder-only action.
+Delivered:
 
-#### Phase 3C: Public Cohort Aggregate Refinements (~1-2h)
+- Public cohort detail page has privacy thresholds for small cohorts.
+- Cohort index suppresses small-cohort aggregate counts.
+- Public cohort JSON-LD is gated behind the same threshold on cohort detail pages.
 
-Goal: make public cohort pages more useful without exposing private activity.
+#### Phase 3D: Referral Loop Polish ✅
 
-Possible refinements:
-
-- Add privacy thresholds before showing small-cohort counts or top vendors.
-- Add public-safe structured data for cohort pages if product wants public cohort SEO.
-- Add links from founder profiles/vendor pages back to cohort aggregate pages where already public.
-
-#### Phase 3D: Referral Loop Polish (~1-2h)
-
-Goal: make the invite/referral loop measurable and safer.
-
-Possible refinements:
+Delivered:
 
 - Add admin-visible referral source counts.
 - Add duplicate invite handling and clearer invite status copy.
 - Add notification/activity events when an invited founder accepts.
-
-Do this after Phase 3A unless referral growth becomes the immediate product priority.
 
 ### Phase 4: Close the Auto-Badge Gap ✅
 Computable badge types now auto-award without admin intervention. Run on review submit, profile update, and daily cron.
@@ -171,8 +161,8 @@ Computable badge types now auto-award without admin intervention. Run on review 
 |-------|--------|--------|-------------|
 | 1. Public structured data | Mostly done | High (unlocks structured public review data) | Optional refinements only |
 | 2. Reputation portability governance | ✅ Mostly done | Optional public-key policy/key rotation remains |
-| 3. Network effects | ~4-8h remaining | Medium-high (growth) | Alumni/invite/cohort first pass exists |
+| 3. Network effects | ✅ First pass done | Medium-high (growth) | Future work depends on product policy |
 | 4. Auto-badges | ✅ Done | Badge definitions existed |
 
 Now delivered: Phase 1 (structured data), Phase 2 core governance, Phase 3 first pass, Phase 4 (auto-badges).
-Remaining: cross-cohort recommendations, richer alumni participation, optional public-key hardening, and product/UX work from `gamification-rethink.md`.
+Remaining: optional public-key hardening, deeper network-effect product experiments, and product/UX work from `gamification-rethink.md`.

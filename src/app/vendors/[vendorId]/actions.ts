@@ -5,7 +5,7 @@ import { getCurrentFounder } from "@/lib/auth";
 import { createReviewForCohort } from "@/lib/reviews";
 import { createConsumerReview } from "@/lib/consumer-reviews";
 import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
-import { hasActiveCohort, canWriteToCohort } from "@/lib/tenant-policy";
+import { hasActiveCohort, canWriteToCohort, canVoteOnReview } from "@/lib/tenant-policy";
 import { toggleVote } from "@/lib/helpful-votes";
 import { reviewCelebrationPoints } from "@/lib/review-action-presenter";
 import { analyzeReviewText } from "@/lib/review-quality";
@@ -179,7 +179,7 @@ export async function toggleHelpfulVote(
   _formData: FormData,
 ): Promise<VoteActionState> {
   const founder = await getCurrentFounder();
-  if (!founder || founder.id !== userId || !founder.cohortId || !canWriteToCohort(founder)) {
+  if (!founder || founder.id !== userId || !founder.cohortId || !canVoteOnReview(founder)) {
     return { count: 0, voted: false };
   }
 

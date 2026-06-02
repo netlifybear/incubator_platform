@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { publicFounderDisplayName } from "@/lib/founder-profile-presenter";
+import { isAlumni } from "@/lib/tenant-policy";
 import { getPublicFounderProfile } from "@/lib/founder-profiles";
 import { getFounderBadges } from "@/lib/badges";
 import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
@@ -153,7 +154,7 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
         </p>
         <h1 className="mt-4 text-5xl font-semibold tracking-tight">
           {displayName}
-          {founder.role === "alumni" ? (
+          {isAlumni(founder) ? (
             <span className="ml-3 inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800 align-middle">
               Alumni
             </span>

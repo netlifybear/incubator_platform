@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listPublicCohorts } from "@/lib/cohorts";
 
+const PRIVACY_THRESHOLD_FOUNDERS = 2;
+
 export const metadata: Metadata = {
   title: "Cohorts — Incubator Trust",
   description: "Browse incubator cohorts and their aggregate trust metrics across vendors and reviews.",
@@ -35,15 +37,23 @@ export default async function CohortsPage() {
                 </p>
               ) : null}
               <div className="mt-4 flex flex-wrap gap-2 text-xs">
-                <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
-                  {cohort._count.users} founder{cohort._count.users === 1 ? "" : "s"}
-                </span>
-                <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
-                  {cohort._count.vendors} vendor{cohort._count.vendors === 1 ? "" : "s"}
-                </span>
-                <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
-                  {cohort._count.reviews + cohort._count.consumerReviews} review{(cohort._count.reviews + cohort._count.consumerReviews) === 1 ? "" : "s"}
-                </span>
+                {cohort._count.users >= PRIVACY_THRESHOLD_FOUNDERS ? (
+                  <>
+                    <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
+                      {cohort._count.users} founder{cohort._count.users === 1 ? "" : "s"}
+                    </span>
+                    <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
+                      {cohort._count.vendors} vendor{cohort._count.vendors === 1 ? "" : "s"}
+                    </span>
+                    <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
+                      {cohort._count.reviews + cohort._count.consumerReviews} review{(cohort._count.reviews + cohort._count.consumerReviews) === 1 ? "" : "s"}
+                    </span>
+                  </>
+                ) : (
+                  <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium text-[var(--muted)]">
+                    New cohort
+                  </span>
+                )}
               </div>
             </Link>
           ))}

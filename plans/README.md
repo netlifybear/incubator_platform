@@ -7,7 +7,7 @@ This folder contains implementation proposals and product direction notes. It is
 | Plan | Status | Next Agent Guidance |
 |------|--------|---------------------|
 | `ai-seo-geo-reviews.md` | Implemented | Public vendor review JSON-LD completed. |
-| `reciprocity-pipeline.md` | Mostly implemented | Governance, auto-badges, alumni first pass, public cohort pages, and invites/referrals are live. Remaining: cross-cohort recommendations and deeper network effects. |
+| `reciprocity-pipeline.md` | Mostly implemented | Network effects first pass is live: cross-cohort recommendations, alumni helpful voting policy, cohort privacy refinements, and referral loop polish. |
 | `gamification-rethink.md` | Product direction | Basic impact-over-points changes applied. Needs UX/product design before deeper work. |
 | `founder-credit-report.md` | Implemented | Founder credit report page and API endpoint completed; privacy/verification polish remains optional. |
 | `nav-regroup-hubs.md` | Implemented | Reference only. Do not execute. |
@@ -47,11 +47,11 @@ This folder contains implementation proposals and product direction notes. It is
 From reciprocity-pipeline.md:
 
 1. **Phase 3 (cont.)**: Network Effects
-   - Alumni role with read-only access: first pass done
-   - Public cohort aggregate pages: first pass done
-   - Invite/referral system: first pass done
-   - Next executable slice: cross-cohort vendor recommendation signal
-   - Later slices: richer alumni participation, cohort aggregate refinements, referral loop polish
+   - Cross-cohort vendor recommendation signal: done
+   - Alumni participation rules: done for helpful votes; other writes remain blocked
+   - Public cohort aggregate refinements: privacy threshold first pass done
+   - Referral loop polish: duplicate invite guard, referral attribution, and invite-accepted notification/activity done
+   - Remaining: observe usage and scope any deeper cross-cohort or alumni write feature as a separate policy-backed task
 
 2. **Gamification rethink**: Impact-over-points refinements
    - Basic UX changes applied (grow/rewards/leaderboard pages)

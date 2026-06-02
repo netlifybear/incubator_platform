@@ -10,6 +10,39 @@ import {
 } from "./test-db.ts";
 import { getVoteCounts, toggleVote } from "./helpful-votes.ts";
 
+test("alumni can vote on cohort reviews", async () => {
+  const run = testRunId("alumni-vote");
+  const cohort = await createTestCohort(`${run}-cohort`);
+  const alumni = await createTestFounder({
+    cohortId: cohort.id,
+    email: `${run}-alumni@example.com`,
+    role: "alumni",
+  });
+  const author = await createTestFounder({
+    cohortId: cohort.id,
+    email: `${run}-author@example.com`,
+  });
+  const vendor = await createTestVendor({ cohortId: cohort.id, name: `${run} Vendor` });
+  const review = await createTestReview({
+    cohortId: cohort.id,
+    userId: author.id,
+    vendorId: vendor.id,
+  });
+
+  try {
+    assert.deepEqual(
+      await toggleVote({ reviewId: review.id, userId: alumni.id, cohortId: cohort.id, value: true }),
+      { count: 1, voted: true },
+    );
+    assert.deepEqual(await getVoteCounts(review.id), { up: 1, down: 0 });
+  } finally {
+    await cleanupTestData({
+      cohortSlugs: [cohort.slug],
+      emails: [alumni.email, author.email],
+    });
+  }
+});
+
 test("helpful votes allow same-cohort voting, toggling, and direction updates", async () => {
   const run = testRunId("votes");
   const cohort = await createTestCohort(`${run}-cohort`);

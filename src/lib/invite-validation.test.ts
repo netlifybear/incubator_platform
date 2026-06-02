@@ -22,6 +22,22 @@ test("invite expiration is seven days after creation", () => {
   );
 });
 
+test("creating a duplicate invite for the same email throws", async () => {
+  const run = testRunId("dup-invite");
+  const cohort = await createTestCohort(`${run}-cohort`);
+  const email = `${run}@example.com`;
+
+  try {
+    await createInviteForCohort({ cohortId: cohort.id, email });
+    await assert.rejects(
+      createInviteForCohort({ cohortId: cohort.id, email }),
+      /active invite already exists/,
+    );
+  } finally {
+    await cleanupTestData({ cohortSlugs: [cohort.slug], emails: [email] });
+  }
+});
+
 test("accepting an invite requires the signed-in invited email", async () => {
   const run = testRunId("invite-accept");
   const cohort = await createTestCohort(`${run}-cohort`);
