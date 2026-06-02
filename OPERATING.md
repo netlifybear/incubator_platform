@@ -98,14 +98,17 @@ All passwords are `password`.
 | `admin@example.com` | Avery Admin | admin | `avery-admin` | — |
 | `maya@example.com` | Maya Chen | founder | `maya` | 1 review (Legal), 1 open request (Payroll), 1 badge (reviewer), 1 pending exchange request, 2 verified backlinks, 1 helpful vote received |
 | `jordan@example.com` | Jordan Lee | founder | `jordan` | 1 review (Accounting), 1 badge (community_contributor), 1 pending backlink |
+| `lina@example.com` | Lina Patel | founder | `lina` | Harbor Accelerator founder with Legal and Payroll reviews for cross-cohort recommendations |
+| `omar@example.com` | Omar Rivera | founder | `omar` | Harbor Accelerator founder with Legal and Payroll reviews for cross-cohort recommendations |
 
 ## Seed Data
 
 Run `npx prisma db push && npm run db:seed` after schema changes (see README.md).
 
 Creates:
-- 1 cohort (Demo Incubator), 3 users (admin, 2 founders), 3 vendors (Legal, Accounting, Design)
-- 2 reviews with helpful vote, 2 badges, 1 active sprint, 1 pending exchange request, 3 backlinks (mixed statuses), 1 open vendor request
+- 2 cohorts (Demo Incubator and Harbor Accelerator), 5 users (admin, 4 founders), and 6 seeded vendors across Legal, Accounting, Design, and Payroll
+- Demo Incubator reviews, helpful vote, badges, active sprint, pending exchange request, backlinks, and one open vendor request
+- Harbor Accelerator Legal and Payroll reviews used to demonstrate cross-cohort recommendations
 
 ## Verification
 

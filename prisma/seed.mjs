@@ -39,6 +39,16 @@ async function main() {
     },
   });
 
+  const peerCohort = await prisma.cohort.upsert({
+    where: { slug: "harbor-accelerator" },
+    update: {},
+    create: {
+      name: "Harbor Accelerator",
+      slug: "harbor-accelerator",
+      description: "A partner cohort used to demonstrate cross-cohort vendor discovery.",
+    },
+  });
+
   const maya = await prisma.user.upsert({
     where: { email: "maya@example.com" },
     update: { cohortId: cohort.id, profileSlug: "maya", role: "founder", publicProfileEnabled: true },
@@ -85,6 +95,40 @@ async function main() {
       cohortId: cohort.id,
       publicProfileEnabled: false,
       profileCompletePercentage: 60,
+    },
+  });
+
+  const lina = await prisma.user.upsert({
+    where: { email: "lina@example.com" },
+    update: { cohortId: peerCohort.id, profileSlug: "lina", role: "founder", publicProfileEnabled: true },
+    create: {
+      email: "lina@example.com",
+      name: "Lina Patel",
+      startupUrl: "https://harborops.example",
+      startupName: "Harbor Ops",
+      bio: "Founder building operations tooling for distributed teams.",
+      profileSlug: "lina",
+      role: "founder",
+      cohortId: peerCohort.id,
+      publicProfileEnabled: true,
+      profileCompletePercentage: 75,
+    },
+  });
+
+  const omar = await prisma.user.upsert({
+    where: { email: "omar@example.com" },
+    update: { cohortId: peerCohort.id, profileSlug: "omar", role: "founder", publicProfileEnabled: true },
+    create: {
+      email: "omar@example.com",
+      name: "Omar Rivera",
+      startupUrl: "https://fieldledger.example",
+      startupName: "Field Ledger",
+      bio: "Founder improving finance workflows for field-service companies.",
+      profileSlug: "omar",
+      role: "founder",
+      cohortId: peerCohort.id,
+      publicProfileEnabled: true,
+      profileCompletePercentage: 70,
     },
   });
 
@@ -136,6 +180,42 @@ async function main() {
     }),
   ]);
 
+  const peerVendors = await Promise.all([
+    prisma.vendor.upsert({
+      where: { id: "harbor-vendor-legal" },
+      update: {},
+      create: {
+        id: "harbor-vendor-legal",
+        name: "Harbor Legal Collective",
+        category: "Legal",
+        contact: "team@harborlegal.example",
+        cohortId: peerCohort.id,
+      },
+    }),
+    prisma.vendor.upsert({
+      where: { id: "harbor-vendor-payroll" },
+      update: {},
+      create: {
+        id: "harbor-vendor-payroll",
+        name: "Dockside Payroll",
+        category: "Payroll",
+        contact: "hello@docksidepayroll.example",
+        cohortId: peerCohort.id,
+      },
+    }),
+    prisma.vendor.upsert({
+      where: { id: "harbor-vendor-design" },
+      update: {},
+      create: {
+        id: "harbor-vendor-design",
+        name: "North Pier Design",
+        category: "Design",
+        contact: "studio@northpier.example",
+        cohortId: peerCohort.id,
+      },
+    }),
+  ]);
+
   await prisma.investor.upsert({
     where: { id: "demo-investor-1" },
     update: {
@@ -152,7 +232,7 @@ async function main() {
 
   await prisma.review.deleteMany({
     where: {
-      vendorId: { in: vendors.map((v) => v.id) },
+      vendorId: { in: [...vendors.map((v) => v.id), ...peerVendors.map((v) => v.id)] },
     },
   });
 
@@ -178,6 +258,47 @@ async function main() {
       vendorId: "demo-vendor-accounting",
       cohortId: cohort.id,
     },
+  });
+
+  await prisma.review.createMany({
+    data: [
+      {
+        rating: 5,
+        comment: "Strong counsel on customer contract templates and data-processing language. Clear scopes and fast redlines.",
+        usedVendor: true,
+        workType: "Customer contract templates",
+        userId: lina.id,
+        vendorId: "harbor-vendor-legal",
+        cohortId: peerCohort.id,
+      },
+      {
+        rating: 4,
+        comment: "Practical advice on vendor terms and privacy addenda. Turnaround was predictable and founder-friendly.",
+        usedVendor: true,
+        workType: "Vendor terms review",
+        userId: omar.id,
+        vendorId: "harbor-vendor-legal",
+        cohortId: peerCohort.id,
+      },
+      {
+        rating: 5,
+        comment: "Handled contractor onboarding and multi-state payroll setup without hand-holding. Support replies were crisp.",
+        usedVendor: true,
+        workType: "Contractor payroll setup",
+        userId: lina.id,
+        vendorId: "harbor-vendor-payroll",
+        cohortId: peerCohort.id,
+      },
+      {
+        rating: 4,
+        comment: "Good fit for early teams that need payroll basics and compliance reminders in one place.",
+        usedVendor: true,
+        workType: "Payroll compliance",
+        userId: omar.id,
+        vendorId: "harbor-vendor-payroll",
+        cohortId: peerCohort.id,
+      },
+    ],
   });
 
   // Demo helpful vote
