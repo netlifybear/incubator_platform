@@ -3,6 +3,7 @@ import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
 import { getLeaderboard } from "@/lib/leaderboard";
+import { getCohortImpactSummary } from "@/lib/impact";
 
 function AccessMessage({
   body,
@@ -61,19 +62,17 @@ export default async function LeaderboardPage() {
     );
   }
 
-  const entries = await getLeaderboard(founder.cohortId);
+  const [impact, entries] = await Promise.all([
+    getCohortImpactSummary(founder.cohortId),
+    getLeaderboard(founder.cohortId),
+  ]);
+
   const currentUserId = founder.id;
-  const totalPoints = entries.reduce((sum, entry) => sum + entry.points, 0);
-  const totalReviews = entries.reduce((sum, entry) => sum + entry.reviewCount, 0);
-  const activeFounders = entries.filter(
-    (entry) => entry.points > 0 || entry.reviewCount > 0 || entry.badgeCount > 0,
-  ).length;
-  const currentRank = entries.findIndex((entry) => entry.userId === currentUserId) + 1;
   const metrics = [
-    { label: "Founders ranked", value: entries.length },
-    { label: "Active contributors", value: activeFounders },
-    { label: "Cohort reviews", value: totalReviews },
-    { label: "Contribution signal", value: totalPoints },
+    { label: "Founders in cohort", value: impact.founderCount },
+    { label: "Active contributors", value: impact.activeContributorCount },
+    { label: "Reviews shared", value: impact.reviewCount },
+    { label: "Helpful votes", value: impact.helpfulVoteCount },
   ];
 
   return (
@@ -93,12 +92,6 @@ export default async function LeaderboardPage() {
                 knowledge base. Use it to spot participation patterns and celebrate impact.
               </p>
             </div>
-            {currentRank > 0 ? (
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel-strong)] px-5 py-4 text-left lg:text-right">
-                <p className="text-sm text-[var(--muted)]">Your position</p>
-                <p className="mt-1 text-2xl font-semibold">#{currentRank}</p>
-              </div>
-            ) : null}
           </div>
         </section>
 
@@ -117,9 +110,9 @@ export default async function LeaderboardPage() {
         <section className="rounded-3xl border border-[var(--border)] bg-white p-6 shadow-[var(--shadow-ambient)]">
           <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--border)] pb-4">
             <div>
-              <h2 className="text-2xl font-semibold">Contribution patterns</h2>
+              <h2 className="text-2xl font-semibold">Contributor patterns</h2>
               <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                Ordering reflects review quality, contribution signals, and helpful votes from peers.
+                Ordering reflects contribution activity, but point totals stay internal.
               </p>
             </div>
             <Link
@@ -136,23 +129,20 @@ export default async function LeaderboardPage() {
             </p>
           ) : (
             <div className="mt-4 divide-y divide-[var(--border)]">
-              {entries.map((entry, index) => {
+              {entries.map((entry) => {
                 const isCurrentUser = entry.userId === currentUserId;
                 return (
                   <div
                     key={entry.userId}
-                    className={`grid gap-4 py-4 sm:grid-cols-[4rem_minmax(0,1fr)_8rem] sm:items-center ${
+                    className={`grid gap-4 py-4 sm:grid-cols-[minmax(0,1fr)_8rem] sm:items-center ${
                       isCurrentUser ? "rounded-2xl bg-[var(--accent)]/5 px-4" : ""
                     }`}
                   >
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-                        Position
-                      </p>
-                      <p className="mt-1 text-xl font-semibold">#{index + 1}</p>
-                    </div>
                     <div className="min-w-0">
-                      <p className="font-semibold">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                        Contributor
+                      </p>
+                      <p className="mt-1 font-semibold">
                         {entry.name ?? entry.email}
                         {isCurrentUser ? (
                           <span className="ml-2 text-xs font-semibold text-[var(--accent)]">
@@ -163,14 +153,10 @@ export default async function LeaderboardPage() {
                       <p className="mt-1 text-sm text-[var(--muted)]">
                         {entry.reviewCount} review{entry.reviewCount === 1 ? "" : "s"}
                         {entry.badgeCount > 0
-                          ? ` | ${entry.badgeCount} badge${entry.badgeCount === 1 ? "" : "s"}`
+                          ? ` | ${entry.badgeCount} contribution signal${entry.badgeCount === 1 ? "" : "s"}`
                           : ""}
                         {entry.avgRating !== null ? ` | ${entry.avgRating.toFixed(1)} avg rating` : ""}
                       </p>
-                    </div>
-                    <div className="sm:text-right">
-                      <p className="text-xl font-semibold">{entry.points}</p>
-                      <p className="text-xs text-[var(--muted)]">signal</p>
                     </div>
                   </div>
                 );
@@ -181,10 +167,10 @@ export default async function LeaderboardPage() {
 
         <section className="grid gap-4 lg:grid-cols-3">
           <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-ambient)]">
-            <p className="text-sm font-semibold text-[var(--accent)]">How ordering works</p>
+            <p className="text-sm font-semibold text-[var(--accent)]">How this view works</p>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              Detailed reviews carry more weight than low-effort volume. Badges and helpful votes
-              add signal when peers find a contribution useful.
+              This private view summarizes cohort participation. Ordering uses contribution
+              activity, but point totals stay internal.
             </p>
           </div>
           <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-ambient)]">
