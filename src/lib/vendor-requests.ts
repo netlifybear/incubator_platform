@@ -52,8 +52,8 @@ export async function createTargetedVendorRequest(input: CreateTargetedRequestIn
 
     sendNotificationEmail({
       to: targetUser.email,
-      subject: `${requester.name} asked about ${description} — Incubator Trust`,
-      body: `<p><strong>${safeRequesterName}</strong> has asked for more details about a vendor you reviewed.</p><p>${safeMessage}</p><p><a href="${requestsUrl}">View and respond on your requests page</a></p><p style="color:#666;font-size:12px">Request: ${safeDescription}</p>`,
+      subject: `${requester.name} needs your vendor expertise — Incubator Trust`,
+      body: `<p><strong>${safeRequesterName}</strong> needs your help evaluating a vendor. Your firsthand review can help them make a better decision.</p><p>${safeMessage}</p><p><a href="${requestsUrl}">Respond on your requests page</a></p><p style="color:#666;font-size:12px">Request: ${safeDescription}</p>`,
     }).catch(() => {});
 
     createNotification({

@@ -4,6 +4,10 @@ This folder contains execution plans, product direction notes, and historical im
 
 ## Active Handoff
 
+| Plan | Status | Next Agent Guidance |
+|------|--------|---------------------|
+| `phase-b-structured-report.md` | Plan ready | Reorganize `/founder/[slug]/credibility` into 7 formal report sections (Summary → Identity → Review History → Contribution Signals → Helpfulness → Backlink Authority → Export). New Section 5 requires `getFounderImpactSummary()` call and distinct helpful-voter query. |
+
 ## Deferred Work
 
 | Area | Source Plan | Status | Next Agent Guidance |

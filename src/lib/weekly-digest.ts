@@ -12,6 +12,7 @@ type FounderDigest = {
   profileViewCount: number;
   publicProfileEnabled: boolean;
   reviewCount: number;
+  helpfulVoteCount: number;
   backlinkVerifiedCount: number;
   backlinkLostCount: number;
   incomingTargetedRequests: number;
@@ -36,7 +37,7 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
 
   if (!user || !user.email) return null;
 
-  const [reviewCount, backlinkVerifiedCount, backlinkLostCount, incomingTargetedRequests, sprintInfo, activityEvents] =
+  const [reviewCount, backlinkVerifiedCount, backlinkLostCount, incomingTargetedRequests, sprintInfo, activityEvents, helpfulVoteCount] =
     await Promise.all([
       prisma.review.count({ where: { userId } }),
       prisma.backlinkLog.count({ where: { userId, status: "verified" } }),
@@ -50,6 +51,12 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
             events.filter((e) => e.userId !== userId),
           )
         : [],
+      prisma.helpfulVote.count({
+        where: {
+          review: { userId },
+          value: true,
+        },
+      }),
     ]);
 
   let sprintHtml = "";
@@ -97,6 +104,7 @@ export async function generateDigestForFounder(userId: string): Promise<FounderD
     publicProfileEnabled: user.publicProfileEnabled,
     profileSlug: user.profileSlug,
     reviewCount,
+    helpfulVoteCount,
     backlinkVerifiedCount,
     backlinkLostCount,
     incomingTargetedRequests,
@@ -146,15 +154,17 @@ function digestHtml(digest: FounderDigest): string {
             <div style="font-size:12px;color:#666">Reviews</div>
           </td>
           <td style="padding:12px;background:#f5f5f5;border-radius:8px;text-align:center;width:25%">
+            <div style="font-size:24px;font-weight:700">${digest.helpfulVoteCount}</div>
+            <div style="font-size:12px;color:#666">Founders helped</div>
+          </td>
+          <td style="padding:12px;text-align:center;width:25%">
             <div style="font-size:24px;font-weight:700">${digest.backlinkVerifiedCount}</div>
             <div style="font-size:12px;color:#666">Backlinks</div>
           </td>
-          <td style="padding:12px;text-align:center;width:25%">
-            <div style="font-size:24px;font-weight:700">${digest.backlinkLostCount}</div>
-            <div style="font-size:12px;color:#666">Lost links</div>
-          </td>
         </tr>
       </table>
+
+      ${digest.helpfulVoteCount > 0 ? `<p style="padding:10px 16px;background:#f0fdf4;border-radius:8px;font-size:14px">Your reviews helped <strong>${digest.helpfulVoteCount}</strong> founder${digest.helpfulVoteCount === 1 ? "" : "s"} make better vendor decisions this week.</p>` : ""}
 
       ${digest.incomingTargetedRequests > 0 ? `<p style="padding:8px 16px;background:#fef3c7;border-radius:8px;font-size:14px"><strong>${digest.incomingTargetedRequests} founder(s)</strong> asked you for vendor details. <a href="${requestsUrl}" style="color:#2563eb;text-decoration:underline">View questions</a></p>` : ""}
 
@@ -181,7 +191,7 @@ export async function sendWeeklyDigestToFounder(userId: string): Promise<{ sent:
 
   await sendNotificationEmail({
     to: digest.email,
-    subject: "Your weekly digest — Incubator Trust Platform",
+    subject: `Your weekly impact — ${digest.helpfulVoteCount} founder${digest.helpfulVoteCount === 1 ? "" : "s"} helped this week`,
     body: digestHtml(digest),
   });
 

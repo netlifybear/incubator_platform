@@ -58,15 +58,16 @@ export async function toggleVote(params: {
     if (review && review.user.email) {
       sendNotificationEmail({
         to: review.user.email,
-        subject: "Your review received a helpful vote",
-        body: `<p>Someone found your review helpful on the Incubator Trust Platform.</p><p><a href="${process.env.NEXTAUTH_URL}/vendors/${review.vendorId}">View your review</a></p>`,
+        subject: "Your review helped another founder evaluate a vendor",
+        body: `<p>Another founder found your vendor review helpful. Your firsthand experience is helping peers make better decisions.</p><p><a href="${process.env.NEXTAUTH_URL}/vendors/${review.vendorId}">View your review</a></p>`,
       }).catch(() => {});
     }
 
     createNotification({
       userId: review!.userId,
       type: "helpful_vote",
-      title: "Your review received a helpful vote",
+      title: "Your review helped another founder",
+      body: "Another founder found your vendor review helpful.",
       link: `/vendors/${review!.vendorId}`,
     }).catch(() => {});
   }
