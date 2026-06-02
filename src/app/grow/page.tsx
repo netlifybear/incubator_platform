@@ -6,9 +6,9 @@ import { hasActiveCohort } from "@/lib/tenant-policy";
 import { computeReviewStreak } from "@/lib/rewards";
 import { getBacklinkSnapshots } from "@/lib/backlinks";
 import { BacklinkVelocityChart } from "@/app/components/backlink-velocity-chart";
-import { prisma } from "@/lib/prisma";
 import { ReputationImportCard } from "./reputation-import-card";
 import { getFounderReferralStats } from "@/lib/invites";
+import { getFounderImpactSummary } from "@/lib/impact";
 
 export default async function GrowPage() {
   const founder = await getCurrentFounder();
@@ -21,21 +21,14 @@ export default async function GrowPage() {
     redirect("/");
   }
 
-  const [reviewCount, badgeCount, snapshots, backlinkCount, referralStats] = await Promise.all([
-    prisma.review.count({ where: { userId: founder.id } }),
-    prisma.badge.count({ where: { userId: founder.id } }),
+  const [impact, snapshots, referralStats] = await Promise.all([
+    getFounderImpactSummary(founder.id),
     getBacklinkSnapshots(founder.id),
-    prisma.backlinkLog.count({ where: { userId: founder.id } }),
     getFounderReferralStats(founder.id),
   ]);
 
-  const helpfulVoteCount = await prisma.helpfulVote.count({
-    where: { review: { userId: founder.id }, value: true },
-  });
-
   const streak = computeReviewStreak(founder.lastReviewDate);
   const profilePublic = founder.publicProfileEnabled;
-  const profileViews = founder.profileViewCount;
 
   return (
     <AppShell founder={founder} cohortName={founder.cohort.name}>
@@ -67,10 +60,10 @@ export default async function GrowPage() {
         </section>
 
         <div className="grid gap-3 sm:grid-cols-4">
-          <MetricCard label="Reviews written" value={reviewCount} />
-          <MetricCard label="Helpful votes" value={helpfulVoteCount} />
-          <MetricCard label="Profile views" value={profileViews} />
-          <MetricCard label="Backlinks" value={backlinkCount} />
+          <MetricCard label="Reviews shared" value={impact.reviewCount} />
+          <MetricCard label="Helpful votes received" value={impact.helpfulVoteCount} />
+          <MetricCard label="Profile views" value={impact.profileViewCount} />
+          <MetricCard label="Verified backlinks" value={impact.verifiedBacklinkCount} />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
@@ -97,10 +90,6 @@ export default async function GrowPage() {
                 <span className="text-sm font-semibold">{streak > 0 ? `${streak} week${streak === 1 ? "" : "s"}` : "None"}</span>
               </div>
               <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
-                <span className="text-sm text-[var(--muted)]">Badges</span>
-                <span className="text-sm font-semibold">{badgeCount}</span>
-              </div>
-              <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
                 <span className="text-sm text-[var(--muted)]">Referrals joined</span>
                 <span className="text-sm font-semibold">{referralStats.accepted}</span>
               </div>
@@ -119,22 +108,24 @@ export default async function GrowPage() {
             <div className="mt-4 space-y-3">
               <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
                 <span className="text-sm text-[var(--muted)]">Vendors evaluated</span>
-                <span className="text-sm font-semibold">{reviewCount}</span>
+                <span className="text-sm font-semibold">{impact.reviewCount}</span>
               </div>
               <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
-                <span className="text-sm text-[var(--muted)]">Founders helped by your reviews</span>
-                <span className="text-sm font-semibold">{helpfulVoteCount}</span>
+                <span className="text-sm text-[var(--muted)]">Founders helped</span>
+                <span className="text-sm font-semibold">{impact.helpfulVoteCount}</span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
+                <span className="text-sm text-[var(--muted)]">Contribution signals</span>
+                <span className="text-sm font-semibold">{impact.contributionSignalCount}</span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
+                <span className="text-sm text-[var(--muted)]">Verified backlinks</span>
+                <span className="text-sm font-semibold">{impact.verifiedBacklinkCount}</span>
               </div>
               {streak > 0 ? (
                 <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
                   <span className="text-sm text-[var(--muted)]">Active streak</span>
                   <span className="text-sm font-semibold">{streak} week{streak === 1 ? "" : "s"}</span>
-                </div>
-              ) : null}
-              {badgeCount > 0 ? (
-                <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
-                  <span className="text-sm text-[var(--muted)]">Contribution signals</span>
-                  <span className="text-sm font-semibold">{badgeCount}</span>
                 </div>
               ) : null}
             </div>
@@ -160,7 +151,7 @@ export default async function GrowPage() {
                 href="/"
               />
             ) : null}
-            {backlinkCount === 0 ? (
+            {impact.verifiedBacklinkCount === 0 ? (
               <ActionItem
                 label="Add your first backlink"
                 detail="Track domains that mention your startup"
