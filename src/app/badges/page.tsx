@@ -15,7 +15,7 @@ export default async function BadgesPage() {
   const earnedTypes = new Set(badges.map((b) => b.type));
 
   return (
-    <AppShell founder={founder}>
+    <AppShell founder={founder} cohortName={founder.cohort?.name}>
       <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
           Contribution tags

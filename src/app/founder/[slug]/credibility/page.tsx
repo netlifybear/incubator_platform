@@ -4,7 +4,7 @@ import { publicFounderDisplayName } from "@/lib/founder-profile-presenter";
 import { getPublicFounderProfile } from "@/lib/founder-profiles";
 import { getFounderBadges } from "@/lib/badges";
 import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
-import { getBacklinkSnapshots, listBacklinksForFounder } from "@/lib/backlinks";
+import { listBacklinksForFounder } from "@/lib/backlinks";
 import { reviewContributionPoints } from "@/lib/review-quality";
 import { computeCredibilityFactors, toPublicCredibilityFactors } from "@/lib/credibility-factors";
 import { getFounderImpactSummary } from "@/lib/impact";
@@ -27,22 +27,18 @@ async function getFounderCredibilityData(slug: string) {
     return null;
   }
 
-  const [
-    points, badges, rank, reviewStats, impact,
-    backlinkSnapshots, backlinks,
-  ] = await Promise.all([
-    getFounderPoints(founder.id),
-    getFounderBadges(founder.email),
-    founder.cohort?.id ? getFounderCohortRank(founder.id, founder.cohort.id) : Promise.resolve(null),
-    prisma.review.aggregate({
-      where: { userId: founder.id },
-      _avg: { rating: true },
-      _count: true,
-    }),
-    getFounderImpactSummary(founder.id),
-    getBacklinkSnapshots(founder.id),
-    listBacklinksForFounder(founder.id),
-  ]);
+  const points = await getFounderPoints(founder.id);
+  const badges = await getFounderBadges(founder.email);
+  const rank = founder.cohort?.id
+    ? await getFounderCohortRank(founder.id, founder.cohort.id)
+    : null;
+  const reviewStats = await prisma.review.aggregate({
+    where: { userId: founder.id },
+    _avg: { rating: true },
+    _count: true,
+  });
+  const impact = await getFounderImpactSummary(founder.id);
+  const backlinks = await listBacklinksForFounder(founder.id);
 
   // Calculate used vendor percentage
   const founderReviews = await prisma.review.findMany({
@@ -79,7 +75,7 @@ async function getFounderCredibilityData(slug: string) {
   // Calculate quality score trend (simplified as average quality %)
   const qualityScorePercentage = founderReviews.length > 0
     ? Math.round(
-        (founderReviews.reduce((sum, r) => sum + (reviewContributionPoints(r.comment) / 20 * 100), 0) / founderReviews.length)
+        (founderReviews.reduce((sum, r) => sum + (reviewContributionPoints(r.comment) / 10 * 100), 0) / founderReviews.length)
       )
     : 0;
 
@@ -108,7 +104,7 @@ async function getFounderCredibilityData(slug: string) {
   const gscConnected = Boolean(founder.gscEmail);
   const issuedAt = new Date();
 
-  const credibility = await computeCredibilityFactors(founder.id, { useCache: true });
+  const credibility = await computeCredibilityFactors(founder.id, { impact, useCache: true });
   const publicFactors = toPublicCredibilityFactors(credibility);
 
   return {
@@ -119,7 +115,6 @@ async function getFounderCredibilityData(slug: string) {
     rank,
     reviewStats,
     impact,
-    backlinkSnapshots,
     backlinks,
     usedVendorPercentage,
     helpfulVoteRatio,
@@ -216,7 +211,6 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
     badges,
     reviewStats,
     impact,
-    backlinkSnapshots,
     backlinks,
     usedVendorPercentage,
     helpfulVoteRatio,
@@ -318,7 +312,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Credibility Summary</h2>
             <p className="mt-2 text-sm text-[var(--muted)]">
-              An overview of {displayName}&apos;s contribution track record on {founder.cohort?.name ?? "the platform"}.
+              {`An overview of ${displayName}'s contribution track record on ${founder.cohort?.name ?? "the platform"}.`}
             </p>
             <div className="mt-4 space-y-3">
               {credibility.isThinFile ? (
@@ -353,7 +347,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
                 </div>
               ))}
               <p className="text-xs text-[var(--muted)]">
-                {reviewStats._count ?? 0} total review{reviewStats._count === 1 ? "" : "s"} —Based on {credibility.factors.find(f => f.key === "reviewQuality")?.value ?? "0"} average review quality
+                {reviewStats._count ?? 0} total review{reviewStats._count === 1 ? "" : "s"} — based on {credibility.factors.find(f => f.key === "reviewQuality")?.value ?? "0"} average review quality
               </p>
             </div>
           </section>
@@ -492,7 +486,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--muted)]">Verified Backlinks</span>
                 <span className="text-sm font-semibold">
-                  {backlinkSnapshots.length > 0 ? backlinkSnapshots[backlinkSnapshots.length - 1].verifiedCount : 0}
+                  {impact.verifiedBacklinkCount}
                 </span>
               </div>
               <div className="flex items-center justify-between">
