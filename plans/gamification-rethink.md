@@ -4,13 +4,20 @@
 
 Basic impact-over-points changes have been applied to `/grow`, `/rewards`, and `/leaderboard`. Computable badges now auto-award through the badge computation engine on review submit, profile update, and the badge cron route. A second text-only pass softened remaining reputation, rewards, and leaderboard language toward credibility, contribution signals, and cohort contribution patterns.
 
-The next executable slice is now defined in `impact-dashboard-implementation.md`. It keeps points internal, turns `/leaderboard` into a private cohort contribution dashboard, strengthens `/grow` around personal impact metrics, and removes visible rank emphasis from `/rewards`.
+The **impact dashboard slice** (`impact-dashboard-implementation.md`) is now fully implemented:
+- `/grow` leads with personal impact metrics (reviews shared, helpful votes received, profile views, verified backlinks) from `getFounderImpactSummary()`
+- `/leaderboard` is a private cohort contribution dashboard with aggregate metrics and contributor patterns — no visible point totals or rank positions
+- `/rewards` explains credibility ingredients ("Review detail", "Contribution signals", "Peer validation") without showing cohort rank or "Contribution position"
+- Points remain internal for ordering, reputation export, and credibility API compatibility
 
 Remaining work is product/UX design rather than a direct implementation queue:
 
-- Execute `impact-dashboard-implementation.md` task-by-task.
-- Keep deeper badge taxonomy changes for a later slice after the dashboard pass lands.
-- Keep public profile and credibility report changes out of this slice unless they are needed to preserve copy consistency.
+- **Keep deeper badge/contribution-signal taxonomy changes** — do not execute until after impact dashboard is stable (see `plans/README.md` for deferral details)
+- **Keep public profile and credibility report changes** out of the dashboard pass
+- **Keep contribution feedback loop design** as a separate UX/product exercise after the dashboard settles
+- **Keep credit report verification UX polish** optional and deferred
+- **Keep Connect inline answering** as a separate UX exercise
+- **Keep Grow SEO alignment** deferred until Grow's data model is settled
 
 ## Current State
 
