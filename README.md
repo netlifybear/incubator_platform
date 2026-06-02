@@ -12,6 +12,7 @@ Use these docs by purpose:
 - `docs/product.md` — product thesis, flywheel, public authority guardrails, and strategic risks.
 - `docs/traceability.md` — business thesis to feature/spec mapping.
 - `plans/` — current/future implementation plans. Some files are intentionally marked implemented or deferred to prevent stale work.
+- `docs/README.md` — documentation map and ownership guide.
 
 ## Setup
 
@@ -46,6 +47,6 @@ See `OPERATING.md` for demo accounts, full route map, smoke test flow, architect
 ## Verification
 
 ```bash
-npm test          # 108 tests across 30 test files (node:test)
+npm test          # DB-backed node:test suite
 npm run build     # Next.js production build
 ```

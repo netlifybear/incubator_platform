@@ -42,11 +42,11 @@ This folder contains implementation proposals and product direction notes. It is
 - Added cohort trust policy configuration for import scope
 - Added optional public-key endpoint for future asymmetric verification
 
-## Remaining Work
+## Current Open Work
 
 From reciprocity-pipeline.md:
 
-1. **Phase 3 (cont.)**: Network Effects
+1. **Network effects**
    - Cross-cohort vendor recommendation signal: done
    - Alumni participation rules: done for helpful votes; other writes remain blocked
    - Public cohort aggregate refinements: privacy threshold first pass done
@@ -70,6 +70,6 @@ From reciprocity-pipeline.md:
 ## Notes For Agents
 
 - Check the current code before following any plan. Some plans intentionally document completed or deferred work.
-- Prefer `docs/product.md`, `docs/traceability.md`, `README.md`, and `OPERATING.md` for durable project truth.
+- Prefer `docs/product.md`, `docs/traceability.md`, `README.md`, and `OPERATING.md` for durable project truth; this folder is for execution history and future slices.
 - Do not implement roadmap-scale items from a plan without first extracting a small, verifiable task.
-- For network effects, execute one slice at a time in the order shown in `reciprocity-pipeline.md`.
+- For deeper network effects, write a policy-backed slice first and keep private founder content out of public surfaces.

@@ -6,8 +6,9 @@
 - `docs/product.md` — product thesis, flywheel, authority model, ethics, and strategic risks.
 - `docs/traceability.md` — business thesis to feature/spec mapping.
 - `plans/` — active and proposed implementation plans.
+- `docs/README.md` — documentation map and ownership guide.
 
-Root-level `doc/` and `docs/` folders are retired. Use `docs/` and `plans/` inside this nested repo for active project documentation.
+Workspace-root `doc/` and `docs/` folders are retired. Use `docs/` and `plans/` inside this nested repo for active project documentation.
 
 ### `weekly-digest` — GET `/api/cron/weekly-digest`
 
@@ -44,8 +45,8 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/signin` | Magic-link sign-in (demo collapsed) | None |
 | `/connect` | Connect hub — incoming questions, open requests, exchanges, cohort activity | Founder |
 | `/grow` | Grow hub — profile, impact, backlinks, SEO actions, reputation export link | Founder |
-| `/cohorts` | Public cohort directory with aggregate counts | None |
-| `/cohorts/[slug]` | Public cohort aggregate page with top vendors and review counts | None |
+| `/cohorts` | Public cohort directory with privacy-gated aggregate counts | None |
+| `/cohorts/[slug]` | Public cohort aggregate page with privacy-gated top vendors and review counts | None |
 | `/vendors` | Vendor directory with search, category filter, sort by name/rating/trending/reviews | Founder |
 | `/vendors/[id]` | Vendor detail + founder/consumer review modes + quality engine + optional images | Founder/public hybrid |
 | `/top-vendors` | Vendor ranking page by authority score with tier badges | Founder |
@@ -109,7 +110,7 @@ Creates:
 ## Verification
 
 ```bash
-npm test          # 108 tests across 30 test files (node:test, node:assert/strict)
+npm test          # DB-backed node:test suite
 npm run build     # Next.js production build
 ```
 
@@ -173,6 +174,7 @@ Key libraries:
 - `src/lib/sprints.ts` — sprint active/history queries with contributor data
 - `src/lib/guest-posts.ts` — guest-post exchange lifecycle
 - `src/lib/helpful-votes.ts` — vote toggle, counts, user vote
+- `src/lib/tenant-policy.ts` — cohort access, write, alumni, and helpful-vote participation policy
 - `src/lib/analytics.ts` — cohort analytics computation
 - `src/lib/review-quality.ts` — quality analysis engine (pure functions)
 - `src/lib/review-template.ts` — guided review template data model + natural-language composition
