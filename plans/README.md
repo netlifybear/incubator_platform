@@ -12,7 +12,6 @@ This folder contains execution plans, product direction notes, and historical im
 
 | Area | Source Plan | Status | Next Agent Guidance |
 |------|-------------|--------|---------------------|
-| Contribution feedback notifications and digest | `contribution-feedback-loop.md` | Implemented (Slice C+D) | Slice A+B already live; Slice C+D done: outcome-language notifications for helpful votes and targeted requests; digest now shows founders helped count with impact section. |
 | Badge/contribution-signal taxonomy | `gamification-rethink.md` | Product direction | Consider renaming badge presentation from achievement-style labels to contribution tags. Requires UX/product design before code changes. |
 | Streak milestones | `gamification-rethink.md` | Product direction | Scope separately after the impact dashboard has been observed in local or production usage. |
 | Credit report verification polish | `founder-credit-report.md` | Optional polish | Existing `/founder/[slug]/credibility` page and API work. Optional follow-up: PDF/export polish, richer verification badges, and inquiry-history display. |
@@ -28,7 +27,7 @@ This folder contains execution plans, product direction notes, and historical im
 | `ai-seo-geo-reviews.md` | Public vendor review JSON-LD is implemented for consumer-visible reviews. Founder reviews remain private. |
 | `reciprocity-pipeline.md` | Network-effects first pass is implemented: cross-cohort recommendations, alumni helpful-voting policy, cohort privacy refinements, referral loop polish, governed reputation imports, and optional public-key endpoint. |
 | `impact-dashboard-implementation.md` | `/grow` uses personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible points; `/rewards` shows credibility ingredients without cohort rank. |
-| `contribution-feedback-loop.md` | Slice A+B are implemented: helper plus `/grow` contribution impact recap. |
+| `contribution-feedback-loop.md` | Full loop implemented: Slice A+B (feedback helper + `/grow` recap) + Slice C (outcome-language notifications for helpful votes and targeted requests) + Slice D (digest shows founders helped with impact section). |
 | `founder-credit-report.md` | Founder credibility report page and machine-readable endpoint are implemented. |
 | `phase-a-credibility-factors.md` | 6-factor computation with `computeCredibilityFactors()`, public presenter `toPublicCredibilityFactors()`, 9 tests, `/grow` card, `/credibility` summary section. |
 | `nav-regroup-hubs.md` | Sidebar regrouped into Write, Connect, Grow, and Admin links; `/connect` and `/grow` exist. Reference only. |
