@@ -1,5 +1,6 @@
 import { inviteStatusLabel } from "@/lib/invite-presenter";
 import { listInvitesForCohort } from "@/lib/invites";
+import { prisma } from "@/lib/prisma";
 import { CreateInviteForm } from "./create-invite-form";
 import { RevokeInviteForm } from "./revoke-invite-form";
 import { CopyInviteLink } from "@/app/components/copy-invite-link";
@@ -10,6 +11,14 @@ type InvitesSectionProps = {
 
 export async function AdminInvitesSection({ cohortId }: InvitesSectionProps) {
   const invites = await listInvitesForCohort(cohortId);
+
+  const [totalInvites, acceptedInvites, founderReferrals] = await Promise.all([
+    prisma.invite.count({ where: { cohortId } }),
+    prisma.invite.count({ where: { cohortId, acceptedAt: { not: null } } }),
+    prisma.invite.count({
+      where: { cohortId, invitedById: { not: null }, acceptedAt: { not: null } },
+    }),
+  ]);
 
   return (
     <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
@@ -24,9 +33,17 @@ export async function AdminInvitesSection({ cohortId }: InvitesSectionProps) {
             cohort.
           </p>
         </div>
-        <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-sm font-semibold">
-          {invites.length} recent invites
-        </span>
+        <div className="flex flex-wrap gap-3">
+          <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-sm font-semibold">
+            {totalInvites} total
+          </span>
+          <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
+            {acceptedInvites} accepted
+          </span>
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700">
+            {founderReferrals} referred
+          </span>
+        </div>
       </div>
       <CreateInviteForm />
       <div className="mt-5 space-y-3">
@@ -47,6 +64,9 @@ export async function AdminInvitesSection({ cohortId }: InvitesSectionProps) {
                   <div>
                     <p className="font-semibold">{invite.email}</p>
                     <p className="mt-1 text-sm text-[var(--muted)]">
+                      {invite.invitedBy ? (
+                        <>Referred by {invite.invitedBy.name ?? invite.invitedBy.email} · </>
+                      ) : null}
                       Expires{" "}
                       {invite.expiresAt.toLocaleDateString("en-US", {
                         month: "short",

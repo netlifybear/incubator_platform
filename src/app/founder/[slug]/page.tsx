@@ -170,9 +170,12 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
         )}
         <div className="mt-6 flex flex-wrap gap-3">
           {founder.cohort ? (
-            <span className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
+            <Link
+              href={`/cohorts/${founder.cohort.slug}`}
+              className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+            >
               Verified member of {founder.cohort.name}
-            </span>
+            </Link>
           ) : null}
           {badges.map((badge) => (
             <span

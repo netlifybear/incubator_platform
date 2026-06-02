@@ -15,6 +15,21 @@ export async function createInviteForCohort(input: CreateInviteInput) {
   const email = normalizeInviteEmail(input.email);
   const now = new Date();
 
+  const existingOpen = await prisma.invite.findFirst({
+    where: {
+      cohortId: input.cohortId,
+      email,
+      acceptedAt: null,
+      revokedAt: null,
+      expiresAt: { gt: now },
+    },
+    select: { id: true },
+  });
+
+  if (existingOpen) {
+    throw new Error("An active invite already exists for this email.");
+  }
+
   return prisma.invite.create({
     data: {
       cohortId: input.cohortId,
@@ -110,10 +125,30 @@ export async function acceptInviteByToken(token: string, actorEmail: string) {
     const acceptedInvite = await tx.invite.update({
       where: { id: invite.id },
       data: { acceptedAt: new Date() },
-      include: { cohort: true },
     });
 
-    return { invite: acceptedInvite, user };
+    if (invite.invitedById) {
+      await tx.notification.create({
+        data: {
+          userId: invite.invitedById,
+          type: "invite_accepted",
+          title: "Invite accepted",
+          body: `${invite.email} joined the cohort through your invite link.`,
+          link: "/grow",
+        },
+      });
+
+      await tx.activityEvent.create({
+        data: {
+          userId: invite.invitedById,
+          cohortId: invite.cohortId,
+          type: "invite_accepted",
+          metadata: { invitedEmail: invite.email },
+        },
+      });
+    }
+
+    return { invite: { ...acceptedInvite, cohort: invite.cohort }, user };
   });
 }
 

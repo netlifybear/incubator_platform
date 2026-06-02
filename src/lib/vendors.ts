@@ -185,8 +185,62 @@ export async function getCrossCohortRecommendations(excludeCohortId: string, lim
       avgRating: v.reviews.reduce((s, r) => s + r.rating, 0) / v.reviews.length,
     }))
     .filter((v) => v.avgRating >= 3.5)
-    .sort((a, b) => b.reviewCount - a.reviewCount)
+    .sort((a, b) => {
+      if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
+      if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;
+      return a.name.localeCompare(b.name);
+    })
     .slice(0, limit);
 
   return scored;
+}
+
+export async function getSimilarVendorsInOtherCohorts(
+  vendorId: string,
+  excludeCohortId: string,
+  limit = 5,
+) {
+  const vendor = await prisma.vendor.findUnique({
+    where: { id: vendorId },
+    select: { category: true },
+  });
+  if (!vendor) return [];
+
+  const vendors = await prisma.vendor.findMany({
+    where: {
+      cohortId: { not: excludeCohortId },
+      category: vendor.category,
+      id: { not: vendorId },
+    },
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      cohort: {
+        select: { name: true, slug: true },
+      },
+      reviews: {
+        select: { rating: true },
+      },
+    },
+  });
+
+  return vendors
+    .filter((v) => v.reviews.length > 0)
+    .map((v) => ({
+      id: v.id,
+      name: v.name,
+      category: v.category,
+      cohortName: v.cohort.name,
+      cohortSlug: v.cohort.slug,
+      reviewCount: v.reviews.length,
+      avgRating: v.reviews.reduce((s, r) => s + r.rating, 0) / v.reviews.length,
+    }))
+    .filter((v) => v.avgRating >= 3.5)
+    .sort((a, b) => {
+      if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
+      if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, limit);
 }

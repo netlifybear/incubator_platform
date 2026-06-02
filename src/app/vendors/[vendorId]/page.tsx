@@ -4,7 +4,7 @@ import { HelpfulVoteButton } from "@/app/components/helpful-vote-button";
 import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { getFounderDisplayName } from "@/lib/tenant-policy";
-import { getVendorForCohort, getPublicVendor, getConsumerReviewsForVendor, getAverageRating } from "@/lib/vendors";
+import { getVendorForCohort, getPublicVendor, getConsumerReviewsForVendor, getAverageRating, getSimilarVendorsInOtherCohorts } from "@/lib/vendors";
 import { formatAverageRating } from "@/lib/vendor-presenter";
 import { askForDetailsAction, createReviewAction, createConsumerReviewAction } from "./actions";
 import { ReviewForm } from "./review-form";
@@ -95,6 +95,9 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
   const consumerReviews = await getConsumerReviewsForVendor(vendorId);
   const founderReviews = privateVendor?.reviews ?? [];
   const averageRating = privateVendor ? getAverageRating(founderReviews) : getAverageRating(consumerReviews);
+  const similarVendors = founder?.cohortId
+    ? await getSimilarVendorsInOtherCohorts(vendorId, founder.cohortId)
+    : [];
   const action = privateVendor && founder ? createReviewAction.bind(null, vendor.id, reviewMode) : null;
   const consumerAction = createConsumerReviewAction.bind(null, vendor.id, vendor.cohortId);
   const boundAskForDetails = founder && founder.cohortId
@@ -302,6 +305,35 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
             ))
           )}
         </div>
+
+        {similarVendors.length > 0 ? (
+          <div className="mt-12 space-y-4">
+            <h2 className="text-2xl font-semibold">Similar vendors in other cohorts</h2>
+            <div className="space-y-3">
+              {similarVendors.map((v) => (
+                <Link
+                  key={v.id}
+                  href={`/vendors/${v.id}`}
+                  className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-white/70 p-4 transition hover:-translate-y-0.5 hover:bg-white"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold">{v.name}</p>
+                      <span className="rounded-full bg-[var(--panel-strong)] px-2 py-0.5 text-xs text-[var(--muted)]">
+                        {v.cohortName}
+                      </span>
+                    </div>
+                    <p className="text-sm text-[var(--muted)]">{v.category}</p>
+                  </div>
+                  <div className="flex gap-4 text-sm text-[var(--muted)]">
+                    <span>{v.reviewCount} review{v.reviewCount === 1 ? "" : "s"}</span>
+                    <span className="font-semibold text-[var(--foreground)]">{v.avgRating.toFixed(1)}/5</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </section>
 
         <aside className="lg:sticky lg:top-8 lg:self-start">

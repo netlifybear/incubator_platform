@@ -7,7 +7,8 @@ export type ActivityType =
   | "badge_earned"
   | "exchange_completed"
   | "request_answered"
-  | "helpful_vote_received";
+  | "helpful_vote_received"
+  | "invite_accepted";
 
 export async function recordActivity(params: {
   userId: string;
