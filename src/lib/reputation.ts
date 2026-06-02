@@ -175,15 +175,10 @@ export async function verifyReputationPacket(
     const valid = verifyEd25519(payload, packet.signature, keyPair.publicKey);
     if (valid) return { valid: true };
 
-    const remoteKey = await fetchPublicKeyFromIssuer(
-      process.env.REPUTATION_ISSUER ?? process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app",
-    );
-    if (remoteKey) {
-      const remoteValid = verifyEd25519(payload, packet.signature, remoteKey);
-      if (remoteValid) return { valid: true };
-    }
-
-    return { valid: false, error: "Invalid signature" };
+    return {
+      valid: false,
+      error: "Invalid signature; cross-instance public-key verification is not configured.",
+    };
   }
 
   if (!verifyHmac(payload, packet.signature)) {

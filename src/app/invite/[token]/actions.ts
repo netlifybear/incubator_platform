@@ -17,6 +17,6 @@ export async function acceptInviteAction(token: string) {
     throw new Error("You must be signed in with the invited email address to accept this invite.");
   }
 
-  await acceptInviteByToken(token);
+  await acceptInviteByToken(token, session.user.email);
   redirect("/");
 }

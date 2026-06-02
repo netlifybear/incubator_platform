@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "./prisma.ts";
 import {
   getInviteExpirationDate,
   normalizeInviteEmail,
-} from "@/lib/invite-validation";
+} from "./invite-validation.ts";
 
 export type CreateInviteInput = {
   cohortId: string;
@@ -63,7 +63,8 @@ export async function getInviteByToken(token: string) {
   });
 }
 
-export async function acceptInviteByToken(token: string) {
+export async function acceptInviteByToken(token: string, actorEmail: string) {
+  const normalizedActorEmail = normalizeInviteEmail(actorEmail);
   const invite = await prisma.invite.findUnique({
     where: { token },
     include: { cohort: true },
@@ -83,6 +84,10 @@ export async function acceptInviteByToken(token: string) {
 
   if (invite.expiresAt < new Date()) {
     throw new Error("Invite has expired.");
+  }
+
+  if (normalizedActorEmail !== invite.email) {
+    throw new Error("You must be signed in with the invited email address to accept this invite.");
   }
 
   return prisma.$transaction(async (tx) => {

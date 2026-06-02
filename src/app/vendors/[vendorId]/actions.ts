@@ -179,7 +179,7 @@ export async function toggleHelpfulVote(
   _formData: FormData,
 ): Promise<VoteActionState> {
   const founder = await getCurrentFounder();
-  if (!founder || founder.id !== userId || !founder.cohortId) {
+  if (!founder || founder.id !== userId || !founder.cohortId || !canWriteToCohort(founder)) {
     return { count: 0, voted: false };
   }
 

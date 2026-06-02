@@ -44,6 +44,7 @@ export async function updateCohortTrustPolicyAction(
   if (!["all", "badges_only", "points_only"].includes(trustPolicy)) {
     return { error: "Invalid trust policy." };
   }
+  if (cohortId !== admin.cohortId) return { error: "Cohort not found." };
 
   const cohort = await prisma.cohort.findFirst({
     where: { id: cohortId },

@@ -1,9 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import { getCurrentAdmin } from "@/lib/auth";
 import { AdminCreateCohortForm } from "./create-cohort-form";
 import { CohortTrustPolicyForm } from "./trust-policy-form";
 
 export default async function AdminCohortsPage() {
+  const admin = await getCurrentAdmin();
+  if (!admin?.cohortId) {
+    return null;
+  }
+
   const cohorts = await prisma.cohort.findMany({
+    where: { id: admin.cohortId },
     orderBy: { createdAt: "desc" },
     include: { _count: { select: { users: true, vendors: true } } },
   });
@@ -32,7 +39,7 @@ export default async function AdminCohortsPage() {
       </details>
 
       <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-        <h2 className="text-xl font-semibold">All cohorts</h2>
+        <h2 className="text-xl font-semibold">Your cohort</h2>
         <div className="mt-4 space-y-3">
           {cohorts.map((cohort) => (
             <div

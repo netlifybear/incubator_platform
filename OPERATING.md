@@ -200,7 +200,7 @@ See `.env.example` for all required variables:
 | `REPUTATION_SHARED_SECRET` | For cross-instance portability | Shared secret for signing/verifying reputation JWTs |
 | `REPUTATION_PRIVATE_KEY` | Optional for reputation portability | Ed25519 private key for signing reputation exports |
 | `REPUTATION_PUBLIC_KEY` | Optional for reputation portability | Ed25519 public key served from `/.well-known/reputation-public-key` |
-| `REPUTATION_ISSUER` | Optional for reputation portability | Public issuer URL used in reputation JWTs |
+| `REPUTATION_ISSUER` | Optional for reputation portability | Public issuer URL written into reputation JWT exports; imports still use shared-secret verification unless source-bound public-key trust is implemented |
 | `ISSUER_SECRET_PEPPER` | For external badge awards | Pepper used to HMAC vendor/investor award secrets before database lookup and attempt logging. Falls back to `NEXTAUTH_SECRET` in development. |
 
 In development, email (magic-link + notifications) is logged to console — no Resend key needed.
