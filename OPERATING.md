@@ -136,22 +136,23 @@ npm run build     # Next.js production build
 15. `/profile/settings` → "Import reputation" — paste the JWT to verify cross-incubator portability
 16. `/founder/maya` — public profile (unauthenticated), badges, cohort rank, Schema.org JSON-LD, copy profile link, portable badge embed
 17. `/leaderboard/public?cohort=demo-incubator` — public leaderboard (no auth, anonymous entries)
-18. `/seo` — guidance page
-19. `/backlinks` — add `example.com`, status badges, reachability checks, GSC connect, view link profile analysis (anchor text breakdown, velocity, natural link score)
-20. `/connect` — incoming questions, open requests, pending exchanges, and cohort activity
-21. `/grow` — profile status, impact metrics, backlinks, SEO actions, and reputation export link
-22. `/notifications` — notification inbox and mark-read controls
-23. Sign in as `admin@example.com` / `password`
-24. `/admin` — admin home and links to requests, vendors, reviews, and cohorts
-25. `/admin/requests` — metrics, invites, request queue, create sprint, badge award, pending nominations, founder badges grid, digest actions
-26. Approve/reject the nomination from step 13
-27. `/profile/settings` — "Review quality" section shows per-user quality dashboard (avg length, avg rating, helpful votes, strengths, improvement areas)
-28. `/admin/requests` — Badge section shows issuer type labels (Auto/Admin/Vendor/Investor) on every badge definition; admin award form can award admin-approved badges only
-29. `/admin/vendors` and `/admin/reviews` — create/delete cohort vendors and moderate cohort reviews
-30. `/backlinks` — Analysis panel now shows "Policy comparison" section linking to Google/Bing spam policies when violations are detected
-31. `/api/badges/vendor-award` — Award a badge as a vendor using a shared secret. The `Vendor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
-32. `/api/badges/investor-award` — Award a badge as an investor using a shared secret. The `Investor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
-33. `/admin/requests` — External badge audit section shows recent vendor/investor award attempts without raw submitted secrets.
+18. `/cohorts/demo-incubator` — public cohort page with privacy-gated aggregates and Harbor Accelerator cross-cohort vendor recommendations
+19. `/seo` — guidance page
+20. `/backlinks` — add `example.com`, status badges, reachability checks, GSC connect, view link profile analysis (anchor text breakdown, velocity, natural link score)
+21. `/connect` — incoming questions, open requests, pending exchanges, and cohort activity
+22. `/grow` — profile status, impact metrics, backlinks, SEO actions, and reputation export link
+23. `/notifications` — notification inbox and mark-read controls
+24. Sign in as `admin@example.com` / `password`
+25. `/admin` — admin home and links to requests, vendors, reviews, and cohorts
+26. `/admin/requests` — metrics, invites, request queue, create sprint, badge award, pending nominations, founder badges grid, digest actions
+27. Approve/reject the nomination from step 13
+28. `/profile/settings` — "Review quality" section shows per-user quality dashboard (avg length, avg rating, helpful votes, strengths, improvement areas)
+29. `/admin/requests` — Badge section shows issuer type labels (Auto/Admin/Vendor/Investor) on every badge definition; admin award form can award admin-approved badges only
+30. `/admin/vendors` and `/admin/reviews` — create/delete cohort vendors and moderate cohort reviews
+31. `/backlinks` — Analysis panel now shows "Policy comparison" section linking to Google/Bing spam policies when violations are detected
+32. `/api/badges/vendor-award` — Award a badge as a vendor using a shared secret. The `Vendor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
+33. `/api/badges/investor-award` — Award a badge as an investor using a shared secret. The `Investor.badgeAwardSecret` database field stores an HMAC hash, not the raw secret.
+34. `/admin/requests` — External badge audit section shows recent vendor/investor award attempts without raw submitted secrets.
 
 ## Architecture
 

@@ -114,6 +114,7 @@ Delivered:
 
 - Recommendations exclude the current cohort.
 - Recommendations are deterministic and rank by public-safe aggregate signal.
+- Recommendations require at least two reviews so one-off activity does not pollute cross-cohort discovery.
 - Anonymous users see only public-safe fields.
 - Existing vendor page tests/build still pass.
 
