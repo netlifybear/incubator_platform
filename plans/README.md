@@ -6,11 +6,8 @@ This folder contains implementation proposals and product direction notes. It is
 
 | Plan | Status | Next Agent Guidance |
 |------|--------|---------------------|
-| `ai-seo-geo-reviews.md` | Implemented | Public vendor review JSON-LD completed. llms.txt remains optional/experimental. |
-| `reciprocity-pipeline.md` | Partially Implemented | Phase 4 (auto-badges) completed. Remaining: portability governance (~4-6h), network effects (~6-10h). |
-| `gamification-rethink.md` | Product direction | Impact-over-points changes applied to grow/rewards/leaderboard pages. Review wants UX/product design before deeper work. |
-| `founder-credit-report.md` | Implemented | Founder credit report page and API endpoint completed. |
-| `nav-regroup-hubs.md` | Implemented | Reference only. Do not execute. |
+| `ai-seo-geo-reviews.md` | Implemented | Public vendor review JSON-LD completed. |
+
 
 ## Completed Work Summary
 
@@ -36,20 +33,14 @@ This folder contains implementation proposals and product direction notes. It is
 - Sidebar changed to Write/Connect/Grow + Admin links
 - `/connect` and `/grow` pages created
 
-⚪ **llms.txt**: Correctly deferred
-- Treated as optional/experimental per ai-seo-geo-reviews.md
-- No implementation needed as major AI/search providers have not clearly adopted it
-- Current industry evidence does not show reliable major-crawler adoption or measurable citation lift
-
 ## Remaining Work
 
 From reciprocity-pipeline.md:
 
-1. **Phase 2 (cont.)**: Govern the Portability Layer (~4-6h)
-   - Admin approval queue for imported packets
-   - Trust policy configuration
-   - Cross-instance verification (public-key based preferred)
-   - Requires schema/admin workflow design before coding
+1. **Phase 2 (cont.)**: Govern the Portability Layer (~4-6h) ✅
+   - Admin approval queue for imported packets: done
+   - Trust policy configuration: done
+   - Cross-instance verification: still shared-secret only (public-key deferred)
 
 2. **Gamification rethink**: Impact-over-points refinements
    - Basic UX changes applied (grow/rewards/leaderboard pages)
@@ -64,7 +55,6 @@ From reciprocity-pipeline.md:
    - Split before execution; this is roadmap-scale
 
 4. **Optional AI/SEO refinements**
-   - `llms.txt`
    - Q&A schema only if public Q&A exists
    - Citation optimization and richer founder/startup structured data
 

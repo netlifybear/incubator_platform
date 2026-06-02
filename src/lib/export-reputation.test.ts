@@ -40,7 +40,7 @@ describe("reputation export", () => {
     assert.ok(jwt);
     assert.equal(jwt.split(".").length, 3);
 
-    const payload = verifyReputationJWT(jwt);
+    const payload = await verifyReputationJWT(jwt);
     assert.ok(payload);
     const reputationPayload = payload as ReputationPayload;
     assert.equal(reputationPayload.sub, userId);
@@ -53,14 +53,14 @@ describe("reputation export", () => {
     const jwt = await generateReputationJWT(userId);
     const parts = jwt.split(".");
     const tampered = `${parts[0]}.${parts[1]}.invalidsignature`;
-    const result = verifyReputationJWT(tampered);
+    const result = await verifyReputationJWT(tampered);
     assert.equal(result, null);
   });
 
   it("verifyReputationJWT rejects expired tokens", async () => {
     // We can't easily create an expired token without mocking,
     // but we can verify a malformed token returns null
-    const result = verifyReputationJWT("header.payload.invalid");
+    const result = await verifyReputationJWT("header.payload.invalid");
     assert.equal(result, null);
   });
 });

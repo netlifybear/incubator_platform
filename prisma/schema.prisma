@@ -12,22 +12,23 @@ datasource db {
 }
 
 model Cohort {
-  id                 String              @id @default(cuid())
-  name               String
-  slug               String              @unique
-  description        String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  users              User[]
-  vendors            Vendor[]
-  reviews            Review[]
-  consumerReviews    ConsumerReview[]
-  requests           VendorRequest[]
-  invites            Invite[]
-  badgeNominations   BadgeNomination[]
-  sprints            Sprint[]
-  guestPostExchanges GuestPostExchange[]
-  activityEvents     ActivityEvent[]
+  id                  String              @id @default(cuid())
+  name                String
+  slug                String              @unique
+  description         String?
+  defaultTrustPolicy  String              @default("all")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  users               User[]
+  vendors             Vendor[]
+  reviews             Review[]
+  consumerReviews     ConsumerReview[]
+  requests            VendorRequest[]
+  invites             Invite[]
+  badgeNominations    BadgeNomination[]
+  sprints             Sprint[]
+  guestPostExchanges  GuestPostExchange[]
+  activityEvents      ActivityEvent[]
 }
 
 model User {
@@ -66,6 +67,7 @@ model User {
   notifications             Notification[]
   activityEvents            ActivityEvent[]
   reputationImports         ReputationImport[]
+  invitedInvites            Invite[]                @relation("InvitedInvites")
   accounts                  Account[]
   sessions                  Session[]
 
@@ -196,9 +198,12 @@ model Invite {
   revokedAt  DateTime?
   cohortId   String
   cohort     Cohort    @relation(fields: [cohortId], references: [id])
+  invitedById String?
+  invitedBy  User?     @relation("InvitedInvites", fields: [invitedById], references: [id])
 
   @@index([cohortId, acceptedAt])
   @@index([email])
+  @@index([invitedById])
 }
 
 model Badge {
@@ -277,18 +282,24 @@ model BacklinkSnapshot {
 }
 
 model ReputationImport {
-  id             String   @id @default(cuid())
-  sourceInstance String
-  sourceName     String
-  founderId      String
-  packetJson     String
-  signature      String
-  verifiedAt     DateTime @default(now())
-  importedAt     DateTime @default(now())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id])
+  id              String    @id @default(cuid())
+  sourceInstance  String
+  sourceName      String
+  founderId       String
+  packetJson      String
+  signature       String
+  verifiedAt      DateTime  @default(now())
+  importedAt      DateTime  @default(now())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  status          String    @default("pending")
+  approvedAt      DateTime?
+  approvedBy      String?
+  trustPolicy     String    @default("all")
+  rejectionReason String?
 
   @@index([userId])
+  @@index([status])
 }
 
 model Sprint {

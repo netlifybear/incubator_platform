@@ -89,8 +89,8 @@ Patent/spec coverage:
 
 Current gap:
 
-- Imported reputation needs governance: admin approval, trust policy, and stronger cross-instance verification.
-- Structured data refinements remain optional: `llms.txt`, Q&A schema if public Q&A exists, and richer founder/startup fields.
+- Imported reputation governance is live (admin approval queue + trust policy per import). Cross-instance public-key verification remains deferred.
+- Structured data refinements remain optional: Q&A schema if public Q&A exists, and richer founder/startup fields.
 
 ## 6. SEO Ethics
 

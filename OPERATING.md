@@ -44,6 +44,8 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/signin` | Magic-link sign-in (demo collapsed) | None |
 | `/connect` | Connect hub — incoming questions, open requests, exchanges, cohort activity | Founder |
 | `/grow` | Grow hub — profile, impact, backlinks, SEO actions, reputation export link | Founder |
+| `/cohorts` | Public cohort directory with aggregate counts | None |
+| `/cohorts/[slug]` | Public cohort aggregate page with top vendors and review counts | None |
 | `/vendors` | Vendor directory with search, category filter, sort by name/rating/trending/reviews | Founder |
 | `/vendors/[id]` | Vendor detail + founder/consumer review modes + quality engine + optional images | Founder/public hybrid |
 | `/top-vendors` | Vendor ranking page by authority score with tier badges | Founder |
@@ -62,10 +64,13 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/backlinks` | Backlink tracker + validation analysis panel + spam policy comparison UI (Google, Bing) | Founder |
 | `/founder/[slug]` | Public founder profile (name, bio, badges, cohort rank, Schema.org, copy link, portable badge embed) | None |
 | `/founder/[slug]/credibility` | Public founder credibility report with aggregate reputation and verification data | None |
+| `/invite` | Founder referral invite page | Founder |
 | `/invite/[token]` | Accept a cohort invite | None |
 | `/notifications` | Notification inbox and mark-read controls | Founder |
 | `/admin` | Admin home with cohort overview and admin navigation | Admin |
 | `/admin/cohorts` | Cohort management | Admin |
+| `/admin/imports` | Reputation import approval queue and history | Admin |
+| `/admin/users` | Founder/alumni role management | Admin |
 | `/admin/vendors` | Admin vendor management | Admin |
 | `/admin/reviews` | Admin founder/consumer review moderation | Admin |
 | `/admin/requests` | Admin requests: invites, request queue, sprint creation, badge award, nominations, digest | Admin |
@@ -81,6 +86,7 @@ Same `CRON_SECRET` auth as the digest endpoint.
 | `/api/notifications` | Unread notification count API | Founder |
 | `/api/reputation/export` | Export reputation as signed JWT | Founder |
 | `/api/reputation/import` | Import reputation from JWT (verified + stored) | Founder |
+| `/.well-known/reputation-public-key` | Public Ed25519 reputation verification key when configured | None |
 
 ## Demo Accounts
 
@@ -103,7 +109,7 @@ Creates:
 ## Verification
 
 ```bash
-npm test          # 103 tests across 29 test files (node:test, node:assert/strict)
+npm test          # 108 tests across 30 test files (node:test, node:assert/strict)
 npm run build     # Next.js production build
 ```
 
@@ -192,6 +198,9 @@ See `.env.example` for all required variables:
 | `RESEND_API_KEY` | For email | Resend transaction API key |
 | `EMAIL_FROM` | For email | Sender address |
 | `REPUTATION_SHARED_SECRET` | For cross-instance portability | Shared secret for signing/verifying reputation JWTs |
+| `REPUTATION_PRIVATE_KEY` | Optional for reputation portability | Ed25519 private key for signing reputation exports |
+| `REPUTATION_PUBLIC_KEY` | Optional for reputation portability | Ed25519 public key served from `/.well-known/reputation-public-key` |
+| `REPUTATION_ISSUER` | Optional for reputation portability | Public issuer URL used in reputation JWTs |
 | `ISSUER_SECRET_PEPPER` | For external badge awards | Pepper used to HMAC vendor/investor award secrets before database lookup and attempt logging. Falls back to `NEXTAUTH_SECRET` in development. |
 
 In development, email (magic-link + notifications) is logged to console — no Resend key needed.

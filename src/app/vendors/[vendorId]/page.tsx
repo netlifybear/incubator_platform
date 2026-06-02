@@ -128,6 +128,16 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
               ? "No ratings yet"
               : `${formatAverageRating(averageRating)} average rating`}
           </div>
+          {vendor.cohort?.slug ? (
+            <div className="mt-4">
+              <Link
+                href={`/cohorts/${vendor.cohort.slug}`}
+                className="inline-flex items-center gap-1 rounded-full bg-[var(--panel-strong)] px-3 py-1.5 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--accent)]"
+              >
+                {vendor.cohort.name}
+              </Link>
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-8 space-y-4">
@@ -158,7 +168,7 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold">{getFounderDisplayName(review.user)}</p>
+                    <p className="font-semibold" data-review-author={getFounderDisplayName(review.user)}>{getFounderDisplayName(review.user)}</p>
                     <p className="text-sm text-[var(--muted)]">Verified cohort member</p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -169,7 +179,7 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                         vendorName={vendor.name}
                       />
                     ) : null}
-                    <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold">
+                    <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold" data-review-rating={review.rating}>
                       {review.rating}/5
                     </p>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${qualityPct >= 80 ? "bg-green-100 text-green-800" : qualityPct >= 50 ? "bg-amber-100 text-amber-800" : "bg-[var(--panel-strong)] text-[var(--muted)]"}`}>
@@ -177,18 +187,18 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                     </span>
                   </div>
                 </div>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-4 flex flex-wrap gap-2" data-review-details="">
                   {review.usedVendor ? (
-                    <span className="rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-semibold text-white">
+                    <span className="rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-semibold text-white" data-review-uservendor="true">
                       Used this vendor
                     </span>
                   ) : (
-                    <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
+                    <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]" data-review-uservendor="false">
                       Recommendation only
                     </span>
                   )}
                   {review.workType ? (
-                    <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
+                    <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]" data-review-worktype={review.workType}>
                       {review.workType}
                     </span>
                   ) : null}
@@ -216,7 +226,7 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                     ))}
                   </div>
                 ) : null}
-                <p className="mt-4 text-sm text-[var(--muted)]">
+                <p className="mt-4 text-sm text-[var(--muted)]" data-review-date={review.createdAt.toISOString()}>
                   {review.createdAt.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -258,8 +268,8 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                 className="rounded-3xl border border-[var(--border)] bg-white/70 p-6"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="font-semibold">{review.displayName ?? "Anonymous"}</p>
-                  <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold">
+                  <p className="font-semibold" data-review-author={review.displayName ?? "Anonymous"}>{review.displayName ?? "Anonymous"}</p>
+                  <p className="rounded-full bg-[var(--panel-strong)] px-3 py-1 font-semibold" data-review-rating={review.rating}>
                     {review.rating}/5
                   </p>
                 </div>
@@ -281,7 +291,7 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
                     ))}
                   </div>
                 ) : null}
-                <p className="mt-4 text-sm text-[var(--muted)]">
+                <p className="mt-4 text-sm text-[var(--muted)]" data-review-date={review.createdAt.toISOString()}>
                   {review.createdAt.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",

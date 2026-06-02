@@ -5,7 +5,7 @@ import { getCurrentFounder } from "@/lib/auth";
 import { createReviewForCohort } from "@/lib/reviews";
 import { createConsumerReview } from "@/lib/consumer-reviews";
 import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
-import { hasActiveCohort } from "@/lib/tenant-policy";
+import { hasActiveCohort, canWriteToCohort } from "@/lib/tenant-policy";
 import { toggleVote } from "@/lib/helpful-votes";
 import { reviewCelebrationPoints } from "@/lib/review-action-presenter";
 import { analyzeReviewText } from "@/lib/review-quality";
@@ -66,6 +66,10 @@ export async function createReviewAction(
 
   if (!hasActiveCohort(founder)) {
     return { error: "You must be signed in as a cohort founder to review vendors." };
+  }
+
+  if (!canWriteToCohort(founder)) {
+    return { error: "Alumni cannot create new reviews." };
   }
 
   const rating = Number(formData.get("rating"));
@@ -139,6 +143,10 @@ export async function askForDetailsAction(
   const founder = await getCurrentFounder();
   if (!founder || founder.id !== founderId) {
     return { error: "You must be signed in." };
+  }
+
+  if (!canWriteToCohort(founder)) {
+    return { error: "Alumni cannot send request messages." };
   }
 
   const message = String(formData.get("message") ?? "").trim();

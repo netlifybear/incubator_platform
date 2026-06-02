@@ -7,7 +7,8 @@ export type NotificationType =
   | "exchange_response"
   | "helpful_vote"
   | "badge_earned"
-  | "sprint_end";
+  | "sprint_end"
+  | "reputation_import";
 
 export async function createNotification(params: {
   userId: string;

@@ -1,5 +1,6 @@
 type CohortScopedUser = {
   cohortId?: string | null;
+  role?: string | null;
 };
 
 type DisplayableFounder = {
@@ -18,6 +19,15 @@ export function canAccessCohortResource(
   resourceCohortId: string,
 ) {
   return Boolean(user?.cohortId && user.cohortId === resourceCohortId);
+}
+
+export function isAlumni(user: CohortScopedUser | null): boolean {
+  return user?.role === "alumni";
+}
+
+export function canWriteToCohort(user: CohortScopedUser | null): boolean {
+  if (!user?.cohortId) return false;
+  return user.role === "founder" || user.role === "admin";
 }
 
 export function getFounderDisplayName(founder: DisplayableFounder) {

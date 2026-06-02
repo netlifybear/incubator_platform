@@ -62,7 +62,14 @@ export default async function FoundersPage({ searchParams }: FoundersPageProps) 
                   {(founder.name ?? "F").charAt(0)}
                 </div>
                 <div>
-                  <h2 className="font-semibold">{founder.name}</h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-semibold">{founder.name}</h2>
+                    {founder.role === "alumni" ? (
+                      <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                        Alumni
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="text-sm text-[var(--muted)]">{founder.cohort?.name ?? "Incubator cohort"}</p>
                 </div>
               </div>

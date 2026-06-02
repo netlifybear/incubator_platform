@@ -8,6 +8,7 @@ import { getBacklinkSnapshots } from "@/lib/backlinks";
 import { BacklinkVelocityChart } from "@/app/components/backlink-velocity-chart";
 import { prisma } from "@/lib/prisma";
 import { ReputationImportCard } from "./reputation-import-card";
+import { getFounderReferralStats } from "@/lib/invites";
 
 export default async function GrowPage() {
   const founder = await getCurrentFounder();
@@ -20,11 +21,12 @@ export default async function GrowPage() {
     redirect("/");
   }
 
-  const [reviewCount, badgeCount, snapshots, backlinkCount] = await Promise.all([
+  const [reviewCount, badgeCount, snapshots, backlinkCount, referralStats] = await Promise.all([
     prisma.review.count({ where: { userId: founder.id } }),
     prisma.badge.count({ where: { userId: founder.id } }),
     getBacklinkSnapshots(founder.id),
     prisma.backlinkLog.count({ where: { userId: founder.id } }),
+    getFounderReferralStats(founder.id),
   ]);
 
   const helpfulVoteCount = await prisma.helpfulVote.count({
@@ -97,6 +99,10 @@ export default async function GrowPage() {
               <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
                 <span className="text-sm text-[var(--muted)]">Badges</span>
                 <span className="text-sm font-semibold">{badgeCount}</span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
+                <span className="text-sm text-[var(--muted)]">Referrals joined</span>
+                <span className="text-sm font-semibold">{referralStats.accepted}</span>
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">

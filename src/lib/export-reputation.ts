@@ -1,21 +1,44 @@
-import { createHash, createHmac } from "node:crypto";
+import crypto from "node:crypto";
 import { prisma } from "./prisma.ts";
 import { getFounderPoints } from "./points.ts";
 import { getBadgesForFounder } from "./badges.ts";
 
 function base64url(input: string) {
-  return Buffer.from(input)
-    .toString("base64url");
+  return Buffer.from(input).toString("base64url");
 }
 
-function sign(payload: string, secret: string) {
-  return createHmac("sha256", secret).update(payload).digest("base64url");
+function getKeyPair(): { publicKey: string; privateKey: string } | null {
+  const privateKey = process.env.REPUTATION_PRIVATE_KEY;
+  const publicKey = process.env.REPUTATION_PUBLIC_KEY;
+  if (privateKey && publicKey) {
+    return { publicKey, privateKey };
+  }
+  return null;
+}
+
+function signEd25519(payload: string, privateKeyPem: string): string {
+  const key = crypto.createPrivateKey({ key: privateKeyPem, format: "pem", type: "pkcs8" });
+  return crypto.sign(null, Buffer.from(payload), key).toString("base64url");
+}
+
+function signHmac(payload: string, secret: string): string {
+  return crypto.createHmac("sha256", secret).update(payload).digest("base64url");
 }
 
 function getSecret(): string {
   const secret = process.env.NEXTAUTH_SECRET;
   if (!secret) throw new Error("NEXTAUTH_SECRET is not configured.");
   return secret;
+}
+
+export function getReputationPublicKey(): string | null {
+  const keyPair = getKeyPair();
+  if (keyPair) return keyPair.publicKey;
+
+  const pubKey = process.env.REPUTATION_PUBLIC_KEY;
+  if (pubKey) return pubKey;
+
+  return null;
 }
 
 export async function generateReputationJWT(userId: string): Promise<string> {
@@ -42,10 +65,14 @@ export async function generateReputationJWT(userId: string): Promise<string> {
 
   if (!user) throw new Error("User not found.");
 
-  const header = { alg: "HS256", typ: "JWT" };
+  const keyPair = getKeyPair();
+  const alg = keyPair ? "Ed25519" : "HS256";
   const now = Math.floor(Date.now() / 1000);
-  const payload = {
-    iss: "incubator-trust",
+  const issuer = process.env.REPUTATION_ISSUER ?? process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app";
+
+  const header = { alg, typ: "JWT" };
+  const payload: Record<string, unknown> = {
+    iss: issuer,
     sub: user.id,
     iat: now,
     exp: now + 86400,
@@ -69,30 +96,53 @@ export async function generateReputationJWT(userId: string): Promise<string> {
       type: b.type,
       label: b.label,
       icon: b.icon,
-      earnedAt: b.earnedAt.toISOString(),
+      earnedAt: b.earnedAt?.toISOString?.() ?? b.earnedAt,
       issuerType: b.issuerType,
     })),
   };
 
-  const secret = getSecret();
   const headerB64 = base64url(JSON.stringify(header));
   const payloadB64 = base64url(JSON.stringify(payload));
-  const signature = sign(`${headerB64}.${payloadB64}`, secret);
+  const signingInput = `${headerB64}.${payloadB64}`;
 
-  return `${headerB64}.${payloadB64}.${signature}`;
+  const signature = keyPair
+    ? signEd25519(signingInput, keyPair.privateKey)
+    : signHmac(signingInput, getSecret());
+
+  return `${signingInput}.${signature}`;
 }
 
-export function verifyReputationJWT(token: string): Record<string, unknown> | null {
+export async function verifyReputationJWT(token: string): Promise<Record<string, unknown> | null> {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
 
-    const secret = getSecret();
-    const expectedSig = sign(`${parts[0]}.${parts[1]}`, secret);
-    if (!safeCompare(parts[2], expectedSig)) return null;
-
+    const header = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf-8"));
     const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf-8"));
+
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
+
+    const alg: string = header.alg;
+    const signingInput = `${parts[0]}.${parts[1]}`;
+    const signature = parts[2];
+
+    if (alg === "Ed25519") {
+      const issuer = payload.iss as string | undefined;
+      if (!issuer) return null;
+
+      const publicKey = await fetchPublicKey(issuer);
+      if (!publicKey) return null;
+
+      const key = crypto.createPublicKey({ key: publicKey, format: "pem", type: "spki" });
+      const valid = crypto.verify(null, Buffer.from(signingInput), key, Buffer.from(signature, "base64url"));
+      if (!valid) return null;
+    } else if (alg === "HS256") {
+      const secret = getSecret();
+      const expected = signHmac(signingInput, secret);
+      if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
+    } else {
+      return null;
+    }
 
     return payload;
   } catch {
@@ -100,7 +150,16 @@ export function verifyReputationJWT(token: string): Record<string, unknown> | nu
   }
 }
 
-function safeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  return createHash("sha256").update(a).digest().equals(createHash("sha256").update(b).digest());
+async function fetchPublicKey(issuer: string): Promise<string | null> {
+  const wellKnownUrl = `${issuer.replace(/\/$/, "")}/.well-known/reputation-public-key`;
+
+  try {
+    const response = await fetch(wellKnownUrl, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) return null;
+    const text = await response.text();
+    if (!text.includes("BEGIN PUBLIC KEY")) return null;
+    return text;
+  } catch {
+    return null;
+  }
 }

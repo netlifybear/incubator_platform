@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentFounder } from "@/lib/auth";
-import { hasActiveCohort } from "@/lib/tenant-policy";
+import { hasActiveCohort, canWriteToCohort } from "@/lib/tenant-policy";
 import { createVendorRequestForCohort } from "@/lib/vendor-requests";
 
 export type VendorRequestActionState = {
@@ -18,6 +18,10 @@ export async function createVendorRequestAction(
 
   if (!hasActiveCohort(founder)) {
     return { error: "You must be signed in as a cohort founder to request vendors." };
+  }
+
+  if (!canWriteToCohort(founder)) {
+    return { error: "Alumni cannot create vendor requests." };
   }
 
   try {

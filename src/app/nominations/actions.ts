@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentFounder } from "@/lib/auth";
+import { canWriteToCohort } from "@/lib/tenant-policy";
 import { createNomination } from "@/lib/nominations";
 import { prisma } from "@/lib/prisma";
 
@@ -18,6 +19,10 @@ export async function createNominationAction(
 
   if (!founder?.cohortId) {
     return { error: "You must be a cohort founder to nominate." };
+  }
+
+  if (!canWriteToCohort(founder)) {
+    return { error: "Alumni cannot submit nominations." };
   }
 
   const nomineeEmail = String(formData.get("nomineeEmail") ?? "").trim().toLowerCase();

@@ -1,6 +1,6 @@
 # Reciprocity Pipeline: Platform ↔ Founder
 
-From `docs/product.md`, the platform's asymmetric advantage is a bilateral exchange. The current implementation delivers the core cohort/private-review loop, public profiles, badges, backlinks/GSC, notifications, activity, reputation export/import, public vendor review JSON-LD, founder credibility reports, and the Write/Connect/Grow hubs. The remaining gaps are mostly governed portability, network effects, automatic badge computation, and impact-over-points product refinement.
+From `docs/product.md`, the platform's asymmetric advantage is a bilateral exchange. The current implementation delivers the core cohort/private-review loop, public profiles, badges, auto-badge computation, backlinks/GSC, notifications, activity, reputation export/import, public vendor review JSON-LD, founder credibility reports, and the Write/Connect/Grow hubs. The remaining gaps are mostly governed portability, network effects, and impact-over-points product refinement.
 
 ## Platform → Founder
 
@@ -19,22 +19,18 @@ From `docs/product.md`, the platform's asymmetric advantage is a bilateral excha
 
 ### ❌ Not Delivered
 
-**1. Governed reputation portability**
+**1. Governed reputation portability — Done ✅**
 - JWT export and import exist, and imported packets are stored
-- Missing governance: imported reputation is accepted directly by the signed-in founder; there is no admin approval queue, trust policy, or cross-instance key rotation
-- **Plan:** Needs a governance scope, not a first import implementation
-- **What it would require:**
-  - Admin approval queue for imported packets
-  - Matching logic (email-based plus manual approval)
-  - Configurable trust: import everything vs. import only badges/points vs. import only verified reviews
-  - Cross-instance verification policy, ideally public-key based instead of shared-secret only
-- **Effort:** ~4-6h for admin review queue and policy, more for public-key verification
+- Admin approval queue with approve/reject actions
+- Trust policy selector per import (all, badges_only, points_only)
+- Admin notification on pending import; founder notification on approve/reject
+- **Remaining:** Public-key based cross-instance verification (currently shared-secret only)
 
 ### 🟡 Partial
 
 | Promise | Status | Gap |
 |---------|--------|-----|
-| SEO benefit for founder's startup | Backlink tracker + `/seo` page exists; founder `Person` JSON-LD and public vendor review JSON-LD exist | Richer founder/startup structured fields, `llms.txt`, and Q&A schema are optional refinements |
+| SEO benefit for founder's startup | Backlink tracker + `/seo` page exists; founder `Person` JSON-LD and public vendor review JSON-LD exist | Richer founder/startup structured fields and Q&A schema are optional refinements |
 
 ## Founder → Platform
 
@@ -74,18 +70,18 @@ The highest-leverage missing piece has been completed for public vendor reviews.
 
 - [x] Public review JSON-LD on `/vendors/[vendorId]` (Product + AggregateRating + Review from public consumer reviews)
 - [x] Profile JSON-LD on `/founder/[slug]` (Person with affiliation/memberOf fields)
-- [ ] Optional/experimental `llms.txt` after JSON-LD, only if it remains low-cost
 - [ ] Q&A schema only if public Q&A/request pages are created
 
-### Phase 2: Govern the Portability Layer (~4-6h)
-Founders can already export and import reputation packets. The next work is to make imported reputation trustworthy enough for admins and future investors.
+### Phase 2: Govern the Portability Layer (~4-6h) ✅
+Founders can already export and import reputation packets. Admin approval queue and trust policy are now implemented. Cross-instance verification via public keys remains deferred (still shared-secret only).
 
 - [x] Reputation export API
 - [x] Reputation import API (accepts signed JWT, validates, records packet)
 - [x] Import/export UI in profile settings
 - [x] Import UI on `/grow`
-- [ ] Admin approval queue for imports
-- [ ] Cross-instance verification (shared secret or public key)
+- [x] Admin approval queue for imports
+- [x] Trust policy per import (all, badges_only, points_only)
+- [ ] Cross-instance verification (public key) — deferred; shared-secret in place
 
 ### Phase 3: Close the Network Effects Gap (~6-10h)
 The platform needs alumni participation to keep the directory current and expand coverage.
@@ -107,8 +103,9 @@ Computable badge types now auto-award without admin intervention. Run on review 
 | Phase | Effort | Impact | Dependencies |
 |-------|--------|--------|-------------|
 | 1. Public structured data | Mostly done | High (unlocks structured public review data) | Optional refinements only |
-| 2. Reputation portability governance | ~4-6h | High (defensibility) | Export/import baseline already built |
+| 2. Reputation portability governance | ✅ Done | Export/import baseline already built |
 | 3. Network effects | ~6-10h | Medium-high (growth) | Alumni role needs schema change |
 | 4. Auto-badges | ✅ Done | Badge definitions existed |
 
-Remaining total: ~10-16h to fully deliver the reciprocity promise in `docs/product.md`, depending on portability governance depth and how far network effects are taken.
+Now fully delivered: Phase 1 (structured data), Phase 2 (portability governance), Phase 4 (auto-badges).
+Remaining: ~6-10h for Phase 3 (network effects).

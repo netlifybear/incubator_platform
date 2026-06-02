@@ -146,6 +146,15 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     awardableByAdmin: true,
     computable: true,
   },
+  {
+    type: "recruiter",
+    label: "Recruiter",
+    icon: "\uD83E\uDD1D",
+    description: "Invited 3+ founders who joined the cohort.",
+    criteria: "3+ accepted referrals through founder invite links.",
+    awardableByAdmin: true,
+    computable: true,
+  },
 ];
 
 export function badgeDefinition(type: string): BadgeDefinition | undefined {

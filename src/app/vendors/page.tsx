@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
-import { searchVendorsForCohort, listVendorCategoriesForCohort } from "@/lib/vendors";
+import { searchVendorsForCohort, listVendorCategoriesForCohort, getCrossCohortRecommendations } from "@/lib/vendors";
 import { getAverageRating, getVendorAuthorityScore, formatVendorAuthorityScore } from "@/lib/vendors";
 import { formatAverageRating, reviewCountLabel } from "@/lib/vendor-presenter";
 import { VendorSearch } from "./vendor-search";
@@ -32,7 +32,7 @@ export default async function VendorsPage({ searchParams }: Props) {
   const category = params?.category;
   const sort = params?.sort ?? "name";
 
-  const [vendors, categories] = await Promise.all([
+  const [vendors, categories, crossCohort] = await Promise.all([
     searchVendorsForCohort({
       cohortId: founder.cohortId,
       query: query || undefined,
@@ -40,6 +40,7 @@ export default async function VendorsPage({ searchParams }: Props) {
       sort,
     }),
     listVendorCategoriesForCohort(founder.cohortId),
+    getCrossCohortRecommendations(founder.cohortId),
   ]);
 
   return (
@@ -127,6 +128,40 @@ export default async function VendorsPage({ searchParams }: Props) {
           </div>
         ) : null}
       </section>
+
+      {crossCohort.length > 0 && !query && !category ? (
+        <section className="mt-10 rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+          <h2 className="text-xl font-semibold">Also trusted by other cohorts</h2>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            Highly rated vendors from other incubator cohorts.
+          </p>
+          <div className="mt-4 space-y-3">
+            {crossCohort.map((vendor) => (
+              <Link
+                key={vendor.id}
+                href={`/vendors/${vendor.id}`}
+                className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:-translate-y-0.5 hover:bg-white"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{vendor.name}</p>
+                    <span className="rounded-full bg-[var(--panel-strong)] px-2 py-0.5 text-xs text-[var(--muted)]">
+                      {vendor.cohortName}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[var(--muted)]">{vendor.category}</p>
+                </div>
+                <div className="flex gap-4 text-sm text-[var(--muted)]">
+                  <span>{vendor.reviewCount} review{vendor.reviewCount === 1 ? "" : "s"}</span>
+                  <span className="font-semibold text-[var(--foreground)]">
+                    {vendor.avgRating.toFixed(1)}/5
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </AppShell>
   );
 }

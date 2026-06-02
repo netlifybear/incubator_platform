@@ -80,6 +80,7 @@ export async function cleanupTestData(input: {
     });
     const userIds = users.map((u) => u.id);
     if (userIds.length) {
+      await prisma.reputationImport.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.notification.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.activityEvent.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.backlinkSnapshot.deleteMany({ where: { userId: { in: userIds } } });

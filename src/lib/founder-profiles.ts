@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 const publicFounderProfileSelect = {
   id: true,
   bio: true,
+  image: true,
   cohort: {
     select: {
       id: true,
@@ -16,6 +17,7 @@ const publicFounderProfileSelect = {
   },
   email: true,
   name: true,
+  role: true,
   profileCompletePercentage: true,
   profileSlug: true,
   startupUrl: true,
@@ -28,7 +30,7 @@ const publicFounderProfileSelect = {
 export async function listPublicFounders(sort?: "name" | "recent") {
   return prisma.user.findMany({
     where: {
-      role: "founder",
+      role: { in: ["founder", "alumni"] },
       cohortId: { not: null },
       publicProfileEnabled: true,
       profileSlug: { not: null },
@@ -36,6 +38,7 @@ export async function listPublicFounders(sort?: "name" | "recent") {
     select: {
       name: true,
       profileSlug: true,
+      role: true,
       startupName: true,
       startupUrl: true,
       bio: true,
@@ -63,7 +66,7 @@ export async function getPublicFounderProfile(slug: string) {
 
   const founderWithStableSlug = await prisma.user.findFirst({
     where: {
-      role: "founder",
+      role: { in: ["founder", "alumni"] },
       cohortId: { not: null },
       profileSlug: normalizedSlug,
       publicProfileEnabled: true,
@@ -77,7 +80,7 @@ export async function getPublicFounderProfile(slug: string) {
 
   const legacyUsers = await prisma.user.findMany({
     where: {
-      role: "founder",
+      role: { in: ["founder", "alumni"] },
       cohortId: { not: null },
       profileSlug: null,
       publicProfileEnabled: true,

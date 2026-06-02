@@ -53,6 +53,10 @@ export async function computeAndAwardBadges(userId: string): Promise<string[]> {
   const reviewCount = reviews.length;
   const comments = reviews.map((r) => r.comment ?? "").filter((c) => c.length > 0);
 
+  const acceptedReferrals = await prisma.invite.count({
+    where: { invitedById: userId, acceptedAt: { not: null } },
+  });
+
   const checks: Array<{ type: string; eligible: boolean; description?: string }> = [
     {
       type: "verified",
@@ -115,6 +119,11 @@ export async function computeAndAwardBadges(userId: string): Promise<string[]> {
         });
       })(),
       description: "No spam or quality warnings triggered in last 20 reviews.",
+    },
+    {
+      type: "recruiter",
+      eligible: acceptedReferrals >= 3,
+      description: "Invited 3+ founders who joined the cohort.",
     },
   ];
 
@@ -202,6 +211,14 @@ async function computeAutoBadges(userId: string): Promise<FounderBadge[]> {
   const topContributorDef = badgeDefinition("top_contributor");
   if (topContributorDef && reviewCount >= 5) {
     badges.push({ type: topContributorDef.type, label: topContributorDef.label, icon: topContributorDef.icon });
+  }
+
+  const acceptedReferrals = await prisma.invite.count({
+    where: { invitedById: userId, acceptedAt: { not: null } },
+  });
+  const recruiterDef = badgeDefinition("recruiter");
+  if (recruiterDef && acceptedReferrals >= 3) {
+    badges.push({ type: recruiterDef.type, label: recruiterDef.label, icon: recruiterDef.icon });
   }
 
   const qualityDefs = await computeQualityBadges(userId, reviewCount);

@@ -8,6 +8,7 @@ import {
 export type CreateInviteInput = {
   cohortId: string;
   email: string;
+  invitedById?: string;
 };
 
 export async function createInviteForCohort(input: CreateInviteInput) {
@@ -20,6 +21,7 @@ export async function createInviteForCohort(input: CreateInviteInput) {
       email,
       token: crypto.randomBytes(24).toString("hex"),
       expiresAt: getInviteExpirationDate(now),
+      ...(input.invitedById ? { invitedById: input.invitedById } : {}),
     },
   });
 }
@@ -33,7 +35,25 @@ export async function listInvitesForCohort(cohortId: string) {
       createdAt: "desc",
     },
     take: 12,
+    include: {
+      invitedBy: {
+        select: { name: true, email: true },
+      },
+    },
   });
+}
+
+export async function getFounderReferralStats(founderId: string) {
+  const [sent, accepted] = await Promise.all([
+    prisma.invite.count({
+      where: { invitedById: founderId },
+    }),
+    prisma.invite.count({
+      where: { invitedById: founderId, acceptedAt: { not: null } },
+    }),
+  ]);
+
+  return { sent, accepted };
 }
 
 export async function getInviteByToken(token: string) {

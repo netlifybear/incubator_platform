@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { AdminCreateCohortForm } from "./create-cohort-form";
+import { CohortTrustPolicyForm } from "./trust-policy-form";
 
 export default async function AdminCohortsPage() {
   const cohorts = await prisma.cohort.findMany({
@@ -44,6 +45,12 @@ export default async function AdminCohortsPage() {
                 {cohort.description ? (
                   <p className="mt-1 text-sm text-[var(--muted)]">{cohort.description}</p>
                 ) : null}
+                <div className="mt-2">
+                  <CohortTrustPolicyForm
+                    cohortId={cohort.id}
+                    currentPolicy={cohort.defaultTrustPolicy}
+                  />
+                </div>
               </div>
               <div className="flex gap-4 text-sm text-[var(--muted)]">
                 <span>{cohort._count.users} founders</span>

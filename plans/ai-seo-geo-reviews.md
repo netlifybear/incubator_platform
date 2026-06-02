@@ -6,7 +6,6 @@ Public vendor review JSON-LD has been implemented on `/vendors/[vendorId]` for p
 
 Remaining work is optional/refinement work:
 
-- `llms.txt` remains an experimental content map, not a required SEO/GEO task.
 - Q&A schema is deferred until there are public Q&A or request pages.
 - Citation optimization and richer profile JSON-LD are lower-priority refinements.
 
@@ -24,7 +23,6 @@ Remaining work is optional/refinement work:
 ## Gap
 
 - Public vendor review JSON-LD is implemented
-- No AI-friendly site overview (`llms.txt`), but current industry evidence does not show reliable major-crawler adoption or measurable citation lift
 - No Q&A / FAQ schema on targeted request pages, deferred until those pages are public
 - No deliberate citation optimization in review content, lower priority after JSON-LD
 
@@ -93,27 +91,7 @@ Potential refinements:
 - Add `worksFor` or `founder`/`alumniOf` style organization fields if the product collects reliable startup/incubator metadata
 - Avoid adding speculative `knowsAbout` terms unless they come from explicit profile fields or reviewed categories
 
-### 3. llms.txt
-
-Optional experiment, not a required SEO/GEO task. Recent industry reporting and server-log analyses suggest `llms.txt` is not currently a dependable lever for AI visibility: major AI/search providers have not clearly adopted it as a retrieval, citation, or ranking signal, and observed crawler fetch behavior is inconsistent.
-
-If implemented later, generate an `llms.txt` at the root that lists public pages with descriptions. Treat it as a low-cost content map for possible future tooling, not as a promised traffic or citation driver.
-
-```
-# Incubator Trust
-> Private trust network for incubator founders
-
-## Vendors
-- /vendors/[id]: Vendor detail page with founder reviews and ratings
-- /founders: Directory of verified cohort founders
-- /founder/[slug]: Public founder profile with reputation and badges
-```
-
-**Files:** `src/app/llms.txt/route.ts` — dynamic route that queries public vendors and founders, renders plaintext.
-
-Keep this public-only. Do not list cohort-scoped pages, private admin pages, private request queues, or reputation import/export endpoints. The existing sitemap and robots configuration are also public-only, so `llms.txt` should follow that boundary.
-
-### 4. Q&A Schema on Request/Vendor Pages
+### 3. Q&A Schema on Request/Vendor Pages
 
 Defer until there are public Q&A pages. Current targeted request workflows are cohort-scoped, so adding `QAPage` to private request content would be misleading for crawlers and could expose content assumptions the public cannot verify.
 
@@ -131,7 +109,7 @@ Defer until there are public Q&A pages. Current targeted request workflows are c
 }
 ```
 
-### 5. AI Citation Optimization
+### 4. AI Citation Optimization
 
 Structure review content to maximize AI extractability:
 
@@ -147,14 +125,11 @@ This is lower priority than public JSON-LD. For founder reviews, prioritize clar
 |------|--------|--------|
 | Public review JSON-LD on vendor pages | Done | High — unlocks structured public consumer review data for crawlers |
 | Profile JSON-LD refinements | ~30min | Low-medium — already implemented; useful if richer public profile fields exist |
-| llms.txt | ~30min | Low/experimental — cheap content map, but not a proven AI visibility signal |
 | Q&A schema | Deferred | Low until public Q&A/request pages exist |
 | Citation optimization | ~2h | Low — nice-to-have after JSON-LD |
 
-Recommended next pass: skip vendor JSON-LD because it is done. Revisit `llms.txt` only after higher-confidence product work, and add Q&A schema only if request/Q&A pages become public.
+Recommended next pass: skip vendor JSON-LD because it is done. Add Q&A schema only if request/Q&A pages become public.
 
 ## Open Questions
 
 - Should public vendor JSON-LD include only consumer reviews, or should there be an explicit product decision to expose selected founder reviews publicly?
-- If `llms.txt` is added later, should it include every public vendor URL or only directory-level routes until vendor quality thresholds are met?
-- Is an `/llms-full.txt` alternative worth maintaining if major crawler adoption remains unproven?

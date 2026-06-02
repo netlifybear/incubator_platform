@@ -79,6 +79,13 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
     getServerSession(authOptions),
   ]);
 
+  const reviewedCategories = await prisma.review.findMany({
+    where: { userId: founder.id },
+    select: { vendor: { select: { category: true } } },
+    distinct: ["vendorId"],
+  });
+  const knowsAbout = [...new Set(reviewedCategories.map((r) => r.vendor.category))].sort();
+
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -100,12 +107,27 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
     jsonLd.url = founder.startupUrl;
   }
 
-  if (founder.startupName && founder.startupUrl) {
-    jsonLd.memberOf = {
-      "@type": "Organization",
-      name: founder.startupName,
-      url: founder.startupUrl,
-    };
+  if (founder.startupName) {
+    if (founder.startupUrl) {
+      jsonLd.worksFor = {
+        "@type": "Organization",
+        name: founder.startupName,
+        url: founder.startupUrl,
+      };
+    } else {
+      jsonLd.worksFor = {
+        "@type": "Organization",
+        name: founder.startupName,
+      };
+    }
+  }
+
+  if (founder.image) {
+    jsonLd.image = founder.image;
+  }
+
+  if (knowsAbout.length > 0) {
+    jsonLd.knowsAbout = knowsAbout;
   }
 
   if (reviewStats._count > 0 && reviewStats._avg.rating !== null) {
@@ -129,7 +151,14 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
           Public founder profile
         </p>
-        <h1 className="mt-4 text-5xl font-semibold tracking-tight">{displayName}</h1>
+        <h1 className="mt-4 text-5xl font-semibold tracking-tight">
+          {displayName}
+          {founder.role === "alumni" ? (
+            <span className="ml-3 inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800 align-middle">
+              Alumni
+            </span>
+          ) : null}
+        </h1>
         {founder.bio ? (
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
             {founder.bio}

@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
-import { prisma } from "@/lib/prisma";
-import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
-import { getFounderBadges } from "@/lib/badges";
-import { getAverageRating } from "@/lib/vendors";
+import { prisma } from "./prisma.ts";
+import { getFounderPoints, getFounderCohortRank } from "./points.ts";
+import { getFounderBadges } from "./badges.ts";
+import { getAverageRating } from "./vendors.ts";
 
 const SHARED_SECRET = process.env.REPUTATION_SHARED_SECRET ?? "dev-secret-change-in-production";
 
@@ -33,27 +33,48 @@ type ReputationAttestation = {
   issuedAt: string;
 };
 
-function base64UrlEncode(data: string): string {
-  return Buffer.from(data)
-    .toString("base64")
-    .replace(/=/g, "")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
+function getKeyPair(): { publicKey: string; privateKey: string } | null {
+  const privateKey = process.env.REPUTATION_PRIVATE_KEY;
+  const publicKey = process.env.REPUTATION_PUBLIC_KEY;
+  if (privateKey && publicKey) return { publicKey, privateKey };
+  return null;
 }
 
-function base64UrlDecode(str: string): string {
-  str = str.replace(/-/g, "+").replace(/_/g, "/");
-  while (str.length % 4) str += "=";
-  return Buffer.from(str, "base64").toString("utf-8");
+function signEd25519(payload: string, privateKeyPem: string): string {
+  const key = crypto.createPrivateKey({ key: privateKeyPem, format: "pem", type: "pkcs8" });
+  return crypto.sign(null, Buffer.from(payload), key).toString("base64url");
 }
 
-function createSignature(payload: string): string {
+function verifyEd25519(payload: string, signature: string, publicKeyPem: string): boolean {
+  try {
+    const key = crypto.createPublicKey({ key: publicKeyPem, format: "pem", type: "spki" });
+    return crypto.verify(null, Buffer.from(payload), key, Buffer.from(signature, "base64url"));
+  } catch {
+    return false;
+  }
+}
+
+function signHmac(payload: string): string {
   return crypto.createHmac("sha256", SHARED_SECRET).update(payload).digest("base64url");
 }
 
-function verifySignature(payload: string, signature: string): boolean {
-  const expected = createSignature(payload);
+function verifyHmac(payload: string, signature: string): boolean {
+  const expected = signHmac(payload);
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+}
+
+export async function fetchPublicKeyFromIssuer(issuerUrl: string): Promise<string | null> {
+  const wellKnownUrl = `${issuerUrl.replace(/\/$/, "")}/.well-known/reputation-public-key`;
+
+  try {
+    const response = await fetch(wellKnownUrl, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) return null;
+    const text = await response.text();
+    if (!text.includes("BEGIN PUBLIC KEY")) return null;
+    return text;
+  } catch {
+    return null;
+  }
 }
 
 export async function generateReputationPacket(founderId: string): Promise<ReputationPacket> {
@@ -103,7 +124,7 @@ export async function generateReputationPacket(founderId: string): Promise<Reput
   }
 
   const packet: Omit<ReputationPacket, "signature"> = {
-    version: "1.0",
+    version: "1.1",
     founderId: founder.id,
     sourceIncubator: {
       id: founder.cohort.id,
@@ -121,14 +142,17 @@ export async function generateReputationPacket(founderId: string): Promise<Reput
   };
 
   const payload = JSON.stringify(packet);
-  const signature = createSignature(payload);
+  const keyPair = getKeyPair();
+  const signature = keyPair
+    ? signEd25519(payload, keyPair.privateKey)
+    : signHmac(payload);
 
   return { ...packet, signature };
 }
 
-export function verifyReputationPacket(
+export async function verifyReputationPacket(
   packet: ReputationPacket,
-): { valid: boolean; error?: string } {
+): Promise<{ valid: boolean; error?: string }> {
   if (!packet.version) {
     return { valid: false, error: "Missing version" };
   }
@@ -146,7 +170,23 @@ export function verifyReputationPacket(
     issuedAt: packet.issuedAt,
   });
 
-  if (!verifySignature(payload, packet.signature)) {
+  const keyPair = getKeyPair();
+  if (keyPair) {
+    const valid = verifyEd25519(payload, packet.signature, keyPair.publicKey);
+    if (valid) return { valid: true };
+
+    const remoteKey = await fetchPublicKeyFromIssuer(
+      process.env.REPUTATION_ISSUER ?? process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app",
+    );
+    if (remoteKey) {
+      const remoteValid = verifyEd25519(payload, packet.signature, remoteKey);
+      if (remoteValid) return { valid: true };
+    }
+
+    return { valid: false, error: "Invalid signature" };
+  }
+
+  if (!verifyHmac(payload, packet.signature)) {
     return { valid: false, error: "Invalid signature" };
   }
 
@@ -154,7 +194,7 @@ export function verifyReputationPacket(
 }
 
 export function reputationPacketToJwt(packet: ReputationPacket): string {
-  const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const header = base64UrlEncode(JSON.stringify({ alg: "Ed25519", typ: "JWT" }));
   const payload = base64UrlEncode(JSON.stringify(packet));
   const sig = base64UrlEncode(packet.signature);
   return `${header}.${payload}.${sig}`;
@@ -173,4 +213,18 @@ export function parseJwtToReputationPacket(jwt: string): ReputationPacket | null
   } catch {
     return null;
   }
+}
+
+function base64UrlEncode(data: string): string {
+  return Buffer.from(data)
+    .toString("base64")
+    .replace(/=/g, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
+}
+
+function base64UrlDecode(str: string): string {
+  str = str.replace(/-/g, "+").replace(/_/g, "/");
+  while (str.length % 4) str += "=";
+  return Buffer.from(str, "base64").toString("utf-8");
 }

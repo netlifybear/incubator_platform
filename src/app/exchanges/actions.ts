@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentFounder } from "@/lib/auth";
-import { hasActiveCohort } from "@/lib/tenant-policy";
+import { hasActiveCohort, canWriteToCohort } from "@/lib/tenant-policy";
 import { createGuestPostRequest, updateExchangeStatus } from "@/lib/guest-posts";
 
 export type CreateExchangeActionState = {
@@ -17,6 +17,10 @@ export async function createExchangeAction(
   const founder = await getCurrentFounder();
   if (!founder || !hasActiveCohort(founder) || !founder.cohort) {
     return { error: "You must be signed in to a cohort." };
+  }
+
+  if (!canWriteToCohort(founder)) {
+    return { error: "Alumni cannot create exchange requests." };
   }
 
   const recipientId = String(formData.get("recipientId") ?? "");
@@ -57,6 +61,10 @@ export async function updateExchangeAction(
   const founder = await getCurrentFounder();
   if (!founder || !hasActiveCohort(founder) || !founder.cohort) {
     return { error: "You must be signed in to a cohort." };
+  }
+
+  if (!canWriteToCohort(founder)) {
+    return { error: "Alumni cannot update exchanges." };
   }
 
   const exchangeId = String(formData.get("exchangeId") ?? "");

@@ -19,6 +19,12 @@ const hubLinks = [
   { href: "/grow", label: "Grow" },
 ];
 
+const exploreLinks = [
+  { href: "/founders", label: "Founders" },
+  { href: "/cohorts", label: "Cohorts" },
+  { href: "/invite", label: "Invite" },
+];
+
 function NavGroup({
   title,
   links,
@@ -56,6 +62,7 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
           </Link>
           <nav className="mt-6 grid gap-1">
             <NavGroup links={hubLinks} />
+            <NavGroup title="Explore" links={exploreLinks} />
             {founder?.role === "admin" ? (
               <NavGroup
                 links={[{ href: "/admin", label: "Admin" }]}
@@ -71,10 +78,15 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
               </p>
               <p className="mt-1 font-medium">{cohortName ?? "No cohort assigned"}</p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="text-[var(--muted)]">{founder ? getFounderDisplayName(founder) : "Guest"}</span>
-              {founder ? <NotificationBell /> : null}
-              {founder ? <SignOutButton /> : null}
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                <span className="text-[var(--muted)]">{founder ? getFounderDisplayName(founder) : "Guest"}</span>
+                {founder?.role === "alumni" ? (
+                  <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                    Alumni
+                  </span>
+                ) : null}
+                {founder ? <NotificationBell /> : null}
+                {founder ? <SignOutButton /> : null}
             </div>
           </header>
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>

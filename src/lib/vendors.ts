@@ -84,7 +84,7 @@ export async function getPublicVendor(vendorId: string) {
       contact: true,
       cohortId: true,
       cohort: {
-        select: { name: true },
+        select: { name: true, slug: true },
       },
     },
   });
@@ -98,7 +98,7 @@ export async function getVendorForCohort(vendorId: string, cohortId: string) {
     },
     include: {
       cohort: {
-        select: { name: true },
+        select: { name: true, slug: true },
       },
       reviews: {
         include: {
@@ -153,4 +153,40 @@ export function formatVendorAuthorityScore(score: number) {
   if (score >= 2.5) return { label: "Rated", tier: "silver" as const };
   if (score > 0) return { label: "Newly Rated", tier: "bronze" as const };
   return { label: "Unrated", tier: "none" as const };
+}
+
+export async function getCrossCohortRecommendations(excludeCohortId: string, limit = 5) {
+  const vendors = await prisma.vendor.findMany({
+    where: {
+      cohortId: { not: excludeCohortId },
+    },
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      cohort: {
+        select: { name: true, slug: true },
+      },
+      reviews: {
+        select: { rating: true },
+      },
+    },
+  });
+
+  const withReviews = vendors.filter((v) => v.reviews.length > 0);
+  const scored = withReviews
+    .map((v) => ({
+      id: v.id,
+      name: v.name,
+      category: v.category,
+      cohortName: v.cohort.name,
+      cohortSlug: v.cohort.slug,
+      reviewCount: v.reviews.length,
+      avgRating: v.reviews.reduce((s, r) => s + r.rating, 0) / v.reviews.length,
+    }))
+    .filter((v) => v.avgRating >= 3.5)
+    .sort((a, b) => b.reviewCount - a.reviewCount)
+    .slice(0, limit);
+
+  return scored;
 }

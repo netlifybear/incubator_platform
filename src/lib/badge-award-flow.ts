@@ -126,7 +126,7 @@ export async function handleExternalBadgeAward(input: {
     return failWithAttempt("No founder found with that email address.", 404);
   }
 
-  if (founder.role !== "founder") {
+  if (founder.role !== "founder" && founder.role !== "alumni") {
     return failWithAttempt(
       input.issuerType === "vendor"
         ? "This founder is not in the same cohort as the vendor."
