@@ -1,10 +1,10 @@
 # Incubator Trust Platform
 
-Cohort knowledge turned into portable reputation.
+Cohort knowledge turned into portable founder credibility.
 
 ## Status
 
-The platform implementation is built through the private trust loop, public reputation flywheel, SEO education/backlink tooling, review-quality engine, reputation portability, multi-issuer badges, and trust/safety guardrails.
+The platform implementation is built through the private trust loop, public credibility flywheel, SEO education/backlink tooling, review-quality engine, reputation portability, multi-issuer contribution tags, and trust/safety guardrails.
 
 Use these docs by purpose:
 

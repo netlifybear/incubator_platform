@@ -2,7 +2,7 @@
 
 Incubator Trust turns cohort knowledge into portable founder credibility.
 
-The first useful product is a private, cohort-scoped vendor trust layer. Founders use it because it helps them find credible vendors faster than searching Slack threads. Public profiles, badges, backlinks, structured data, and portability only matter after the private trust loop is useful.
+The first useful product is a private, cohort-scoped vendor trust layer. Founders use it because it helps them find credible vendors faster than searching Slack threads. Public profiles, contribution tags, backlinks, structured data, and portability only matter after the private trust loop is useful.
 
 ## Thesis
 
@@ -22,8 +22,8 @@ Private Trust -> Utility -> Contribution Incentives -> Portable Credibility
 |-------|-----------------|
 | Private Trust | Cohort-scoped access, named reviews, verified membership, and tenant boundaries. |
 | Utility | Founders find vendors, request missing recommendations, and ask peers for context. |
-| Contribution Incentives | Helpful votes, badges, sprints, notifications, activity, and impact feedback make contribution worthwhile. |
-| Portable Credibility | Public profiles, badge embeds, backlinks, structured data, credibility reports, and signed reputation packets let useful contribution travel. |
+| Contribution Incentives | Helpful votes, contribution tags, sprints, notifications, activity, and impact feedback make contribution worthwhile. |
+| Portable Credibility | Public profiles, embeddable contribution tags, backlinks, structured data, credibility reports, and signed reputation packets let useful contribution travel. |
 
 ## Reciprocal Authority
 
@@ -32,7 +32,7 @@ Unlike consumer review platforms, this product has a bilateral authority exchang
 What the platform grants founders:
 
 - Verified cohort status.
-- Public profile and badge surfaces.
+- Public profile and contribution-tag surfaces.
 - Backlink and search-visibility tooling.
 - Signed reputation export/import.
 - Founder credibility signals that can outlive one cohort.
@@ -53,7 +53,7 @@ The app currently includes:
 - Cohort-scoped vendor discovery, vendor requests, targeted questions, and admin fulfillment.
 - Founder and consumer review modes with quality feedback and disclosure handling.
 - Cross-cohort recommendations, alumni helpful voting, invite/referral flow, and public cohort aggregates with privacy thresholds.
-- Public founder profiles, badge embeds, public vendor JSON-LD, and founder credibility reports.
+- Public founder profiles, embeddable contribution tags, public vendor JSON-LD, and founder credibility reports.
 - Backlink tracking, GSC OAuth, SEO guidance, digest emails, notifications, and activity.
 - Signed reputation export/import with governed admin approval.
 - Impact-over-points copy on Grow, Rewards, and the private contribution view.
@@ -65,8 +65,8 @@ See `../OPERATING.md` for route-level detail.
 - Public profiles are opt-in.
 - Private cohort reviews, requests, invites, and admin activity must not leak into public profiles or public structured data.
 - Startup links are editorial attribution links, not required reciprocal links.
-- Badges must represent real criteria or explicit issuers; no paid badges.
-- Do not promise ranking improvements from badges, links, or structured data.
+- Contribution tags must represent real criteria or explicit issuers; no paid tags.
+- Do not promise ranking improvements from contribution tags, links, or structured data.
 - Do not automate reciprocal link exchange mechanics.
 - Public cohort aggregates and public leaderboard-like surfaces need privacy thresholds.
 - Points can remain internal, but user-facing language should emphasize contribution, impact, and credibility.
@@ -82,8 +82,8 @@ See `../OPERATING.md` for route-level detail.
 
 ## Near-Term Direction
 
-- Execute `../plans/phase-a-credibility-factors.md` to explain founder credibility signals on private and public surfaces.
-- Keep notification and digest feedback improvements as small slices from `../plans/contribution-feedback-loop.md`.
-- Keep badge taxonomy, streak milestones, Connect inline answering, and Grow SEO alignment as product/UX work before implementation.
+- Credibility factor explainability and the structured credibility report are implemented; monitor the UX before adding more report sections.
+- Contribution feedback notifications and digest language are implemented; monitor for notification noise before expanding the loop.
+- Keep streak milestones, Connect inline answering, and Grow SEO alignment as product/UX work before implementation.
 - Treat public Q&A schema and citation refinements as optional structured-data experiments, not required AI visibility levers.
 - Keep deeper alumni/cross-cohort interaction policy-backed and scoped.

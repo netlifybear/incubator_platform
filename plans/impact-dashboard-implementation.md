@@ -17,7 +17,7 @@ Implemented. This file is now a compact implementation record, not an execution 
 
 - Keep `/leaderboard` as the route for compatibility, but present it as a contribution view.
 - Do not expose private founder review text, request text, admin data, or cross-cohort details.
-- Use existing `Review`, `HelpfulVote`, `Badge`, `BacklinkLog`, `User`, and invite/referral data.
+- Use existing `Review`, `HelpfulVote`, `ContributionTag`, `BacklinkLog`, `User`, and invite/referral data.
 - Avoid new database columns for this slice.
 
 ## Verification Record
@@ -30,6 +30,5 @@ The implementation should continue to be covered by:
 
 ## Follow-Ups
 
-- Use `phase-a-credibility-factors.md` for the next active explainability slice.
-- Use `contribution-feedback-loop.md` for deferred notification and digest feedback work.
-- Use `gamification-rethink.md` for future UX/product direction around badges, streaks, and contribution language.
+- Use `phase-a-credibility-factors.md` and `contribution-feedback-loop.md` as implemented references.
+- Use `gamification-rethink.md` for future UX/product direction around streaks, Connect inline answering, Grow SEO alignment, and contribution language.

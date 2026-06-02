@@ -6,15 +6,14 @@ This folder contains execution plans, product direction notes, and historical im
 
 | Plan | Status | Next Agent Guidance |
 |------|--------|---------------------|
-| `phase-b-structured-report.md` | Implemented | 7-section report: Credibility Summary → Identity & Cohort Verification → Review History → Contribution Signals → Helpfulness & Peer Validation → Backlink Authority → Export & Verification. Verifiable tag moved into Identity section. Added review freshness, detailed-comment count, helpful voter count. |
+| None | — | Current plans are implemented, deferred, or product-direction references. Write a focused plan before starting the next code slice. |
 
 ## Deferred Work
 
 | Area | Source Plan | Status | Next Agent Guidance |
 |------|-------------|--------|---------------------|
-| Badge/contribution-signal taxonomy | `gamification-rethink.md` | Product direction | Consider renaming badge presentation from achievement-style labels to contribution tags. Requires UX/product design before code changes. |
 | Streak milestones | `gamification-rethink.md` | Product direction | Scope separately after the impact dashboard has been observed in local or production usage. |
-| Credit report verification polish | `founder-credit-report.md` | Optional polish | Existing `/founder/[slug]/credibility` page and API work. Optional follow-up: PDF/export polish, richer verification badges, and inquiry-history display. |
+| Credibility report verification polish | `founder-credit-report.md` | Optional polish | Existing `/founder/[slug]/credibility` page and API work. Optional follow-up: PDF/export polish, richer verification UI, and inquiry-history display. |
 | Connect inline answering | `gamification-rethink.md` | Optional UX optimization | Let founders answer open vendor requests from `/connect` without navigating away. Design the workflow before implementation. |
 | Grow SEO alignment | `gamification-rethink.md` | Deferred | Revisit after Grow's data model settles. Consider metadata, semantic structure, and JSON-LD only where the public surface supports it. |
 | Portability hardening | `reciprocity-pipeline.md` | Optional hardening | Shared-secret verification works and public-key endpoint exists when configured. Full cross-instance public-key policy and key rotation remain future work. |
@@ -28,7 +27,8 @@ This folder contains execution plans, product direction notes, and historical im
 | `reciprocity-pipeline.md` | Network-effects first pass is implemented: cross-cohort recommendations, alumni helpful-voting policy, cohort privacy refinements, referral loop polish, governed reputation imports, and optional public-key endpoint. |
 | `impact-dashboard-implementation.md` | `/grow` uses personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible points; `/rewards` shows credibility ingredients without cohort rank. |
 | `contribution-feedback-loop.md` | Full loop implemented: Slice A+B (feedback helper + `/grow` recap) + Slice C (outcome-language notifications for helpful votes and targeted requests) + Slice D (digest shows founders helped with impact section). |
-| `founder-credit-report.md` | Founder credibility report page and machine-readable endpoint are implemented. |
+| `founder-credit-report.md` | Founder credibility report page and machine-readable endpoint are implemented. Historical filename retained; product language should use credibility/report wording. |
+| `gamification-rethink.md` | Impact-over-points changes and contribution-tag taxonomy rename are implemented. Remaining items are product-direction follow-ups. |
 | `phase-a-credibility-factors.md` | 6-factor computation with `computeCredibilityFactors()`, public presenter `toPublicCredibilityFactors()`, 9 tests, `/grow` card, `/credibility` summary section. |
 | `phase-b-structured-report.md` | 7-section credibility report: Summary → Identity → Review History → Contribution Signals → Helpfulness → Backlink Authority → Export. Added review freshness, detailed comments, helpful voter count. Verifiable tag in Identity section. |
 | `nav-regroup-hubs.md` | Sidebar regrouped into Write, Connect, Grow, and Admin links; `/connect` and `/grow` exist. Reference only. |

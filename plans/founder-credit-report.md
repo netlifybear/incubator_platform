@@ -10,7 +10,7 @@ Implemented. The old "credit report" framing remains only in this historical fil
 - Signed machine-readable endpoint at `/api/credibility/[slug]`.
 - Grow hub CTA linking to the founder's credibility report.
 - Browser print/save flow for PDF-style sharing.
-- Aggregate review, badge, backlink, and verification data assembled for the report.
+- Aggregate review, contribution tag, backlink, and verification data assembled for the report.
 
 ## Privacy Model
 
@@ -18,7 +18,7 @@ Implemented. The old "credit report" framing remains only in this historical fil
 |------|------------|
 | Founder name, startup, public cohort context | Public when public profile is enabled |
 | Review counts and aggregate review stats | Public aggregate only |
-| Badges and contribution signals | Public aggregate/profile signal |
+| Contribution tags and contribution signals | Public aggregate/profile signal |
 | Backlink counts | Public aggregate |
 | Backlink domains and richer GSC metrics | Explicit opt-in only |
 | Individual founder review text | Private |

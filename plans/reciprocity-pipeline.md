@@ -18,7 +18,7 @@ Mostly implemented. Remaining work is optional hardening or future product exper
 
 - Named cohort-scoped reviews with trust signals.
 - Helpful votes, sprints, guest post exchanges, notifications, and cohort activity.
-- Auto-badge computation on review submit, profile update, and cron.
+- Auto contribution tag computation on review submit, profile update, and cron.
 - Cross-cohort vendor recommendation first pass using public-safe aggregate fields.
 - Alumni helpful-voting policy with broader writes blocked.
 - Referral/invite loop polish and public cohort aggregate privacy thresholds.
