@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { getFounderPoints } from "@/lib/points";
+import { prisma } from "./prisma.ts";
+import { getFounderPoints } from "./points.ts";
 
 export type LeaderboardEntry = {
   userId: string;

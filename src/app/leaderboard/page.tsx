@@ -183,7 +183,7 @@ export default async function LeaderboardPage() {
           <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-ambient)]">
             <p className="text-sm font-semibold text-[var(--accent)]">Privacy note</p>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              This private view is cohort-scoped. Public rankings hide names and stay hidden
+              This private view is cohort-scoped. Public summaries hide names and stay hidden
               for small cohorts.
             </p>
           </div>
