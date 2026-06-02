@@ -26,10 +26,10 @@ export async function createNominationAction(
   }
 
   const nomineeEmail = String(formData.get("nomineeEmail") ?? "").trim().toLowerCase();
-  const badgeType = String(formData.get("badgeType") ?? "");
+  const tagType = String(formData.get("tagType") ?? "");
   const reason = String(formData.get("reason") ?? "").trim();
 
-  if (!nomineeEmail || !badgeType || !reason) {
+  if (!nomineeEmail || !tagType || !reason) {
     return { error: "All fields are required." };
   }
 
@@ -54,7 +54,7 @@ export async function createNominationAction(
     await createNomination({
       nominatorId: founder.id,
       nomineeId: nominee.id,
-      badgeType,
+      tagType,
       reason,
       cohortId: founder.cohortId,
     });

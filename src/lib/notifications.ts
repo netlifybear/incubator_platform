@@ -7,6 +7,7 @@ export type NotificationType =
   | "exchange_response"
   | "helpful_vote"
   | "badge_earned"
+  | "tag_earned"
   | "sprint_end"
   | "reputation_import"
   | "invite_accepted";

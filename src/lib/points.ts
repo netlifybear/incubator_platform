@@ -23,7 +23,7 @@ export async function getFounderPoints(userId: string): Promise<FounderPoints> {
       where: { userId },
       select: { comment: true, id: true },
     }),
-    prisma.badge.count({ where: { userId } }),
+    prisma.contributionTag.count({ where: { userId } }),
   ]);
 
   const helpfulVoteCount = await prisma.helpfulVote.count({

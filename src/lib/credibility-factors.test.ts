@@ -66,7 +66,7 @@ test("all factors strong", async () => {
   }
 
   for (let i = 0; i < 5; i++) {
-    await prisma.badge.create({ data: { userId: founder.id, type: "reviewer" } });
+    await prisma.contributionTag.create({ data: { userId: founder.id, type: "reviewer" } });
   }
 
   await prisma.backlinkLog.create({
@@ -91,7 +91,7 @@ test("all factors strong", async () => {
   }
 
   await prisma.backlinkLog.deleteMany({ where: { userId: founder.id } });
-  await prisma.badge.deleteMany({ where: { userId: founder.id } });
+  await prisma.contributionTag.deleteMany({ where: { userId: founder.id } });
   await prisma.helpfulVote.deleteMany({
     where: { reviewId: { in: reviews.map((r) => r.id) } },
   });
@@ -144,7 +144,7 @@ test("high badges no reviews", async () => {
   });
 
   for (let i = 0; i < 5; i++) {
-    await prisma.badge.create({ data: { userId: founder.id, type: "reviewer" } });
+    await prisma.contributionTag.create({ data: { userId: founder.id, type: "reviewer" } });
   }
 
   const result = await computeCredibilityFactors(founder.id);
@@ -154,7 +154,7 @@ test("high badges no reviews", async () => {
   const cs = result.factors.find((f) => f.key === "contributionSignals");
   assert.equal(cs?.status, "strong");
 
-  await prisma.badge.deleteMany({ where: { userId: founder.id } });
+  await prisma.contributionTag.deleteMany({ where: { userId: founder.id } });
   await prisma.user.deleteMany({ where: { id: founder.id } });
   await prisma.cohort.deleteMany({ where: { id: cohort.id } });
 });
@@ -199,7 +199,7 @@ test("mixed factors developing summary", async () => {
     });
   }
 
-  await prisma.badge.create({ data: { userId: founder.id, type: "reviewer" } });
+  await prisma.contributionTag.create({ data: { userId: founder.id, type: "reviewer" } });
 
   await prisma.backlinkLog.create({
     data: { userId: founder.id, referringDomain: "x.com", targetUrl: "https://startup.com", status: "verified" },
@@ -214,7 +214,7 @@ test("mixed factors developing summary", async () => {
   assert.equal(result.summary, "developing");
 
   await prisma.backlinkLog.deleteMany({ where: { userId: founder.id } });
-  await prisma.badge.deleteMany({ where: { userId: founder.id } });
+  await prisma.contributionTag.deleteMany({ where: { userId: founder.id } });
   await prisma.helpfulVote.deleteMany({ where: { reviewId: { in: allHelpful.map((r) => r.id) } } });
   await prisma.review.deleteMany({ where: { vendorId: vendor.id } });
   await prisma.vendor.deleteMany({ where: { id: vendor.id } });

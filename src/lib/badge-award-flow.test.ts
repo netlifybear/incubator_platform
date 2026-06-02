@@ -19,7 +19,7 @@ test("external badge award failures are logged without raw secrets and rate-limi
     for (let i = 0; i < 5; i++) {
       const result = await handleExternalBadgeAward({
         body: {
-          badgeType: "vendor_endorsed",
+          tagType: "vendor_endorsed",
           founderEmail: "missing@example.com",
           secret,
         },
@@ -30,7 +30,7 @@ test("external badge award failures are logged without raw secrets and rate-limi
 
     const limited = await handleExternalBadgeAward({
       body: {
-        badgeType: "vendor_endorsed",
+        tagType: "vendor_endorsed",
         founderEmail: "missing@example.com",
         secret,
       },
@@ -38,7 +38,7 @@ test("external badge award failures are logged without raw secrets and rate-limi
     });
     assert.equal(limited.status, 429);
 
-    const attempts = await prisma.badgeAwardAttempt.findMany({
+    const attempts = await prisma.tagAwardAttempt.findMany({
       where: { secretHash },
       orderBy: { createdAt: "asc" },
     });
@@ -60,7 +60,7 @@ test("external badge awards accept valid secrets and reject wrong issuer badge c
   const secret = `${run}-valid-secret`;
   const secretHash = fingerprintIssuerSecret(secret);
   await createTestVendor({
-    badgeAwardSecret: hashIssuerSecret(secret),
+    tagAwardSecret: hashIssuerSecret(secret),
     cohortId: cohort.id,
     name: `${run} Vendor`,
   });
@@ -68,7 +68,7 @@ test("external badge awards accept valid secrets and reject wrong issuer badge c
   try {
     const wrongClass = await handleExternalBadgeAward({
       body: {
-        badgeType: "investor_backed",
+        tagType: "investor_backed",
         founderEmail: founder.email,
         secret,
       },
@@ -78,7 +78,7 @@ test("external badge awards accept valid secrets and reject wrong issuer badge c
 
     const success = await handleExternalBadgeAward({
       body: {
-        badgeType: "vendor_endorsed",
+        tagType: "vendor_endorsed",
         founderEmail: founder.email,
         secret,
       },
@@ -86,12 +86,12 @@ test("external badge awards accept valid secrets and reject wrong issuer badge c
     });
     assert.equal(success.status, 200);
 
-    const badge = await prisma.badge.findFirst({
+    const badge = await prisma.contributionTag.findFirst({
       where: { issuerType: "vendor", type: "vendor_endorsed", userId: founder.id },
     });
     assert.ok(badge);
 
-    const attempts = await prisma.badgeAwardAttempt.findMany({
+    const attempts = await prisma.tagAwardAttempt.findMany({
       where: { secretHash },
       orderBy: { createdAt: "asc" },
     });

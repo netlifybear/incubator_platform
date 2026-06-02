@@ -34,7 +34,7 @@ test("getFounderImpactSummary returns personal contribution metrics", async () =
   await prisma.helpfulVote.create({
     data: { reviewId: review.id, userId: founder.id, value: true },
   });
-  await prisma.badge.create({
+  await prisma.contributionTag.create({
     data: { userId: founder.id, type: "reviewer" },
   });
   await prisma.backlinkLog.create({
@@ -55,7 +55,7 @@ test("getFounderImpactSummary returns personal contribution metrics", async () =
   assert.equal(summary.verifiedBacklinkCount, 1);
 
   await prisma.helpfulVote.deleteMany({ where: { reviewId: review.id } });
-  await prisma.badge.deleteMany({ where: { userId: founder.id } });
+  await prisma.contributionTag.deleteMany({ where: { userId: founder.id } });
   await prisma.backlinkLog.deleteMany({ where: { userId: founder.id } });
   await prisma.review.deleteMany({ where: { vendorId: vendor.id } });
   await prisma.vendor.deleteMany({ where: { id: vendor.id } });

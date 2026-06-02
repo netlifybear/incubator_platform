@@ -62,7 +62,7 @@ export default async function Home({ searchParams }: HomeProps) {
     listVendorCategoriesForCohort(cohortId),
     listOpenVendorRequestsForCohort(cohortId),
     prisma.review.count({ where: { userId: founder.id } }),
-    prisma.badge.count({ where: { userId: founder.id } }),
+    prisma.contributionTag.count({ where: { userId: founder.id } }),
     getActiveSprint(cohortId),
   ]);
   const totalReviewCount = vendors.reduce(

@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { badgeDefinition } from "@/config/badge-definitions";
-import { awardBadge } from "@/lib/badges";
+import { contributionTagDefinition } from "@/config/contribution-tag-definitions";
+import { awardTag } from "@/lib/contribution-tags";
 
 export type NominationWithUsers = {
   id: string;
-  badgeType: string;
+  tagType: string;
   reason: string;
   status: string;
   createdAt: Date;
@@ -17,7 +17,7 @@ export type NominationWithUsers = {
 export async function createNomination(input: {
   nominatorId: string;
   nomineeId: string;
-  badgeType: string;
+  tagType: string;
   reason: string;
   cohortId: string;
 }) {
@@ -25,30 +25,30 @@ export async function createNomination(input: {
     throw new Error("You cannot nominate yourself.");
   }
 
-  const def = badgeDefinition(input.badgeType);
+  const def = contributionTagDefinition(input.tagType);
   if (!def) {
-    throw new Error(`Unknown badge type: ${input.badgeType}`);
+    throw new Error(`Unknown tag type: ${input.tagType}`);
   }
   if (!def.nominatable) {
-    throw new Error(`"${def.label}" badges cannot be nominated by peers.`);
+    throw new Error(`"${def.label}" tags cannot be nominated by peers.`);
   }
 
-  const existing = await prisma.badgeNomination.findFirst({
+  const existing = await prisma.tagNomination.findFirst({
     where: {
       nominatorId: input.nominatorId,
       nomineeId: input.nomineeId,
-      badgeType: input.badgeType,
+      tagType: input.tagType,
       status: "pending",
     },
   });
 
   if (existing) {
-    throw new Error("You already have a pending nomination for this founder and badge.");
+    throw new Error("You already have a pending nomination for this founder and tag type.");
   }
 
-  return prisma.badgeNomination.create({
+  return prisma.tagNomination.create({
     data: {
-      badgeType: input.badgeType,
+      tagType: input.tagType,
       reason: input.reason,
       nominatorId: input.nominatorId,
       nomineeId: input.nomineeId,
@@ -58,7 +58,7 @@ export async function createNomination(input: {
 }
 
 export async function listPendingNominations(cohortId: string) {
-  return prisma.badgeNomination.findMany({
+  return prisma.tagNomination.findMany({
     where: { cohortId, status: "pending" },
     orderBy: { createdAt: "desc" },
     include: {
@@ -69,7 +69,7 @@ export async function listPendingNominations(cohortId: string) {
 }
 
 export async function listNominationsForFounder(founderId: string) {
-  return prisma.badgeNomination.findMany({
+  return prisma.tagNomination.findMany({
     where: {
       OR: [{ nominatorId: founderId }, { nomineeId: founderId }],
     },
@@ -85,7 +85,7 @@ export async function approveNomination(
   nominationId: string,
   reviewerNote?: string,
 ) {
-  const nomination = await prisma.badgeNomination.findUnique({
+  const nomination = await prisma.tagNomination.findUnique({
     where: { id: nominationId },
   });
 
@@ -96,7 +96,7 @@ export async function approveNomination(
     throw new Error("This nomination has already been reviewed.");
   }
 
-  await prisma.badgeNomination.update({
+  await prisma.tagNomination.update({
     where: { id: nominationId },
     data: {
       status: "approved",
@@ -105,7 +105,7 @@ export async function approveNomination(
     },
   });
 
-  await awardBadge(nomination.nomineeId, nomination.badgeType,
+  await awardTag(nomination.nomineeId, nomination.tagType,
     `Nominated by cohort peer: ${nomination.reason}`, "admin");
 
   return { success: true };
@@ -115,7 +115,7 @@ export async function rejectNomination(
   nominationId: string,
   reviewerNote?: string,
 ) {
-  const nomination = await prisma.badgeNomination.findUnique({
+  const nomination = await prisma.tagNomination.findUnique({
     where: { id: nominationId },
   });
 
@@ -126,7 +126,7 @@ export async function rejectNomination(
     throw new Error("This nomination has already been reviewed.");
   }
 
-  await prisma.badgeNomination.update({
+  await prisma.tagNomination.update({
     where: { id: nominationId },
     data: {
       status: "rejected",
@@ -138,7 +138,7 @@ export async function rejectNomination(
   return { success: true };
 }
 
-export async function listFoundersWithBadges(cohortId: string) {
+export async function listFoundersWithTags(cohortId: string) {
   const founders = await prisma.user.findMany({
     where: { cohortId, role: "founder" },
     select: {
@@ -160,9 +160,9 @@ export async function listFoundersWithBadges(cohortId: string) {
 
   return founders.map((f) => ({
     ...f,
-    badges: f.badges.map((b) => ({
-      ...b,
-      def: badgeDefinition(b.type),
+    badges: f.badges.map((t) => ({
+      ...t,
+      def: contributionTagDefinition(t.type),
     })),
   }));
 }

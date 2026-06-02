@@ -37,7 +37,7 @@ export async function getFounderImpactSummary(userId: string): Promise<FounderIm
       where: { userId },
       select: { id: true },
     }),
-    prisma.badge.count({ where: { userId } }),
+    prisma.contributionTag.count({ where: { userId } }),
     prisma.backlinkLog.count({ where: { userId, status: "verified" } }),
   ]);
 

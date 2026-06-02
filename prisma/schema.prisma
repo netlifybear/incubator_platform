@@ -12,23 +12,23 @@ datasource db {
 }
 
 model Cohort {
-  id                  String              @id @default(cuid())
-  name                String
-  slug                String              @unique
-  description         String?
-  defaultTrustPolicy  String              @default("all")
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  users               User[]
-  vendors             Vendor[]
-  reviews             Review[]
-  consumerReviews     ConsumerReview[]
-  requests            VendorRequest[]
-  invites             Invite[]
-  badgeNominations    BadgeNomination[]
-  sprints             Sprint[]
-  guestPostExchanges  GuestPostExchange[]
-  activityEvents      ActivityEvent[]
+  id                 String              @id @default(cuid())
+  name               String
+  slug               String              @unique
+  description        String?
+  defaultTrustPolicy String              @default("all")
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  users              User[]
+  vendors            Vendor[]
+  reviews            Review[]
+  consumerReviews    ConsumerReview[]
+  requests           VendorRequest[]
+  invites            Invite[]
+  tagNominations     TagNomination[]
+  sprints            Sprint[]
+  guestPostExchanges GuestPostExchange[]
+  activityEvents     ActivityEvent[]
 }
 
 model User {
@@ -56,37 +56,37 @@ model User {
   reviews                   Review[]
   helpfulVotesGiven         HelpfulVote[]
   vendorRequests            VendorRequest[]
-  targetedRequests          VendorRequest[] @relation("TargetedVendorRequests")
-  badges                    Badge[]
-  backlinkLogs              BacklinkLog[]
-  backlinkSnapshots         BacklinkSnapshot[]
-  nominationsGiven          BadgeNomination[]   @relation("NominationsGiven")
-  nominationsReceived       BadgeNomination[]   @relation("NominationsReceived")
+  targetedRequests          VendorRequest[]     @relation("TargetedVendorRequests")
+  badges                    ContributionTag[]
+  nominationsGiven          TagNomination[]     @relation("NominationsGiven")
+  nominationsReceived       TagNomination[]     @relation("NominationsReceived")
   guestPostsRequested       GuestPostExchange[] @relation("GuestPostsRequested")
   guestPostsReceived        GuestPostExchange[] @relation("GuestPostsReceived")
   notifications             Notification[]
   activityEvents            ActivityEvent[]
   reputationImports         ReputationImport[]
-  invitedInvites            Invite[]                @relation("InvitedInvites")
+  invitedInvites            Invite[]            @relation("InvitedInvites")
   accounts                  Account[]
   sessions                  Session[]
+  backlinkLogs              BacklinkLog[]
+  backlinkSnapshots         BacklinkSnapshot[]
 
   @@index([cohortId])
 }
 
 model Vendor {
-  id                String          @id @default(cuid())
+  id                String           @id @default(cuid())
   name              String
   category          String
   contact           String?
-  badgeAwardSecret  String?
+  tagAwardSecret  String?  @map("badgeAwardSecret")
   cohortId          String
-  cohort            Cohort          @relation(fields: [cohortId], references: [id])
+  cohort            Cohort           @relation(fields: [cohortId], references: [id])
   reviews           Review[]
   consumerReviews   ConsumerReview[]
-  fulfilledRequests VendorRequest[] @relation("FulfilledRequestVendor")
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  fulfilledRequests VendorRequest[]  @relation("FulfilledRequestVendor")
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
   @@index([cohortId, category])
 }
@@ -96,7 +96,7 @@ model Investor {
   name             String
   email            String?
   company          String?
-  badgeAwardSecret String?
+  tagAwardSecret String?  @map("badgeAwardSecret")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -160,15 +160,15 @@ model VendorRequest {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   type      String
   title     String
   body      String?
   link      String?
   readAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 
   @@index([userId, readAt, createdAt])
 }
@@ -188,25 +188,25 @@ model ActivityEvent {
 }
 
 model Invite {
-  id         String    @id @default(cuid())
-  email      String
-  token      String    @unique
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  expiresAt  DateTime
-  acceptedAt DateTime?
-  revokedAt  DateTime?
-  cohortId   String
-  cohort     Cohort    @relation(fields: [cohortId], references: [id])
+  id          String    @id @default(cuid())
+  email       String
+  token       String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  cohortId    String
+  cohort      Cohort    @relation(fields: [cohortId], references: [id])
   invitedById String?
-  invitedBy  User?     @relation("InvitedInvites", fields: [invitedById], references: [id])
+  invitedBy   User?     @relation("InvitedInvites", fields: [invitedById], references: [id])
 
   @@index([cohortId, acceptedAt])
   @@index([email])
   @@index([invitedById])
 }
 
-model Badge {
+model ContributionTag {
   id          String   @id @default(cuid())
   type        String
   description String?
@@ -218,9 +218,10 @@ model Badge {
 
   @@index([userId])
   @@index([issuerType])
+  @@map("Badge")
 }
 
-model BadgeAwardAttempt {
+model TagAwardAttempt {
   id         String   @id @default(cuid())
   issuerType String
   secretHash String
@@ -231,11 +232,12 @@ model BadgeAwardAttempt {
 
   @@index([issuerType, secretHash, createdAt])
   @@index([createdAt])
+  @@map("BadgeAwardAttempt")
 }
 
-model BadgeNomination {
+model TagNomination {
   id           String    @id @default(cuid())
-  badgeType    String
+  tagType      String    @map("badgeType")
   reason       String
   status       String    @default("pending")
   createdAt    DateTime  @default(now())
@@ -251,6 +253,7 @@ model BadgeNomination {
   @@index([cohortId, status])
   @@index([nominatorId])
   @@index([nomineeId])
+  @@map("BadgeNomination")
 }
 
 model BacklinkLog {
@@ -269,14 +272,14 @@ model BacklinkLog {
 }
 
 model BacklinkSnapshot {
-  id              String   @id @default(cuid())
-  verifiedCount   Int      @default(0)
-  lostCount       Int      @default(0)
-  reachableCount  Int      @default(0)
-  pendingCount    Int      @default(0)
-  snapshotAt      DateTime @default(now())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
+  id             String   @id @default(cuid())
+  verifiedCount  Int      @default(0)
+  lostCount      Int      @default(0)
+  reachableCount Int      @default(0)
+  pendingCount   Int      @default(0)
+  snapshotAt     DateTime @default(now())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
 
   @@index([userId, snapshotAt])
 }
@@ -348,16 +351,16 @@ model GscState {
 }
 
 model ConsumerReview {
-  id           String   @id @default(cuid())
-  rating       Int
-  comment      String?
-  images       String[]
-  displayName  String?
-  createdAt    DateTime @default(now())
-  vendorId     String
-  vendor       Vendor   @relation(fields: [vendorId], references: [id])
-  cohortId     String
-  cohort       Cohort   @relation(fields: [cohortId], references: [id])
+  id          String   @id @default(cuid())
+  rating      Int
+  comment     String?
+  images      String[]
+  displayName String?
+  createdAt   DateTime @default(now())
+  vendorId    String
+  vendor      Vendor   @relation(fields: [vendorId], references: [id])
+  cohortId    String
+  cohort      Cohort   @relation(fields: [cohortId], references: [id])
 
   @@index([vendorId, createdAt])
   @@index([cohortId])

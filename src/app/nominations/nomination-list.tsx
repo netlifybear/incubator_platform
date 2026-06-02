@@ -1,7 +1,7 @@
 "use client";
 
 import type { NominationWithUsers } from "@/lib/nominations";
-import { badgeDefinition } from "@/config/badge-definitions";
+import { contributionTagDefinition } from "@/config/contribution-tag-definitions";
 
 export function NominationList({
   nominations,
@@ -17,7 +17,7 @@ export function NominationList({
   return (
     <div className="mt-4 space-y-3">
       {nominations.map((n) => {
-        const def = badgeDefinition(n.badgeType);
+        const def = contributionTagDefinition(n.tagType);
         return (
           <div
             key={n.id}
@@ -26,7 +26,7 @@ export function NominationList({
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-medium">
-                  {def?.icon} {def?.label ?? n.badgeType}
+                  {def?.icon} {def?.label ?? n.tagType}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
                   {n.nominator.name ?? n.nominator.email} nominated{" "}

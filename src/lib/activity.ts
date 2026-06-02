@@ -5,6 +5,7 @@ export type ActivityType =
   | "review_written"
   | "consumer_review_written"
   | "badge_earned"
+  | "tag_earned"
   | "exchange_completed"
   | "request_answered"
   | "helpful_vote_received"

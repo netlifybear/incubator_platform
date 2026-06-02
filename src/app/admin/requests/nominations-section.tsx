@@ -35,7 +35,7 @@ export async function AdminNominationsSection({
       ) : (
         <div className="mt-5 space-y-4">
           {pending.map((n) => {
-            const def = badgeDefinition(n.badgeType);
+            const def = badgeDefinition(n.tagType);
             return (
               <div
                 key={n.id}
@@ -44,7 +44,7 @@ export async function AdminNominationsSection({
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="font-medium">
-                      {def?.icon} {def?.label ?? n.badgeType}
+                      {def?.icon} {def?.label ?? n.tagType}
                     </p>
                     <p className="mt-1 text-sm text-[var(--muted)]">
                       {n.nominator.name ?? n.nominator.email} nominated{" "}

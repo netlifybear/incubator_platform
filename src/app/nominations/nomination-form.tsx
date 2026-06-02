@@ -16,7 +16,7 @@ export function NominationForm() {
       action={formAction}
       className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-sm"
     >
-      <h2 className="text-xl font-semibold">Nominate a peer for a badge</h2>
+      <h2 className="text-xl font-semibold">Nominate a peer for a contribution tag</h2>
       <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
         Recognize a fellow founder who has made meaningful contributions to the
         cohort.
@@ -37,12 +37,12 @@ export function NominationForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold" htmlFor="badge-type">
-            Badge
+          <label className="block text-sm font-semibold" htmlFor="tag-type">
+            Tag type
           </label>
           <select
-            id="badge-type"
-            name="badgeType"
+            id="tag-type"
+            name="tagType"
             required
             className="mt-2 w-full rounded-2xl border border-[var(--border)] bg-white px-4 py-3"
           >
@@ -54,7 +54,7 @@ export function NominationForm() {
 
       <div className="mt-5">
         <label className="block text-sm font-semibold" htmlFor="nomination-reason">
-          Why does this founder deserve this badge?
+          Why does this founder deserve this tag?
         </label>
         <textarea
           id="nomination-reason"

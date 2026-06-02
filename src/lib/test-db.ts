@@ -30,16 +30,16 @@ export async function createTestFounder(input: {
 }
 
 export async function createTestVendor(input: {
-  badgeAwardSecret?: string;
-  cohortId: string;
   name: string;
+  tagAwardSecret?: string;
+  cohortId: string;
 }) {
   return prisma.vendor.create({
     data: {
-      badgeAwardSecret: input.badgeAwardSecret ?? null,
+      name: input.name,
+      tagAwardSecret: input.tagAwardSecret ?? null,
       category: "Testing",
       cohortId: input.cohortId,
-      name: input.name,
     },
   });
 }
@@ -68,7 +68,7 @@ export async function cleanupTestData(input: {
   issuerSecretHashes?: string[];
 }) {
   if (input.issuerSecretHashes?.length) {
-    await prisma.badgeAwardAttempt.deleteMany({
+    await prisma.tagAwardAttempt.deleteMany({
       where: { secretHash: { in: input.issuerSecretHashes } },
     });
   }
@@ -85,7 +85,7 @@ export async function cleanupTestData(input: {
       await prisma.activityEvent.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.backlinkSnapshot.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.backlinkLog.deleteMany({ where: { userId: { in: userIds } } });
-      await prisma.badge.deleteMany({ where: { userId: { in: userIds } } });
+      await prisma.contributionTag.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.helpfulVote.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.vendorRequest.deleteMany({ where: { userId: { in: userIds } } });
       await prisma.review.deleteMany({ where: { userId: { in: userIds } } });
@@ -107,7 +107,7 @@ export async function cleanupTestData(input: {
       await prisma.review.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.vendorRequest.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.invite.deleteMany({ where: { cohortId: { in: cohortIds } } });
-      await prisma.badgeNomination.deleteMany({ where: { cohortId: { in: cohortIds } } });
+      await prisma.tagNomination.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.sprint.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.guestPostExchange.deleteMany({ where: { cohortId: { in: cohortIds } } });
       await prisma.activityEvent.deleteMany({ where: { cohortId: { in: cohortIds } } });

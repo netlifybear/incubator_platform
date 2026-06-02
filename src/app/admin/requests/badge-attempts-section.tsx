@@ -7,7 +7,7 @@ type BadgeAttemptsSectionProps = {
 export async function AdminBadgeAttemptsSection({
   limit = 10,
 }: BadgeAttemptsSectionProps) {
-  const attempts = await prisma.badgeAwardAttempt.findMany({
+  const attempts = await prisma.tagAwardAttempt.findMany({
     orderBy: { createdAt: "desc" },
     take: limit,
   });
