@@ -54,7 +54,7 @@ export default async function LeaderboardPage() {
       <AppShell founder={founder} cohortName="No cohort assigned">
         <AccessMessage
           title="Join a cohort before viewing contribution patterns."
-          body="Contribution signals come from reviews, badges, and helpful votes inside a cohort. Ask your incubator admin for an invite to activate this workspace."
+          body="Contribution signals come from reviews, contribution tags, and helpful votes inside a cohort. Ask your incubator admin for an invite to activate this workspace."
           ctaHref="/"
           ctaLabel="Back to dashboard"
         />
@@ -88,7 +88,7 @@ export default async function LeaderboardPage() {
                 Cohort contributions
               </h1>
               <p className="mt-3 max-w-2xl leading-7 text-[var(--muted)]">
-                See where reviews, helpful votes, and badges are strengthening the cohort
+                See where reviews, helpful votes, and contribution tags are strengthening the cohort
                 knowledge base. Use it to spot participation patterns and celebrate impact.
               </p>
             </div>

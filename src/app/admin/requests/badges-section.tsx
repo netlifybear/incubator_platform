@@ -18,12 +18,12 @@ export async function AdminBadgesSection() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
-            Badges
+            Contribution tags
           </p>
-          <h2 className="mt-2 text-2xl font-semibold">Badge types & criteria</h2>
+          <h2 className="mt-2 text-2xl font-semibold">Contribution tag types & criteria</h2>
           <p className="mt-2 max-w-2xl leading-7 text-[var(--muted)]">
-            Badges recognize contributions. Some are awarded automatically, others
-            require admin approval. Vendors and investors can also award badges.
+            Contribution tags recognize contributions. Some are awarded automatically, others
+            require admin approval. Vendors and investors can also award tags.
           </p>
         </div>
       </div>
@@ -66,9 +66,9 @@ export async function AdminBadgesSection() {
         </div>
 
         <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5">
-          <p className="text-sm font-semibold">Award a badge to a founder</p>
+          <p className="text-sm font-semibold">Award a tag to a founder</p>
           <p className="mt-1 text-xs text-[var(--muted)]">
-            Select issuer type (Admin/Vendor/Investor) then the badge type.
+            Select issuer type (Admin/Vendor/Investor) then the tag type.
           </p>
           <div className="mt-4">
             <AwardBadgeForm />

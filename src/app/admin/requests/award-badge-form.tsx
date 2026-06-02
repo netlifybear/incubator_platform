@@ -37,13 +37,13 @@ export function AwardBadgeForm() {
           disabled={pending}
           className="rounded-full bg-[var(--accent)] px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {pending ? "Awarding..." : "Award badge"}
+          {pending ? "Awarding..." : "Award tag"}
         </button>
       </div>
       <input
         name="description"
         className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3"
-        placeholder="Optional reason for this badge"
+        placeholder="Optional reason for this tag"
       />
       {state.error ? (
         <p className="text-sm font-medium text-red-700">{state.error}</p>

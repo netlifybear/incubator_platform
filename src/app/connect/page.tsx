@@ -216,7 +216,7 @@ function activityLabel(event: { type: string; metadata: Prisma.JsonValue }) {
     case "review_written":
       return <>reviewed <span className="font-medium">{m.vendorName ?? "a vendor"}</span></>;
     case "badge_earned":
-      return <>earned the <span className="font-medium">{badgeLabel(m.badgeType ?? "")}</span> badge</>;
+      return <>earned the <span className="font-medium">{badgeLabel(m.badgeType ?? "")}</span> contribution tag</>;
     case "exchange_completed":
       return <>published a guest post{m.topic ? `: "${m.topic}"` : ""}</>;
     case "request_answered":

@@ -5,7 +5,7 @@ import { updateCohortTrustPolicyAction } from "../actions";
 
 const POLICY_OPTIONS = [
   { value: "all", label: "All data" },
-  { value: "badges_only", label: "Badges only" },
+  { value: "badges_only", label: "Tags only" },
   { value: "points_only", label: "Points only" },
 ] as const;
 

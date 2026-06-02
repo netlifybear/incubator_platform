@@ -17,12 +17,12 @@ export async function AdminBadgeAttemptsSection({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
-            External badge audit
+            External tag audit
           </p>
-          <h2 className="mt-2 text-2xl font-semibold">Recent badge award attempts</h2>
+          <h2 className="mt-2 text-2xl font-semibold">Recent tag award attempts</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
             Raw issuer secrets are never shown. Use this log to spot repeated failures,
-            suspicious issuer activity, or successful external badge grants.
+            suspicious issuer activity, or successful external tag grants.
           </p>
         </div>
         <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-sm font-semibold">
@@ -32,7 +32,7 @@ export async function AdminBadgeAttemptsSection({
 
       {attempts.length === 0 ? (
         <p className="mt-5 rounded-2xl bg-[var(--panel)] p-4 text-sm text-[var(--muted)]">
-          No external badge attempts recorded yet.
+          No external tag award attempts recorded yet.
         </p>
       ) : (
         <div className="mt-5 overflow-hidden rounded-2xl border border-[var(--border)]">

@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 
 const RULES = [
   { action: "Share a useful review", description: "Specific details, outcomes, numbers, and firsthand context make a review easier to trust." },
-  { action: "Receive a contribution signal", description: "Badges and nominations add context about the kind of help you have provided." },
+  { action: "Receive a contribution signal", description: "Contribution tags and nominations add context about the kind of help you have provided." },
   { action: "Help peers decide", description: "Helpful votes show that other founders used your contribution to evaluate a vendor." },
 ];
 

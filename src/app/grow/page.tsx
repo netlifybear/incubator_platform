@@ -100,7 +100,7 @@ export default async function GrowPage() {
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/leaderboard" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Contribution view</Link>
-              <Link href="/badges" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Badges</Link>
+              <Link href="/badges" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Contribution tags</Link>
               <Link href="/nominations" className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)]">Nominations</Link>
             </div>
           </section>
@@ -245,7 +245,7 @@ export default async function GrowPage() {
             ) : null}
             <ActionItem
               label="Export your credibility packet"
-              detail="Download a signed JWT of your profile, badges, and contribution signals"
+              detail="Download a signed JWT of your profile, contribution tags, and signals"
               href="/api/reputation/export"
             />
             {founder.profileSlug ? (

@@ -18,13 +18,13 @@ export default async function BadgesPage() {
     <AppShell founder={founder}>
       <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
-          Badges
+          Contribution tags
         </p>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight">
-          Your earned badges
+          Your earned tags
         </h1>
         <p className="mt-4 max-w-2xl leading-7 text-[var(--muted)]">
-          Badges represent your reputation across the platform — from verified cohort
+          Contribution tags represent your reputation across the platform — from verified cohort
           membership to review quality and community contributions.
         </p>
       </section>
@@ -32,9 +32,9 @@ export default async function BadgesPage() {
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {badges.length === 0 ? (
           <div className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm sm:col-span-2 lg:col-span-3">
-            <p className="text-xl font-semibold">No badges earned yet.</p>
+            <p className="text-xl font-semibold">No contribution tags earned yet.</p>
             <p className="mt-2 leading-7 text-[var(--muted)]">
-              Write reviews and complete your profile to earn badges.
+              Write reviews and complete your profile to earn tags.
             </p>
           </div>
         ) : (
@@ -67,7 +67,7 @@ export default async function BadgesPage() {
       </section>
 
       <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold">All badge types</h2>
+        <h2 className="text-2xl font-semibold">All tag types</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {BADGE_DEFINITIONS.map((def) => {
             const earned = earnedTypes.has(def.type);

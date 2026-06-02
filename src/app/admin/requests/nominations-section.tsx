@@ -25,7 +25,7 @@ export async function AdminNominationsSection({
             {pending.length} pending
           </h2>
           <p className="mt-2 max-w-2xl leading-7 text-[var(--muted)]">
-            Founders nominate each other for badges. Review and approve or reject.
+            Founders nominate each other for contribution tags. Review and approve or reject.
           </p>
         </div>
       </div>

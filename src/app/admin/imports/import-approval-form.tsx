@@ -42,7 +42,7 @@ export function ImportApprovalForm({ importId, defaultTrustPolicy = "all" }: { i
           className="rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-xs"
         >
           <option value="all">All data</option>
-          <option value="badges_only">Badges only</option>
+          <option value="badges_only">Tags only</option>
           <option value="points_only">Points only</option>
         </select>
         <button

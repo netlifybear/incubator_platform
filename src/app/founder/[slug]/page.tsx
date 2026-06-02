@@ -248,7 +248,7 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
           )}
           <div className="mt-4 space-y-1 text-sm text-[var(--muted)]">
             <p>{points.breakdown.reviews} from reviews</p>
-            <p>{points.breakdown.badges} from badges</p>
+            <p>{points.breakdown.badges} from contribution tags</p>
             <p>{points.breakdown.helpfulVotes} from helpful votes</p>
           </div>
         </article>
@@ -263,18 +263,18 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
       </section>
 
       <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
-        <h2 className="text-lg font-semibold">Portable reputation badge</h2>
+        <h2 className="text-lg font-semibold">Portable reputation tag</h2>
         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          Embed this badge on your startup website to show your verified cohort reputation.
+          Embed this tag on your startup website to show your verified cohort reputation.
         </p>
         <div className="mt-4 overflow-x-auto">
           <code className="block whitespace-pre rounded-2xl bg-[var(--panel-strong)] p-4 text-xs text-[var(--muted)]">
-            {`<img src="${process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app"}/api/badge/${slug}" alt="Incubator Trust reputation badge" width="240" height="80" />`}
+            {`<img src="${process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app"}/api/badge/${slug}" alt="Incubator Trust reputation tag" width="240" height="80" />`}
           </code>
         </div>
         <CopyLinkButton
           url={`${process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app"}/api/badge/${slug}`}
-          label="Copy badge image URL"
+          label="Copy tag image URL"
         />
       </section>
 

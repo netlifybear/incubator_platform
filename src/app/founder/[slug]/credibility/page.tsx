@@ -268,15 +268,15 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </span>
           </div>
           
-          {/* Verifiable badge section */}
+          {/* Verifiable contribution tag section */}
           <div className="mt-6 text-center">
             <div className="inline-block">
-              {/* This would normally be the actual badge SVG */}
+              {/* This would normally be the actual tag SVG */}
               <div className="flex h-24 w-24 items-center justify-center rounded-[50%] bg-[var(--accent)] text-lg font-semibold text-white">
                 {(founder.name ?? "F").charAt(0)}
               </div>
               <p className="mt-2 text-sm text-[var(--muted)]">
-                Verifiable badge • Hash: {badgeVerificationHash.slice(0, 8)}...
+                Verifiable tag • Hash: {badgeVerificationHash.slice(0, 8)}...
               </p>
             </div>
           </div>
@@ -369,12 +369,12 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </div>
           </section>
 
-          {/* Section 4: Badge Proof */}
+          {/* Section 4: Contribution Tag Proof */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
-            <h2 className="text-xl font-semibold">Badge Proof</h2>
+            <h2 className="text-xl font-semibold">Contribution Tag Proof</h2>
             <div className="mt-4">
               <p className="text-sm text-[var(--muted)] mb-2">
-                All cryptographically verifiable badges with issuance details:
+                All cryptographically verifiable contribution tags with issuance details:
               </p>
               {badges.length > 0 ? (
                 <div className="space-y-2">
@@ -392,12 +392,12 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
                   ))}
                 </div>
               ) : (
-                <p className="py-4 text-center text-[var(--muted)]">No badges earned yet</p>
+                <p className="py-4 text-center text-[var(--muted)]">No contribution tags earned yet</p>
               )}
             </div>
             <div className="mt-4 border-t border-[var(--border)] pt-4">
               <p className="text-center text-xs text-[var(--muted)]">
-                Badge verification hash: {badgeVerificationHash}
+                Tag verification hash: {badgeVerificationHash}
               </p>
             </div>
           </section>

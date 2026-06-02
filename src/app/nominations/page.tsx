@@ -27,8 +27,8 @@ export default async function NominationsPage() {
           Recognize outstanding founders.
         </h1>
         <p className="mt-4 max-w-2xl leading-7 text-[var(--muted)]">
-          Nominate a fellow founder for a badge. An admin reviews each nomination
-          before the badge is awarded.
+          Nominate a fellow founder for a contribution tag. An admin reviews each nomination
+          before the tag is awarded.
         </p>
       </section>
 

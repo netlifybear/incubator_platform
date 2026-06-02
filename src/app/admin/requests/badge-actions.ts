@@ -18,7 +18,7 @@ export async function awardBadgeAction(
   const admin = await getCurrentAdmin();
 
   if (!admin?.cohortId || !canManageCohort(admin, admin.cohortId)) {
-    return { error: "Only cohort admins can award badges." };
+    return { error: "Only cohort admins can award contribution tags." };
   }
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
@@ -45,10 +45,10 @@ export async function awardBadgeAction(
   try {
     await awardBadge(founder.id, badgeType, description, "admin");
     revalidatePath("/admin/requests");
-    return { success: `${badgeType} badge awarded to ${founder.name ?? email}.` };
+    return { success: `${badgeType} tag awarded to ${founder.name ?? email}.` };
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Could not award badge.",
+      error: error instanceof Error ? error.message : "Could not award tag.",
     };
   }
 }

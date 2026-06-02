@@ -66,7 +66,7 @@ export default async function SeoPage() {
     { label: "Profile slug set", done: hasProfileSlug, hint: "Creates a clean URL like /founder/your-name." },
     { label: "Public profile enabled", done: hasPublicProfile, hint: "Search engines can't index private profiles." },
     { label: "Google Search Console connected", done: hasGsc, hint: "Auto-discovers backlinks from across the web." },
-    { label: "At least one badge earned", done: hasBadge, hint: "Badges display on your public profile." },
+    { label: "At least one contribution tag earned", done: hasBadge, hint: "Contribution tags display on your public profile." },
     { label: "At least one verified backlink", done: verifiedBacklinks > 0, hint: "Each backlink is a citation signal." },
   ];
 
@@ -166,7 +166,7 @@ export default async function SeoPage() {
             </Link>
             <Link href="/grow" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
               <p className="font-semibold">Public profile</p>
-              <p className="mt-1 text-sm text-[var(--muted)]">View your grow hub with badges and points</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">View your grow hub with contribution tags and points</p>
             </Link>
             <Link href="/profile/settings" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
               <p className="font-semibold">Profile settings</p>
