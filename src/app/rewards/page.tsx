@@ -2,14 +2,14 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/app/components/app-shell";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
-import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
+import { getFounderPoints } from "@/lib/points";
 import { computeReviewStreak } from "@/lib/rewards";
 import { prisma } from "@/lib/prisma";
 
 const RULES = [
-  { action: "Write a useful review", description: "Measured by specificity, useful detail, outcomes, numbers, and natural language." },
+  { action: "Share a useful review", description: "Specific details, outcomes, numbers, and firsthand context make a review easier to trust." },
   { action: "Receive a contribution signal", description: "Badges and nominations add context about the kind of help you have provided." },
-  { action: "Receive a helpful vote", description: "Each thumbs up from a cohort member signals peer validation." },
+  { action: "Help peers decide", description: "Helpful votes show that other founders used your contribution to evaluate a vendor." },
 ];
 
 export default async function RewardsPage() {
@@ -23,9 +23,8 @@ export default async function RewardsPage() {
     redirect("/");
   }
 
-  const [points, rank, user] = await Promise.all([
+  const [points, user] = await Promise.all([
     getFounderPoints(founder.id),
-    getFounderCohortRank(founder.id, founder.cohortId),
     prisma.user.findUnique({
       where: { id: founder.id },
       select: { lastReviewDate: true },
@@ -107,17 +106,12 @@ export default async function RewardsPage() {
 
         <div className="space-y-6">
           <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-            <h2 className="text-xl font-semibold">Contribution breakdown</h2>
+            <h2 className="text-xl font-semibold">What feeds your credibility</h2>
             <div className="mt-6 space-y-3">
-              <BreakdownRow label="Review quality score" value={points.breakdown.reviews} />
+              <BreakdownRow label="Review detail" value={points.breakdown.reviews} />
               <BreakdownRow label="Contribution signals" value={points.breakdown.badges} />
-              <BreakdownRow label="Helpful votes received" value={points.breakdown.helpfulVotes} />
+              <BreakdownRow label="Peer validation" value={points.breakdown.helpfulVotes} />
             </div>
-            {rank && (
-              <p className="mt-4 text-center text-sm text-[var(--muted)]">
-                Contribution position: #{rank.rank} of {rank.total}
-              </p>
-            )}
           </section>
 
           <section className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-sm">
