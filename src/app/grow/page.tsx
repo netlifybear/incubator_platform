@@ -10,6 +10,7 @@ import { ReputationImportCard } from "./reputation-import-card";
 import { getFounderReferralStats } from "@/lib/invites";
 import { getFounderImpactSummary } from "@/lib/impact";
 import { getContributionFeedback } from "@/lib/contribution-feedback";
+import { computeCredibilityFactors } from "@/lib/credibility-factors";
 
 export default async function GrowPage() {
   const founder = await getCurrentFounder();
@@ -28,6 +29,7 @@ export default async function GrowPage() {
     getFounderReferralStats(founder.id),
     getContributionFeedback(founder.id, founder.cohortId),
   ]);
+  const credibility = await computeCredibilityFactors(founder.id, { impact, useCache: true });
 
   const streak = computeReviewStreak(founder.lastReviewDate);
   const profilePublic = founder.publicProfileEnabled;
@@ -131,6 +133,41 @@ export default async function GrowPage() {
                 </div>
               ) : null}
             </div>
+          </section>
+
+          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Credibility factors</h2>
+            {credibility.isThinFile ? (
+              <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+                Getting started. Write your first review to build your track record.
+              </p>
+            ) : (
+              <div className="mt-4 space-y-2">
+                <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
+                  credibility.summary === "strong"
+                    ? "bg-green-100 text-green-800"
+                    : credibility.summary === "developing"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-600"
+                }`}>
+                  {credibility.summary === "strong" ? "Strong" : credibility.summary === "developing" ? "Developing" : "Needs activity"}
+                </span>
+                {credibility.factors.filter(f => f.isPublic && f.key !== "reviewRecency").map((f) => (
+                  <div key={f.key} className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`h-2 w-2 rounded-full ${
+                        f.status === "strong" ? "bg-green-500" : f.status === "developing" ? "bg-yellow-500" : "bg-gray-300"
+                      }`} />
+                      <span className="text-sm text-[var(--muted)]">{f.label}</span>
+                    </div>
+                    <span className="text-sm font-semibold">{f.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Link href="/rewards" className="mt-4 inline-block text-sm font-semibold text-[var(--accent)]">
+              Learn what feeds your credibility →
+            </Link>
           </section>
         </div>
 

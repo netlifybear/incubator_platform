@@ -6,6 +6,7 @@ import { getFounderBadges } from "@/lib/badges";
 import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
 import { getBacklinkSnapshots, listBacklinksForFounder } from "@/lib/backlinks";
 import { reviewContributionPoints } from "@/lib/review-quality";
+import { computeCredibilityFactors, toPublicCredibilityFactors } from "@/lib/credibility-factors";
 import { prisma } from "@/lib/prisma";
 import crypto from "node:crypto";
 import { CredibilityActions } from "./credibility-actions";
@@ -84,6 +85,9 @@ async function getFounderCredibilityData(slug: string) {
   const gscConnected = Boolean(founder.gscEmail);
   const issuedAt = new Date();
 
+  const credibility = await computeCredibilityFactors(founder.id, { useCache: true });
+  const publicFactors = toPublicCredibilityFactors(credibility);
+
   return {
     founder,
     displayName: publicFounderDisplayName(founder),
@@ -96,6 +100,8 @@ async function getFounderCredibilityData(slug: string) {
     usedVendorPercentage,
     helpfulVoteRatio,
     qualityScorePercentage,
+    credibility,
+    publicFactors,
     badgeVerificationHash,
     gscConnected,
     accountAgeDays: Math.floor((issuedAt.getTime() - founder.createdAt.getTime()) / 86400000),
@@ -177,6 +183,8 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
     helpfulVoteRatio,
     qualityScorePercentage,
     badgeVerificationHash,
+    credibility,
+    publicFactors,
     gscConnected,
     accountAgeDays,
     lastUpdatedLabel,
@@ -295,7 +303,44 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </div>
           </section>
 
-          {/* Section 2: Review Credibility */}
+          {/* Section 2: Credibility Factor Summary */}
+          <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
+            <h2 className="text-xl font-semibold">Credibility Summary</h2>
+            <div className="mt-4 space-y-3">
+              {credibility.isThinFile ? (
+                <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+                  Establishing presence
+                </span>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
+                    credibility.summary === "strong"
+                      ? "bg-green-100 text-green-800"
+                      : credibility.summary === "developing"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-600"
+                  }`}>
+                    {credibility.summary === "strong" ? "Strong" : credibility.summary === "developing" ? "Developing" : "Needs activity"}
+                  </span>
+                </div>
+              )}
+              {publicFactors.map((f) => (
+                <div key={f.key} className="flex items-center justify-between rounded-xl bg-[var(--panel-strong)] px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className={`h-2 w-2 rounded-full ${
+                      f.status === "strong" ? "bg-green-500" : f.status === "developing" ? "bg-yellow-500" : "bg-gray-300"
+                    }`} />
+                    <span className="text-sm text-[var(--muted)]">{f.label}</span>
+                  </div>
+                </div>
+              ))}
+              <p className="text-xs text-[var(--muted)]">
+                Based on {credibility.factors.find(f => f.key === "reviewQuality")?.value ?? "0"} average review quality
+              </p>
+            </div>
+          </section>
+
+          {/* Section 3: Review Credibility */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Review Credibility</h2>
             <div className="mt-4 space-y-4">
@@ -324,7 +369,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </div>
           </section>
 
-          {/* Section 3: Badge Proof */}
+          {/* Section 4: Badge Proof */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Badge Proof</h2>
             <div className="mt-4">
@@ -357,7 +402,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </div>
           </section>
 
-          {/* Section 4: Backlink Authority */}
+          {/* Section 5: Backlink Authority */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Backlink Authority</h2>
             <div className="mt-4 space-y-4">
@@ -382,7 +427,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             </div>
           </section>
 
-          {/* Section 5: Export & Verify */}
+          {/* Section 6: Export & Verify */}
           <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-6">
             <h2 className="text-xl font-semibold">Export & Verify</h2>
             <div className="mt-4 space-y-4">
