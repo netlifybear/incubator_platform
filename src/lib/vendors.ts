@@ -1,5 +1,7 @@
 import { prisma } from "./prisma.ts";
 
+const MIN_CROSS_COHORT_REVIEW_COUNT = 2;
+
 export async function listVendorsForCohort(cohortId: string, category?: string) {
   return prisma.vendor.findMany({
     where: {
@@ -184,7 +186,7 @@ export async function getCrossCohortRecommendations(excludeCohortId: string, lim
       reviewCount: v.reviews.length,
       avgRating: v.reviews.reduce((s, r) => s + r.rating, 0) / v.reviews.length,
     }))
-    .filter((v) => v.avgRating >= 3.5)
+    .filter((v) => v.reviewCount >= MIN_CROSS_COHORT_REVIEW_COUNT && v.avgRating >= 3.5)
     .sort((a, b) => {
       if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
       if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;
@@ -236,7 +238,7 @@ export async function getSimilarVendorsInOtherCohorts(
       reviewCount: v.reviews.length,
       avgRating: v.reviews.reduce((s, r) => s + r.rating, 0) / v.reviews.length,
     }))
-    .filter((v) => v.avgRating >= 3.5)
+    .filter((v) => v.reviewCount >= MIN_CROSS_COHORT_REVIEW_COUNT && v.avgRating >= 3.5)
     .sort((a, b) => {
       if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
       if (b.avgRating !== a.avgRating) return b.avgRating - a.avgRating;

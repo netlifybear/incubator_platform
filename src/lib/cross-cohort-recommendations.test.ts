@@ -73,7 +73,7 @@ describe("cross-cohort vendor recommendations", () => {
 
     it("filters out vendors with average rating below 3.5", async () => {
       // vendorB has two reviews: 5+4=9, avg=4.5 >= 3.5 ✓
-      // vendorC has one review: 3, avg=3.0 < 3.5 ✗
+      // vendorC has one review: 3, avg=3.0 < 3.5 and below review threshold ✗
       const result = await getCrossCohortRecommendations(cohortA.id);
       const names = result.map((v: CrossCohortVendor) => v.name);
       assert.ok(names.includes(`B-Vendor ${runId}`));
@@ -123,7 +123,7 @@ describe("cross-cohort vendor recommendations", () => {
       assert.equal(result.length, 0);
     });
 
-    it("returns same-category vendors from other cohorts with good ratings", async () => {
+    it("returns same-category vendors from other cohorts with enough good ratings", async () => {
       const similar = await prisma.vendor.create({
         data: { cohortId: cohortB.id, name: `Similar ${runId}`, category: uniqueCategory },
       });
@@ -132,6 +132,7 @@ describe("cross-cohort vendor recommendations", () => {
       });
 
       await createTestReview({ cohortId: cohortB.id, userId: founderB.id, vendorId: similar.id, rating: 5 });
+      await createTestReview({ cohortId: cohortB.id, userId: founderB.id, vendorId: similar.id, rating: 4 });
 
       const result = await getSimilarVendorsInOtherCohorts(sourceVendor.id, cohortA.id);
       assert.ok(result.length >= 1);
