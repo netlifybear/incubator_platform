@@ -9,6 +9,7 @@ import { BacklinkVelocityChart } from "@/app/components/backlink-velocity-chart"
 import { ReputationImportCard } from "./reputation-import-card";
 import { getFounderReferralStats } from "@/lib/invites";
 import { getFounderImpactSummary } from "@/lib/impact";
+import { getContributionFeedback } from "@/lib/contribution-feedback";
 
 export default async function GrowPage() {
   const founder = await getCurrentFounder();
@@ -21,10 +22,11 @@ export default async function GrowPage() {
     redirect("/");
   }
 
-  const [impact, snapshots, referralStats] = await Promise.all([
+  const [impact, snapshots, referralStats, feedback] = await Promise.all([
     getFounderImpactSummary(founder.id),
     getBacklinkSnapshots(founder.id),
     getFounderReferralStats(founder.id),
+    getContributionFeedback(founder.id, founder.cohortId),
   ]);
 
   const streak = computeReviewStreak(founder.lastReviewDate);
@@ -133,6 +135,45 @@ export default async function GrowPage() {
         </div>
 
         <BacklinkVelocityChart snapshots={snapshots} />
+
+        {feedback.helpfulVotesReceived > 0 || feedback.targetedQuestionsReceived > 0 || feedback.reviewsWritten > 0 ? (
+          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Recent contribution impact</h2>
+            <div className="mt-4 space-y-2">
+              {feedback.helpfulVotesReceived > 0 ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
+                  <p className="text-sm leading-6">
+                    <span className="font-semibold">{feedback.helpfulVotesReceived}</span> founder{feedback.helpfulVotesReceived === 1 ? "" : "s"} marked
+                    {" "}your vendor reviews helpful this week.
+                  </p>
+                </div>
+              ) : null}
+              {feedback.targetedQuestionsReceived > 0 ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
+                  <p className="text-sm leading-6">
+                    <span className="font-semibold">{feedback.targetedQuestionsReceived}</span> founder{feedback.targetedQuestionsReceived === 1 ? "" : "s"} asked
+                    {" "}for more detail on vendors you know.
+                  </p>
+                </div>
+              ) : null}
+              {feedback.cohortActivityCount > 0 ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-3">
+                  <p className="text-sm leading-6">
+                    Your cohort recorded <span className="font-semibold">{feedback.cohortActivityCount}</span> contribution
+                    {" "}event{feedback.cohortActivityCount === 1 ? "" : "s"} this week.
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        ) : (
+          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Recent contribution impact</h2>
+            <p className="mt-4 text-sm leading-6 text-[var(--muted)]">
+              Write a detailed vendor review to start building visible impact.
+            </p>
+          </section>
+        )}
 
         <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
           <h2 className="text-xl font-semibold">Recommended actions</h2>
