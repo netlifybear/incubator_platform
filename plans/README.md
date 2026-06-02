@@ -4,10 +4,6 @@ This folder contains execution plans, product direction notes, and historical im
 
 ## Active Handoff
 
-| Plan | Status | Next Agent Guidance |
-|------|--------|---------------------|
-| `phase-a-credibility-factors.md` | Ready to execute | Build credibility factor explainability for `/grow` and `/founder/[slug]/credibility`. Use `reviewContributionPoints()` with the current 10-point max, keep public/private presenter rules explicit, and avoid all "credit" terminology. |
-
 ## Deferred Work
 
 | Area | Source Plan | Status | Next Agent Guidance |
@@ -30,6 +26,7 @@ This folder contains execution plans, product direction notes, and historical im
 | `impact-dashboard-implementation.md` | `/grow` uses personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible points; `/rewards` shows credibility ingredients without cohort rank. |
 | `contribution-feedback-loop.md` | Slice A+B are implemented: helper plus `/grow` contribution impact recap. |
 | `founder-credit-report.md` | Founder credibility report page and machine-readable endpoint are implemented. |
+| `phase-a-credibility-factors.md` | 6-factor computation with `computeCredibilityFactors()`, public presenter `toPublicCredibilityFactors()`, 9 tests, `/grow` card, `/credibility` summary section. |
 | `nav-regroup-hubs.md` | Sidebar regrouped into Write, Connect, Grow, and Admin links; `/connect` and `/grow` exist. Reference only. |
 
 ## Agent Guardrails
