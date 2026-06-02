@@ -12,7 +12,7 @@ This folder contains execution plans, product direction notes, and historical im
 
 | Area | Source Plan | Status | Next Agent Guidance |
 |------|-------------|--------|---------------------|
-| Contribution feedback notifications and digest | `contribution-feedback-loop.md` | Deferred after Slice A+B | Slice A+B are implemented: `getContributionFeedback()` and the `/grow` "Recent contribution impact" recap are live. Plan notification copy/links and digest language before implementation. |
+| Contribution feedback notifications and digest | `contribution-feedback-loop.md` | Implemented (Slice C+D) | Slice A+B already live; Slice C+D done: outcome-language notifications for helpful votes and targeted requests; digest now shows founders helped count with impact section. |
 | Badge/contribution-signal taxonomy | `gamification-rethink.md` | Product direction | Consider renaming badge presentation from achievement-style labels to contribution tags. Requires UX/product design before code changes. |
 | Streak milestones | `gamification-rethink.md` | Product direction | Scope separately after the impact dashboard has been observed in local or production usage. |
 | Credit report verification polish | `founder-credit-report.md` | Optional polish | Existing `/founder/[slug]/credibility` page and API work. Optional follow-up: PDF/export polish, richer verification badges, and inquiry-history display. |
