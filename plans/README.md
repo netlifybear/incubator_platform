@@ -10,8 +10,9 @@ This folder contains implementation proposals and product direction notes. It is
 | `reciprocity-pipeline.md` | Mostly implemented | Network effects first pass is live: cross-cohort recommendations, alumni helpful voting policy, cohort privacy refinements, and referral loop polish. |
 | `gamification-rethink.md` | Product direction | Impact dashboard slice implemented. Remaining badge/contribution-signal taxonomy, contribution feedback loop, and deeper UX work deferred (see deferral notes below). |
 | `impact-dashboard-implementation.md` | Implemented | `/grow` uses personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible points; `/rewards` shows credibility ingredients without rank. |
-| `contribution-feedback-loop.md` | Ready for implementation planning | Separate UX plan for turning helpful votes, requests, activity, and digest into a coherent "your contribution mattered" loop. Start with Slice A + Slice B only. |
+| `contribution-feedback-loop.md` | Implemented (Slice A+B) | `getContributionFeedback()` helper + "Recent contribution impact" section on `/grow`. Slice C (notification copy) and D (digest) remain deferred pending UX design. |
 | `founder-credit-report.md` | Implemented | Founder credit report page and API endpoint completed; credit report verification UX polish remains optional and deferred until after impact dashboard. |
+| `phase-a-credibility-factors.md` | Ready to execute | Credibility factor explainability on `/grow` and `/credibility`. Uses `reviewContributionPoints()` for quality computation. Factor labels only, no numeric score. |
 | `nav-regroup-hubs.md` | Implemented | Reference only. Do not execute. |
 
 ## Completed Work Summary
@@ -58,7 +59,8 @@ From reciprocity-pipeline.md:
 2. **Gamification rethink**: Impact-over-points refinements
    - Impact dashboard implementation is complete: `/grow` uses `getFounderImpactSummary()` for personal impact metrics; `/leaderboard` is a cohort contribution dashboard without visible point totals or rank positions; `/rewards` shows credibility ingredients without cohort rank
    - Points remain internal for ordering, reputation export, and credibility API compatibility
-   - `contribution-feedback-loop.md` now defines the next UX/product slice. Implementation should start with Slice A + Slice B only: contribution feedback summary helper plus a small Grow recap section.
+   - Contribution feedback Slice A+B are complete: `getContributionFeedback()` and the `/grow` "Recent contribution impact" recap are live.
+   - Contribution feedback Slice C+D remain deferred: notification copy/links and weekly digest language should be planned separately before implementation.
    - Remaining after that: deeper badge/contribution-signal taxonomy and streak milestones — each requires UX/product design before implementation
 
 3. **Optional portability hardening**
@@ -76,7 +78,7 @@ The following items were identified during the impact dashboard implementation. 
 
 1. **Badge/Contribution-signal taxonomy** — converting badges from "achievements" to descriptive "contribution tags" (e.g. `reviewer` → "Has written reviews"). Requires UX design for naming, display treatment on profiles, and impact on badge computation engine. Deferred because the current badge system works and this is purely a presentation change.
 
-2. **Contribution feedback loop** — now planned in `contribution-feedback-loop.md`. Start with a narrow implementation plan for recent feedback summary data and a Grow recap. Keep notification and digest copy as later slices.
+2. **Contribution feedback loop** — Slice A+B are implemented. Keep notification and digest copy as later slices, with a short UX plan before implementation.
 
 3. **Credit report verification UX** — optional polish to the `/founder/[slug]/credibility` page: export-as-PDF, richer verification badges, inquiry history display. Deferred because the current page is functional and this is a nice-to-have.
 
