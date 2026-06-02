@@ -2,7 +2,14 @@
 
 ## Status
 
-Product/UX plan ready. Do not implement this as a broad rewrite. Extract a small implementation plan before code changes.
+Slice A+B implemented. `getContributionFeedback()` exists, tests cover recent feedback summary behavior, and `/grow` now includes a "Recent contribution impact" recap.
+
+Remaining work is limited to later UX slices:
+
+- Slice C: notification copy and links
+- Slice D: weekly digest language
+
+Do not implement these later slices as a broad rewrite. Write a short implementation plan before code changes.
 
 This follows the completed impact dashboard work. The dashboard now shows what a founder has contributed; this plan defines how the product should tell the founder when that contribution mattered.
 
@@ -26,7 +33,7 @@ The current product has the raw feedback signals:
 - badge awards
 - impact metrics on `/grow`
 
-But those signals still feel fragmented. A founder can see counts, but the app does not consistently explain the effect of a contribution.
+The first feedback surface now exists on `/grow`, but notification and digest copy still need to be aligned with the same outcome-oriented language.
 
 This matters because the core loop is:
 
@@ -39,12 +46,12 @@ This matters because the core loop is:
 
 Recommended approach: **lightweight feedback moments**, not a new dashboard.
 
-Use existing surfaces first:
+Use existing surfaces:
 
-- `/grow`: personal impact recap and next meaningful action
-- Notifications: immediate "your review helped" moments
+- `/grow`: personal impact recap and next meaningful action (implemented)
+- Notifications: immediate "your review helped" moments (deferred)
 - Activity: cohort-visible contribution movement
-- Weekly digest: slower summary of impact over the week
+- Weekly digest: slower summary of impact over the week (deferred)
 
 Avoid adding a new top-level route for this pass.
 
@@ -89,7 +96,7 @@ Avoid treating these as celebration moments:
 
 ### 1. Grow: Impact Recap
 
-Add a compact "Recent contribution impact" section near the existing impact cards.
+Implemented: `/grow` now includes a compact "Recent contribution impact" section.
 
 Examples:
 
@@ -103,8 +110,8 @@ Empty state:
 
 Data source:
 
-- Start with helpful votes received, targeted requests, activity events, and recent review count.
-- Keep the first implementation query simple and testable.
+- `src/lib/contribution-feedback.ts`
+- The first implementation tracks recent helpful votes, targeted requests, recent reviews, cohort activity count, and a suggested next action.
 
 ### 2. Notifications: Immediate Feedback
 
@@ -156,7 +163,7 @@ Preferred message direction:
 
 ### Slice A: Impact Event Summary Library
 
-Create a focused helper, likely `src/lib/contribution-feedback.ts`, that returns a founder's recent feedback summary.
+Implemented in `src/lib/contribution-feedback.ts`.
 
 Inputs:
 
@@ -180,15 +187,15 @@ Tests:
 
 ### Slice B: Grow Feedback Recap
 
-Use the summary helper in `/grow`.
+Implemented in `/grow`.
 
-Add one section:
+Implemented section:
 
 - heading: "Recent contribution impact"
 - one to three outcome rows
 - a privacy-safe empty state
 
-Do not redesign the whole page.
+The whole page was not redesigned.
 
 ### Slice C: Notification Copy And Links
 
@@ -227,14 +234,13 @@ Do not add a new email template system.
 
 ## Handoff Guidance
 
-Another agent should begin by writing an implementation plan for **Slice A + Slice B only**.
+Another agent should not re-run Slice A+B. They are already implemented.
 
-Recommended first implementation scope:
+Recommended next scope:
 
-1. Add `src/lib/contribution-feedback.ts`.
-2. Add tests for recent helpful votes and targeted requests.
-3. Add a small `/grow` recap section.
-4. Verify with `npm run lint`, `npm run build`, and `npm test`.
+1. Write a short implementation plan for Slice C only: notification copy and links.
+2. Keep helpful-vote and request feedback privacy-safe.
+3. Add tests only where notification creation behavior changes.
+4. Verify with `npm run lint`, `npm run build`, and focused tests.
 
-Do not implement digest or notification copy changes until the Grow recap data model is stable.
-
+Slice D, weekly digest language, should wait until Slice C is reviewed.
