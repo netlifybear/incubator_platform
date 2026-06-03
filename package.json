@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "node prisma/seed.mjs",
+    "db:cleanup-tests": "node scripts/cleanup-test-data.mjs --apply",
+    "db:cleanup-tests:dry-run": "node scripts/cleanup-test-data.mjs",
     "test": "node --test --test-concurrency=1 src/**/*.test.ts"
   },
   "prisma": {

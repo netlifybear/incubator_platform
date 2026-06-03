@@ -46,21 +46,23 @@ test("getFounderImpactSummary returns personal contribution metrics", async () =
     },
   });
 
-  const summary = await getFounderImpactSummary(founder.id);
+  try {
+    const summary = await getFounderImpactSummary(founder.id);
 
-  assert.equal(summary.reviewCount, 1);
-  assert.equal(summary.helpfulVoteCount, 1);
-  assert.equal(summary.contributionSignalCount, 1);
-  assert.equal(summary.profileViewCount, 7);
-  assert.equal(summary.verifiedBacklinkCount, 1);
-
-  await prisma.helpfulVote.deleteMany({ where: { reviewId: review.id } });
-  await prisma.contributionTag.deleteMany({ where: { userId: founder.id } });
-  await prisma.backlinkLog.deleteMany({ where: { userId: founder.id } });
-  await prisma.review.deleteMany({ where: { vendorId: vendor.id } });
-  await prisma.vendor.deleteMany({ where: { id: vendor.id } });
-  await prisma.user.deleteMany({ where: { id: founder.id } });
-  await prisma.cohort.deleteMany({ where: { id: cohort.id } });
+    assert.equal(summary.reviewCount, 1);
+    assert.equal(summary.helpfulVoteCount, 1);
+    assert.equal(summary.contributionSignalCount, 1);
+    assert.equal(summary.profileViewCount, 7);
+    assert.equal(summary.verifiedBacklinkCount, 1);
+  } finally {
+    await prisma.helpfulVote.deleteMany({ where: { reviewId: review.id } });
+    await prisma.contributionTag.deleteMany({ where: { userId: founder.id } });
+    await prisma.backlinkLog.deleteMany({ where: { userId: founder.id } });
+    await prisma.review.deleteMany({ where: { vendorId: vendor.id } });
+    await prisma.vendor.deleteMany({ where: { id: vendor.id } });
+    await prisma.user.deleteMany({ where: { id: founder.id } });
+    await prisma.cohort.deleteMany({ where: { id: cohort.id } });
+  }
 });
 
 test("getCohortImpactSummary aggregates cohort activity without review text", async () => {
@@ -88,15 +90,17 @@ test("getCohortImpactSummary aggregates cohort activity without review text", as
     },
   });
 
-  const summary = await getCohortImpactSummary(cohort.id);
+  try {
+    const summary = await getCohortImpactSummary(cohort.id);
 
-  assert.equal(summary.founderCount, 1);
-  assert.equal(summary.activeContributorCount, 1);
-  assert.equal(summary.reviewCount, 1);
-  assert.equal("comment" in summary.topContributors[0], false);
-
-  await prisma.review.deleteMany({ where: { id: review.id } });
-  await prisma.vendor.deleteMany({ where: { id: vendor.id } });
-  await prisma.user.deleteMany({ where: { id: founder.id } });
-  await prisma.cohort.deleteMany({ where: { id: cohort.id } });
+    assert.equal(summary.founderCount, 1);
+    assert.equal(summary.activeContributorCount, 1);
+    assert.equal(summary.reviewCount, 1);
+    assert.equal("comment" in summary.topContributors[0], false);
+  } finally {
+    await prisma.review.deleteMany({ where: { id: review.id } });
+    await prisma.vendor.deleteMany({ where: { id: vendor.id } });
+    await prisma.user.deleteMany({ where: { id: founder.id } });
+    await prisma.cohort.deleteMany({ where: { id: cohort.id } });
+  }
 });

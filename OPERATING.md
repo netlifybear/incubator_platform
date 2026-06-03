@@ -218,6 +218,15 @@ In development, email (magic-link + notifications) is logged to console — no R
 
 `npm test` includes integration tests that create and clean isolated cohorts, founders, vendors, reviews, helpful votes, contribution tag award attempts, and admin metrics rows. The test runner loads `.env` through `src/lib/prisma.ts`, so local runs need the same `DATABASE_URL` and `DIRECT_DATABASE_URL` values used by Prisma/Next. Test records use unique `test-*` slugs and emails and are removed at the end of each test.
 
+Interrupted or failed local test runs can leave disposable fixtures in the shared development database. Before UX audits of public directories such as `/cohorts`, run:
+
+```bash
+npm run db:cleanup-tests:dry-run
+npm run db:cleanup-tests
+```
+
+The cleanup script only targets local test prefixes (`test-*`, `cf-*`, `impact-*`, `cohort-impact-*`, `leaderboard-test-*`, and `notif-test-*`) and leaves seeded demo records such as `demo-incubator`, `harbor-accelerator`, `maya@example.com`, and `jordan@example.com` intact. Use the dry run first when another agent may have just updated the project.
+
 ## MVP Thesis
 
 The first useful product is a private, cohort-scoped trust layer that replaces repeated Slack/WhatsApp vendor recommendation threads. Public authority features follow — without trusted founder participation, the SEO layer is mostly decorative.
