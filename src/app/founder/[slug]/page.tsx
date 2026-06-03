@@ -5,7 +5,6 @@ import { publicFounderDisplayName } from "@/lib/founder-profile-presenter";
 import { isAlumni } from "@/lib/tenant-policy";
 import { getPublicFounderProfile } from "@/lib/founder-profiles";
 import { getFounderBadges } from "@/lib/badges";
-import { getFounderPoints, getFounderCohortRank } from "@/lib/points";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -69,9 +68,13 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
 
   const displayName = publicFounderDisplayName(founder);
   const badges = await getFounderBadges(founder.email);
-  const [points, rank, reviewStats, session] = await Promise.all([
-    getFounderPoints(founder.id),
-    founder.cohort?.id ? getFounderCohortRank(founder.id, founder.cohort.id) : Promise.resolve(null),
+  const [helpfulVoteCount, reviewStats, session] = await Promise.all([
+    prisma.helpfulVote.count({
+      where: {
+        value: true,
+        review: { userId: founder.id },
+      },
+    }),
     prisma.review.aggregate({
       where: { userId: founder.id },
       _avg: { rating: true },
@@ -222,35 +225,36 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
         </article>
 
         <article className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold">Credibility</h2>
-          <div className="mt-2 flex items-baseline gap-1">
-            <span className="text-4xl font-bold text-[var(--accent)]">{points.total}</span>
-            <span className="text-sm text-[var(--muted)]">pts</span>
+          <h2 className="text-2xl font-semibold">Contribution signals</h2>
+          <div className="mt-4 space-y-2 text-sm text-[var(--muted)]">
+            <p>
+              <span className="font-semibold text-[var(--foreground)]">{reviewStats._count}</span>{" "}
+              review{reviewStats._count === 1 ? "" : "s"} written
+              {reviewStats._avg.rating !== null ? ` with ${Math.round(reviewStats._avg.rating * 10) / 10}/5 avg rating` : ""}
+            </p>
+            <p>
+              <span className="font-semibold text-[var(--foreground)]">{badges.length}</span>{" "}
+              contribution tag{badges.length === 1 ? "" : "s"}
+            </p>
+            <p>
+              <span className="font-semibold text-[var(--foreground)]">{helpfulVoteCount}</span>{" "}
+              helpful vote{helpfulVoteCount === 1 ? "" : "s"} received
+            </p>
           </div>
-          {rank !== null && (
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              #{rank.rank} of {rank.total} founders in {founder.cohort?.name}
-            </p>
-          )}
-          {reviewStats._count > 0 ? (
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              {reviewStats._count} review{reviewStats._count === 1 ? "" : "s"} written
-              {reviewStats._avg.rating !== null ? ` · ${Math.round(reviewStats._avg.rating * 10) / 10} avg rating` : ""}
-            </p>
-          ) : null}
+          <Link
+            href={`/founder/${slug}/credibility`}
+            className="mt-4 inline-flex text-sm font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
+          >
+            View credibility report
+          </Link>
           {founder.cohort && (
             <Link
               href={`/leaderboard/public?cohort=${founder.cohort.slug}`}
-              className="mt-3 inline-flex text-sm font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
+              className="mt-3 block text-sm font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
             >
               View cohort contribution summary
             </Link>
           )}
-          <div className="mt-4 space-y-1 text-sm text-[var(--muted)]">
-            <p>{points.breakdown.reviews} from reviews</p>
-            <p>{points.breakdown.badges} from contribution tags</p>
-            <p>{points.breakdown.helpfulVotes} from helpful votes</p>
-          </div>
         </article>
 
         <article className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">

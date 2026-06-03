@@ -90,7 +90,7 @@ export default async function AdminImportsPage() {
                         <div className="flex flex-wrap gap-3 text-sm text-[var(--muted)]">
                           <span>{packet.aggregates.totalReviews ?? 0} reviews</span>
                           <span>{packet.aggregates.totalBadges ?? 0} contribution tags</span>
-                          <span>{packet.aggregates.totalPoints ?? 0} pts</span>
+                          <span>{packet.aggregates.totalPoints ?? 0} internal scoring signals</span>
                         </div>
                       ) : null}
                       {badgeAttestations.length > 0 ? (

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${cohort.name} — Incubator Trust`,
     description:
       cohort.description ??
-      `${cohort.name} incubator cohort with ${cohort._count.users} founders and ${cohort._count.vendors} vendors.`,
+      `${cohort.name} public-safe cohort summary with aggregate founder and vendor contribution signals.`,
   };
 }
 
@@ -36,9 +36,16 @@ export default async function CohortPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: cohort.name,
-    description: cohort.description ?? undefined,
+    description:
+      cohort.description ??
+      `${cohort.name} public-safe cohort summary with aggregate founder and vendor contribution signals.`,
     numberOfEmployees: { "@type": "QuantitativeValue", value: cohort._count.users },
     knowsAbout: cohort.topVendors.map((v) => v.category).filter((v, i, a) => a.indexOf(v) === i),
+    additionalProperty: [
+      { "@type": "PropertyValue", name: "Vendor count", value: cohort._count.vendors },
+      { "@type": "PropertyValue", name: "Founder review count", value: cohort._count.reviews },
+      { "@type": "PropertyValue", name: "Consumer review count", value: cohort._count.consumerReviews },
+    ],
   } : null;
 
   return (
@@ -54,6 +61,10 @@ export default async function CohortPage({ params }: Props) {
             {cohort.description}
           </p>
         ) : null}
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+          This public-safe page shows aggregate cohort activity only. Private founder
+          reviews, requests, invites, and admin activity stay inside the cohort trust network.
+        </p>
       </section>
 
       {aboveThreshold ? (

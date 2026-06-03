@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/founder/", "/founders", "/leaderboard/public", "/api/badge/"],
+        allow: ["/", "/cohorts", "/cohorts/", "/founder/", "/founders", "/leaderboard/public", "/api/badge/"],
         disallow: ["/admin/", "/signin", "/api/auth/", "/api/reputation/", "/api/badges/"],
       },
     ],

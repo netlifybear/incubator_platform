@@ -4,7 +4,8 @@ import { listPublicFounders } from "@/lib/founder-profiles";
 
 export const metadata: Metadata = {
   title: "Founders — Incubator Trust",
-  description: "Browse verified startup founders with public profiles across incubator cohorts.",
+  description:
+    "Browse public-safe founder profiles with verified contribution signals across incubator cohorts.",
 };
 
 type FoundersPageProps = {
@@ -17,13 +18,34 @@ export default async function FoundersPage({ searchParams }: FoundersPageProps) 
   const params = await searchParams;
   const sort = params?.sort === "recent" ? "recent" : "name";
   const founders = await listPublicFounders(sort);
+  const baseUrl = process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Founder public credibility profiles",
+    description:
+      "Public-safe directory of verified startup founders with contribution signals and credibility report links.",
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: founders.map((founder, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: founder.name,
+        url: `${baseUrl}/founder/${founder.profileSlug}`,
+      })),
+    },
+  };
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="text-center">
         <h1 className="text-4xl font-semibold tracking-tight">Browse founders</h1>
         <p className="mt-4 text-lg leading-7 text-[var(--muted)]">
-          Verified startup founders building portable credibility across incubator cohorts.
+          Public-safe founder profiles with contribution signals, cohort context, and credibility reports.
         </p>
       </section>
 

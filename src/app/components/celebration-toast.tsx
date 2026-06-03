@@ -60,7 +60,7 @@ export function CelebrationToast({ pointsEarned, newTotal, rank, badgeType }: Ce
                 />
               </div>
               <p className="mt-1 text-right text-xs text-green-600">
-                {progress.next.threshold - newTotal} pts to unlock
+                {progress.next.threshold - newTotal} signals to unlock
               </p>
             </div>
           ) : newTotal > 0 ? (

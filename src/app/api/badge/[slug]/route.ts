@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { normalizeFounderProfileSlug, founderProfileSlugFromEmail } from "@/lib/founder-profile-presenter";
-import { getFounderPoints } from "@/lib/points";
 
 type BadgeRouteProps = {
   params: Promise<{ slug: string }>;
@@ -55,8 +54,7 @@ export async function GET(_request: Request, { params }: BadgeRouteProps) {
       return new NextResponse("Founder not found", { status: 404 });
     }
 
-    const points = await getFounderPoints(legacy.id);
-    const svg = generateBadgeSvg(legacy.name ?? "Founder", legacy.cohort?.name ?? "Cohort", points.total, legacy.profileCompletePercentage);
+    const svg = generateBadgeSvg(legacy.name ?? "Founder", legacy.cohort?.name ?? "Cohort", legacy.profileCompletePercentage);
 
     return new NextResponse(svg, {
       headers: {
@@ -66,8 +64,7 @@ export async function GET(_request: Request, { params }: BadgeRouteProps) {
     });
   }
 
-  const points = await getFounderPoints(founder.id);
-  const svg = generateBadgeSvg(founder.name ?? "Founder", founder.cohort?.name ?? "Cohort", points.total, founder.profileCompletePercentage);
+  const svg = generateBadgeSvg(founder.name ?? "Founder", founder.cohort?.name ?? "Cohort", founder.profileCompletePercentage);
 
   return new NextResponse(svg, {
     headers: {
@@ -80,7 +77,6 @@ export async function GET(_request: Request, { params }: BadgeRouteProps) {
 function generateBadgeSvg(
   name: string,
   cohort: string,
-  points: number,
   profilePct: number,
 ): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="80" viewBox="0 0 240 80">
@@ -95,7 +91,7 @@ function generateBadgeSvg(
   <text x="16" y="46" font-family="system-ui, sans-serif" font-size="10" fill="#888">Verified in ${escapeXml(cohort)}</text>
   <rect x="16" y="54" width="140" height="6" rx="3" fill="#333"/>
   <rect x="16" y="54" width="${Math.round(profilePct * 1.4)}" height="6" rx="3" fill="#4ade80"/>
-  <text x="16" y="72" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#4ade80">${points} pts</text>
+  <text x="16" y="72" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#4ade80">${profilePct}% profile complete</text>
   <text x="180" y="72" font-family="system-ui, sans-serif" font-size="9" fill="#666">incubator-trust</text>
 </svg>`;
 }

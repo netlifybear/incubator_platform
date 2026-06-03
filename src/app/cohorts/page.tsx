@@ -6,18 +6,39 @@ const PRIVACY_THRESHOLD_FOUNDERS = 2;
 
 export const metadata: Metadata = {
   title: "Cohorts — Incubator Trust",
-  description: "Browse incubator cohorts and their aggregate trust metrics across vendors and reviews.",
+  description: "Browse public-safe incubator cohort summaries built from verified vendor reviews and contribution signals.",
 };
 
 export default async function CohortsPage() {
   const cohorts = await listPublicCohorts();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Incubator cohort public summaries",
+    description:
+      "Public-safe directory of incubator cohorts with aggregate trust metrics. Private cohort activity and founder-level details remain hidden unless intentionally published.",
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: cohorts.map((cohort, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: cohort.name,
+        url: `/cohorts/${cohort.slug}`,
+      })),
+    },
+  };
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="text-center">
         <h1 className="text-4xl font-semibold tracking-tight">Cohorts</h1>
         <p className="mt-4 text-lg leading-7 text-[var(--muted)]">
-          Incubator cohorts with verified vendor reviews and portable credibility.
+          Public-safe cohort summaries built from verified vendor reviews,
+          contribution signals, and privacy-gated aggregate activity.
         </p>
       </section>
 
