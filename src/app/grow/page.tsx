@@ -6,6 +6,7 @@ import { hasActiveCohort } from "@/lib/tenant-policy";
 import { computeReviewStreak } from "@/lib/rewards";
 import { getBacklinkSnapshots } from "@/lib/backlinks";
 import { BacklinkVelocityChart } from "@/app/components/backlink-velocity-chart";
+import { WorkflowStrip } from "@/app/components/workflow-strip";
 import { ReputationImportCard } from "./reputation-import-card";
 import { getFounderReferralStats } from "@/lib/invites";
 import { getFounderImpactSummary } from "@/lib/impact";
@@ -52,7 +53,7 @@ export default async function GrowPage() {
           <h1 className="mt-3 text-4xl font-semibold tracking-normal">Grow</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
             Your credibility and contribution trail. Track what you have shared, who it
-            helped, and how your public founder profile is showing up.
+            helped, and how private cohort work becomes public-safe credibility.
           </p>
           {profilePublic ? (
             <Link
@@ -70,6 +71,8 @@ export default async function GrowPage() {
             </Link>
           )}
         </section>
+
+        <WorkflowStrip active="grow" />
 
         {credibility.isThinFile ? (
           <section className="rounded-3xl border border-[var(--border)] bg-gradient-to-br from-blue-50 to-white p-6 shadow-sm">
@@ -261,7 +264,7 @@ export default async function GrowPage() {
             {streak === 0 ? (
               <ActionItem
                 label="Write a review this week"
-                detail="Add fresh context that helps other founders evaluate vendors"
+                detail="Add fresh private context that helps founders evaluate vendors"
                 href="/"
               />
             ) : null}
@@ -281,7 +284,7 @@ export default async function GrowPage() {
             ) : null}
             <ActionItem
               label="Export your credibility packet"
-              detail="Download a signed JWT of your profile, contribution tags, and signals"
+              detail="Download signed verification data for your profile, contribution tags, and signals"
               href="/api/reputation/export"
             />
             {founder.profileSlug ? (

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/app/components/app-shell";
+import { WorkflowStrip } from "@/app/components/workflow-strip";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
 import { getFounderPoints } from "@/lib/points";
@@ -47,6 +48,8 @@ export default async function RewardsPage() {
           understand why your recommendations carry weight.
         </p>
       </section>
+
+      <WorkflowStrip active="grow" />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
         <div className="space-y-8">

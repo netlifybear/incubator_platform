@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/app/components/app-shell";
+import { WorkflowStrip } from "@/app/components/workflow-strip";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
 import { getBacklinkSnapshots } from "@/lib/backlinks";
@@ -64,7 +65,7 @@ export default async function SeoPage() {
     { label: "Startup URL set", done: hasStartupUrl, hint: "Links your profile to your startup's domain." },
     { label: "Bio written", done: hasBio, hint: "A bio gives search engines context about you." },
     { label: "Profile slug set", done: hasProfileSlug, hint: "Creates a clean URL like /founder/your-name." },
-    { label: "Public profile enabled", done: hasPublicProfile, hint: "Search engines can't index private profiles." },
+    { label: "Public profile enabled", done: hasPublicProfile, hint: "Search engines can only crawl intentionally public profiles." },
     { label: "Google Search Console connected", done: hasGsc, hint: "Auto-discovers backlinks from across the web." },
     { label: "At least one contribution tag earned", done: hasBadge, hint: "Contribution tags display on your public profile." },
     { label: "At least one verified backlink", done: verifiedBacklinks > 0, hint: "Each backlink is a citation signal." },
@@ -82,10 +83,12 @@ export default async function SeoPage() {
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-normal">SEO Checklist</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            Optimize your founder profile and backlinks for search engine visibility.
-            Each item completed increases your chance of being found.
+            Prepare public-safe founder profile, backlink, and structured-data surfaces
+            for search and AI discovery without exposing private cohort activity.
           </p>
         </section>
+
+        <WorkflowStrip active="grow" />
 
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
@@ -174,7 +177,7 @@ export default async function SeoPage() {
             </Link>
             <Link href="/api/reputation/export" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
               <p className="font-semibold">Export credibility packet</p>
-              <p className="mt-1 text-sm text-[var(--muted)]">Download signed JWT of your profile data</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">Download signed verification data for your profile</p>
             </Link>
           </div>
         </section>

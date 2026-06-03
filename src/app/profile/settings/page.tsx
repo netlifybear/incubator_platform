@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AppShell } from "@/app/components/app-shell";
+import { WorkflowStrip } from "@/app/components/workflow-strip";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
 import { ProfileSettingsForm } from "./settings-form";
@@ -40,6 +41,8 @@ export default async function ProfileSettingsPage() {
           </span>
         </div>
       </section>
+
+      <WorkflowStrip active="grow" />
 
       <ProfileSettingsForm
         action={action}

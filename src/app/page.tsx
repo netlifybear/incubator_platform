@@ -14,6 +14,7 @@ import {
 } from "@/lib/vendors";
 import { OnboardingBanner } from "@/app/components/onboarding-banner";
 import { VendorSearch } from "@/app/components/vendor-search";
+import { WorkflowStrip } from "@/app/components/workflow-strip";
 import { prisma } from "@/lib/prisma";
 import { getActiveSprint } from "@/lib/sprints";
 import { computeReviewStreak } from "@/lib/rewards";
@@ -137,6 +138,8 @@ export default async function Home({ searchParams }: HomeProps) {
           badgeCount={badgeCount}
         />
 
+        <WorkflowStrip active="write" />
+
         <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
           <div>
             <div className="flex flex-wrap items-end justify-between gap-4">
@@ -244,6 +247,12 @@ export default async function Home({ searchParams }: HomeProps) {
               </p>
               <div className="mt-4 grid gap-2">
                 <Link
+                  href="/connect"
+                  className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                >
+                  Answer cohort questions
+                </Link>
+                <Link
                   href="/leaderboard"
                   className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
@@ -284,7 +293,8 @@ export default async function Home({ searchParams }: HomeProps) {
               {openRequests.length === 0 ? (
                 <p className="leading-7 text-[var(--muted)]">
                   No open requests yet. When founders need a vendor that is not listed,
-                  their requests will show up here.
+                  their requests will show up here. To help peers right now, answer cohort
+                  questions in Connect.
                 </p>
               ) : (
                 openRequests.map((request) => (

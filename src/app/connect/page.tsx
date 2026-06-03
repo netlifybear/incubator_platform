@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 import { AppShell } from "@/app/components/app-shell";
+import { WorkflowStrip } from "@/app/components/workflow-strip";
 import { getCurrentFounder } from "@/lib/auth";
 import { hasActiveCohort } from "@/lib/tenant-policy";
 import { listOpenVendorRequestsForCohort, listIncomingTargetedRequests } from "@/lib/vendor-requests";
@@ -43,7 +44,8 @@ export default async function ConnectPage() {
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-normal">Connect</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            Ask your cohort for vendor recommendations and answer questions from peers.
+            Ask your cohort for vendor recommendations, answer questions from peers,
+            and turn private operating knowledge into useful contribution signals.
           </p>
           {unansweredCount > 0 ? (
             <Link
@@ -61,6 +63,8 @@ export default async function ConnectPage() {
             </Link>
           )}
         </section>
+
+        <WorkflowStrip active="connect" />
 
         <div className="grid gap-3 sm:grid-cols-3">
           <MetricCard label="Unanswered questions" value={unansweredCount} />
@@ -106,7 +110,8 @@ export default async function ConnectPage() {
           </div>
           {openRequests.length === 0 ? (
             <p className="mt-4 text-sm text-[var(--muted)]">
-              You haven&apos;t requested any vendors yet. Ask your cohort for recommendations.
+              You haven&apos;t requested any vendors yet. Ask your cohort for recommendations
+              when the private vendor directory does not have the context you need.
             </p>
           ) : (
             <div className="mt-4 space-y-2">
@@ -177,7 +182,7 @@ export default async function ConnectPage() {
           <p className="mt-2 text-xl font-semibold">Founders in your cohort</p>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
             See who else is building in this incubator cohort. You can view public profiles and
-            request recommendations.
+            request recommendations when you need more vendor context.
           </p>
           <Link
             href="/founders"
