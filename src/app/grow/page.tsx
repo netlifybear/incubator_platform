@@ -33,6 +33,14 @@ export default async function GrowPage() {
 
   const streak = computeReviewStreak(founder.lastReviewDate);
   const profilePublic = founder.publicProfileEnabled;
+  const credibilitySummaryLabel =
+    credibility.summary === "strong"
+      ? "Strong"
+      : credibility.summary === "developing" && impact.reviewCount <= 1
+        ? "Early signal"
+        : credibility.summary === "developing"
+          ? "Developing"
+          : "Needs activity";
 
   return (
     <AppShell founder={founder} cohortName={founder.cohort.name}>
@@ -178,7 +186,7 @@ export default async function GrowPage() {
                       ? "bg-yellow-100 text-yellow-800"
                       : "bg-gray-100 text-gray-600"
                 }`}>
-                  {credibility.summary === "strong" ? "Strong" : credibility.summary === "developing" ? "Developing" : "Needs activity"}
+                  {credibilitySummaryLabel}
                 </span>
                 {credibility.factors.filter(f => f.isPublic && f.key !== "reviewRecency").map((f) => (
                   <div key={f.key} className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3">

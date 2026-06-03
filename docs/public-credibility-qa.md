@@ -90,11 +90,11 @@ Actionable follow-ups from this QA pass are tracked in `traceability.md` so this
 
 | # | Item | Page | Status |
 |---|------|------|--------|
-| 1 | **Leaderboard empty for small cohorts**: Threshold message shows but no data. Correct privacy behavior, but potentially confusing for cohorts with fewer than 5 members. | `/leaderboard/public` | Open, low priority |
+| 1 | **Leaderboard empty for small cohorts**: Threshold message shows but no data. Correct privacy behavior, but potentially confusing for cohorts with fewer than 5 members. | `/leaderboard/public` | Resolved |
 | 2 | **Founder profile meta description** should combine founder context with public-safe credibility purpose. | `/founder/jordan` | Resolved |
 | 3 | **Export section JWT UX** should be understandable to non-technical users. | `/founder/jordan/credibility` | Resolved |
 | 4 | **Badge watermark** should be readable enough to provide context. | `/api/badge/jordan` | Resolved |
-| 5 | **Summary label "Developing"** for 1 review (4.0, 0 helpful votes, 20% quality) is correct per factor logic but a marginal single-review case. | `/founder/jordan/credibility` | Open, low priority |
+| 5 | **Summary label "Developing"** for 1 review (4.0, 0 helpful votes, 20% quality) is correct per factor logic but a marginal single-review case. | `/founder/jordan/credibility` | Resolved |
 
 ## Structured Data Coverage
 
@@ -104,4 +104,4 @@ All pages pass with JSON-LD schema.org markup for AI/search crawlers.
 
 **Primary question: PASS.** The private→public projection is clean — no points, rank, or disallowed terminology leaks. Privacy boundaries are explicit on all aggregate pages.
 
-**Secondary question: PASS with notes.** Pages are structurally sound, well-described with meta tags and JSON-LD, and organized in a natural reading order. Three polish items were resolved after QA; the remaining two are low-priority product decisions.
+**Secondary question: PASS with notes.** Pages are structurally sound, well-described with meta tags and JSON-LD, and organized in a natural reading order. Follow-up polish items from this QA pass have been resolved.

@@ -267,6 +267,14 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
   }));
   const signature = createJwtSignature(jwtPayload);
   const reputationJwt = `${jwtPayload}.${signature}`;
+  const credibilitySummaryLabel =
+    credibility.summary === "strong"
+      ? "Strong"
+      : credibility.summary === "developing" && reviewStats._count <= 1
+        ? "Early signal"
+        : credibility.summary === "developing"
+          ? "Developing"
+          : "Needs activity";
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-8 px-6 py-10">
@@ -366,7 +374,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
                         ? "bg-yellow-100 text-yellow-800"
                         : "bg-gray-100 text-gray-600"
                   }`}>
-                    {credibility.summary === "strong" ? "Strong" : credibility.summary === "developing" ? "Developing" : "Needs activity"}
+                    {credibilitySummaryLabel}
                   </span>
                 </div>
               )}

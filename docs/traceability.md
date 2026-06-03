@@ -24,8 +24,8 @@ Product language should follow `product.md`: private cohort trust graph first, p
 | Cross-instance public-key verification | Optional hardening | Shared-secret verification works; policy/key rotation remains future work. |
 | Public Q&A schema and richer structured data | Optional | Add only when public surfaces and reliable fields exist. |
 | Backlink page-level verification | Optional | Current verification is educational/domain-level unless deeper parsing is added. |
-| Small-cohort public contribution summary | UX polish | Current privacy threshold behavior is correct, but the under-threshold state could better explain why aggregate data is hidden and what changes when the cohort grows. |
-| Single-review credibility label | Product calibration | "Developing" is technically correct for a marginal single-review profile; revisit copy after observing real founder reports. |
+| Small-cohort public contribution summary | Implemented | Under-threshold public summaries now explain that private activity may exist, why public aggregates stay hidden, what threshold unlocks them, and where visitors can go next. |
+| Single-review credibility label | Implemented | Sparse non-thin credibility reports now use "Early signal" instead of "Developing" while preserving stronger labels once the track record has more evidence. |
 
 ## Lower-Novelty Product Features
 
@@ -41,4 +41,4 @@ These are useful but lower priority for patent expansion than trust, portability
 
 | Record | Result | Remaining Follow-Up |
 |--------|--------|---------------------|
-| `public-credibility-qa.md` | Public credibility surfaces pass the private-to-public projection check: no visible internal points/rank leakage, no credit-language drift, and JSON-LD is present across reviewed HTML pages. | Small-cohort contribution summary messaging and single-review credibility label calibration. |
+| `public-credibility-qa.md` | Public credibility surfaces pass the private-to-public projection check: no visible internal points/rank leakage, no credit-language drift, and JSON-LD is present across reviewed HTML pages. | Follow-up UX polish implemented for small-cohort summary messaging and single-review credibility label calibration. |

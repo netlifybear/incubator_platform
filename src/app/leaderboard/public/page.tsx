@@ -114,9 +114,25 @@ export default async function PublicLeaderboardPage({
             <p className="font-semibold">Public summary hidden for privacy</p>
             <p className="mt-2 leading-7 text-[var(--muted)]">
               This cohort has {impact.founderCount} founder{impact.founderCount === 1 ? "" : "s"}.
-              Public summaries appear only after at least {PUBLIC_LEADERBOARD_MIN_FOUNDERS} founders
-              have joined, reducing the risk of identifying members by activity patterns.
+              Private cohort activity may already exist, but public aggregate metrics unlock only
+              after at least {PUBLIC_LEADERBOARD_MIN_FOUNDERS} founders have joined. This keeps
+              reviews, helpful votes, and contribution patterns from becoming identifiable in a
+              small group.
             </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href={`/cohorts/${cohortSlug}`}
+                className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+              >
+                View cohort summary
+              </Link>
+              <Link
+                href="/founders"
+                className="rounded-xl border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold transition hover:border-[var(--accent)]"
+              >
+                Browse public founders
+              </Link>
+            </div>
           </div>
         ) : impact.founderCount === 0 ? (
           <p className="text-[var(--muted)]">No founders in this cohort yet.</p>
