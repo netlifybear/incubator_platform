@@ -1,7 +1,7 @@
 # Public Credibility Surfaces — Visual QA
 
 **Date:** 2026-06-02
-**Scope:** 8 public pages across the credibility projection surface
+**Scope:** 7 public surfaces across the credibility projection surface
 **Primary question:** Does the public experience clearly communicate private cohort trust graph → public-safe credibility projection, without exposing internal points/rank or confusing reputation/credit language?
 **Secondary question:** Are pages visually understandable for founders, incubator admins, and AI/search crawlers?
 
@@ -54,7 +54,7 @@
 
 ### /founder/jordan — Founder Profile
 - Title: "Jordan Lee | Founder Profile"
-- Description: "Founder building better finance tooling for independent operators."
+- Description: "Founder building better finance tooling for independent operators. Verified founder in Demo Incubator — public-safe credibility profile with contribution tags and cohort context."
 - JSON-LD: `Person` with `affiliation`, `aggregateRating` (4.0, 1 review), `knowsAbout` (Accounting), `url`
 - Rendered: Name, bio, cohort badge, 5 contribution tags (✅ Verified, 🌟 Profile Complete, 📝 Founding Reviewer, 🔒 Trusted Reviewer, 🤝 Community Contributor), 70% profile complete
 - No points or rank visible
@@ -70,7 +70,7 @@
   4. **Contribution Signals** — 5 tags listed with descriptions and verification hash
   5. **Helpfulness & Peer Validation** — 0% vote ratio, 20% quality score, 0 votes, 0 peers
   6. **Backlink Authority** — 0 verified, 1 domain, GSC not connected
-  7. **Export & Verification** — PDF download, JWT copy, verify link
+  7. **Export & Verification** — PDF download, verification data copy, verify link
 
 ### /leaderboard/public — Cohort Contribution Summary
 - Title: "Demo Incubator Contribution Summary"
@@ -79,20 +79,22 @@
 - Rendered: Privacy threshold notice — "This cohort has 3 founders. Public summaries appear only after at least 5 founders have joined, reducing the risk of identifying members by activity patterns."
 - Data hidden for cohorts under 5 members (correct behavior)
 
-### /api/badge/jordan — Reputation Image
+### /api/badge/jordan — Credibility Tag Image
 - Content-Type: `image/svg+xml`
-- SVG content: 240×80 dark gradient card showing name, cohort, profile completeness bar, watermark
+- SVG content: 240×80 dark gradient card showing name, cohort, profile completeness bar, readable watermark
 - No points, rank, or scores
 
-## Polish Opportunities
+## Follow-Up Status
 
-| # | Issue | Page | Severity |
-|---|-------|------|----------|
-| 1 | **Leaderboard empty for small cohorts**: Threshold message shows but no data. Correct behavior but confusing for cohorts with <5 members. | `/leaderboard/public` | Low |
-| 2 | **Founder profile meta description** uses Jordan's bio rather than page purpose. Crawlers see "Founder building better finance tooling" vs "Public founder credibility profile." | `/founder/jordan` | Medium |
-| 3 | **Export section JWT UX**: Truncated hash + "Copy JWT" button not obviously labeled for non-technical users. | `/founder/jordan/credibility` | Low |
-| 4 | **Badge watermark** (`incubator-trust`, 9px font) near-invisible — fine for humans, crawlers may miss context. | `/api/badge/jordan` | Low |
-| 5 | **Summary label "Developing"** for 1 review (4.0, 0 helpful votes, 20% quality) — correct per factor logic but a marginal single-review case. | `/founder/jordan/credibility` | Low |
+Actionable follow-ups from this QA pass are tracked in `traceability.md` so this report can remain a point-in-time audit record.
+
+| # | Item | Page | Status |
+|---|------|------|--------|
+| 1 | **Leaderboard empty for small cohorts**: Threshold message shows but no data. Correct privacy behavior, but potentially confusing for cohorts with fewer than 5 members. | `/leaderboard/public` | Open, low priority |
+| 2 | **Founder profile meta description** should combine founder context with public-safe credibility purpose. | `/founder/jordan` | Resolved |
+| 3 | **Export section JWT UX** should be understandable to non-technical users. | `/founder/jordan/credibility` | Resolved |
+| 4 | **Badge watermark** should be readable enough to provide context. | `/api/badge/jordan` | Resolved |
+| 5 | **Summary label "Developing"** for 1 review (4.0, 0 helpful votes, 20% quality) is correct per factor logic but a marginal single-review case. | `/founder/jordan/credibility` | Open, low priority |
 
 ## Structured Data Coverage
 
@@ -102,4 +104,4 @@ All pages pass with JSON-LD schema.org markup for AI/search crawlers.
 
 **Primary question: PASS.** The private→public projection is clean — no points, rank, or disallowed terminology leaks. Privacy boundaries are explicit on all aggregate pages.
 
-**Secondary question: PASS with notes.** Pages are structurally sound, well-described with meta tags and JSON-LD, and organized in a natural reading order. The 5 polish items above are minor and safe to defer.
+**Secondary question: PASS with notes.** Pages are structurally sound, well-described with meta tags and JSON-LD, and organized in a natural reading order. Three polish items were resolved after QA; the remaining two are low-priority product decisions.
