@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { publicFounderDisplayName } from "@/lib/founder-profile-presenter";
 import { getPublicFounderProfile } from "@/lib/founder-profiles";
@@ -19,6 +20,39 @@ type FounderCredibilityPageProps = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: FounderCredibilityPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const founder = await getPublicFounderProfile(slug);
+
+  if (!founder) {
+    return {
+      title: "Founder credibility report not found",
+    };
+  }
+
+  const displayName = publicFounderDisplayName(founder);
+  const baseUrl = process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app";
+  const description = founder.bio
+    ? `${displayName}'s public-safe founder credibility report.`
+    : `${displayName} is a verified founder with portable cohort credibility.`;
+
+  return {
+    title: `${displayName} | Credibility Report`,
+    description,
+    metadataBase: new URL(baseUrl),
+    alternates: { canonical: `/founder/${slug}/credibility` },
+    openGraph: {
+      title: `${displayName} | Credibility Report`,
+      description,
+      type: "profile",
+      siteName: "Incubator Trust",
+      url: `/founder/${slug}/credibility`,
+    },
+  };
+}
 
 async function getFounderCredibilityData(slug: string) {
   const founder = await getPublicFounderProfile(slug);

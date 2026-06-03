@@ -12,14 +12,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app";
 
-  const founderEntries: MetadataRoute.Sitemap = founders
+  const publicFounders = founders
     .filter((f): f is { profileSlug: string; updatedAt: Date } => f.profileSlug !== null)
-    .map((f) => ({
+  const founderEntries: MetadataRoute.Sitemap = publicFounders.flatMap((f) => [
+    {
       url: `${baseUrl}/founder/${f.profileSlug}`,
       lastModified: f.updatedAt,
       changeFrequency: "weekly" as const,
       priority: 0.8,
-    }));
+    },
+    {
+      url: `${baseUrl}/founder/${f.profileSlug}/credibility`,
+      lastModified: f.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    },
+  ]);
 
   return [
     {

@@ -1,5 +1,8 @@
 import { prisma } from "./prisma.ts";
-import { getFounderPoints } from "./points.ts";
+import { reviewContributionPoints } from "./review-quality.ts";
+
+const POINTS_PER_BADGE = 25;
+const POINTS_PER_HELPFUL_VOTE = 2;
 
 export type LeaderboardEntry = {
   userId: string;
@@ -19,7 +22,14 @@ export async function getLeaderboard(cohortId: string): Promise<LeaderboardEntry
       name: true,
       email: true,
       reviews: {
-        select: { rating: true },
+        select: {
+          comment: true,
+          rating: true,
+          helpfulVotes: {
+            where: { value: true },
+            select: { id: true },
+          },
+        },
       },
       badges: {
         select: { id: true },
@@ -28,23 +38,29 @@ export async function getLeaderboard(cohortId: string): Promise<LeaderboardEntry
     orderBy: { name: "asc" },
   });
 
-  const entries = await Promise.all(
-    founders.map(async (f) => {
-      const points = await getFounderPoints(f.id);
-      return {
-        userId: f.id,
-        name: f.name,
-        email: f.email,
-        reviewCount: f.reviews.length,
-        badgeCount: f.badges.length,
-        avgRating:
-          f.reviews.length > 0
-            ? f.reviews.reduce((s, r) => s + r.rating, 0) / f.reviews.length
-            : null,
-        points: points.total,
-      };
-    }),
-  );
+  const entries = founders.map((f) => {
+    const reviewPoints = f.reviews.reduce(
+      (sum, review) => sum + reviewContributionPoints(review.comment),
+      0,
+    );
+    const tagPoints = f.badges.length * POINTS_PER_BADGE;
+    const helpfulVotePoints =
+      f.reviews.reduce((sum, review) => sum + review.helpfulVotes.length, 0) *
+      POINTS_PER_HELPFUL_VOTE;
+
+    return {
+      userId: f.id,
+      name: f.name,
+      email: f.email,
+      reviewCount: f.reviews.length,
+      badgeCount: f.badges.length,
+      avgRating:
+        f.reviews.length > 0
+          ? f.reviews.reduce((s, r) => s + r.rating, 0) / f.reviews.length
+          : null,
+      points: reviewPoints + tagPoints + helpfulVotePoints,
+    };
+  });
 
   return entries.sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;

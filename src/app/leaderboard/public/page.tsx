@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getLeaderboard } from "@/lib/leaderboard";
 import { getCohortImpactSummary } from "@/lib/impact";
 import {
   PUBLIC_LEADERBOARD_MIN_FOUNDERS,
@@ -67,20 +66,37 @@ export default async function PublicLeaderboardPage({
     notFound();
   }
 
-  const [entries, impact] = await Promise.all([
-    getLeaderboard(cohort.id),
-    getCohortImpactSummary(cohort.id),
-  ]);
-  const isBelowPrivacyThreshold = !shouldShowPublicLeaderboard(entries.length);
+  const impact = await getCohortImpactSummary(cohort.id);
+  const isBelowPrivacyThreshold = !shouldShowPublicLeaderboard(impact.founderCount);
   const metrics = [
     { label: "Founders in cohort", value: impact.founderCount },
     { label: "Active contributors", value: impact.activeContributorCount },
     { label: "Reviews shared", value: impact.reviewCount },
     { label: "Helpful votes", value: impact.helpfulVoteCount },
   ];
+  const publicSummaryJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${cohort.name} Public Contribution Summary`,
+    description:
+      "Public-safe aggregate contribution summary for an incubator cohort. Founder names and private activity are withheld.",
+    about: {
+      "@type": "Organization",
+      name: cohort.name,
+    },
+    additionalProperty: metrics.map((metric) => ({
+      "@type": "PropertyValue",
+      name: metric.label,
+      value: metric.value,
+    })),
+  };
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-8 px-6 py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(publicSummaryJsonLd) }}
+      />
       <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
           Public contribution summary
@@ -97,12 +113,12 @@ export default async function PublicLeaderboardPage({
           <div className="rounded-2xl bg-[var(--panel)] p-5">
             <p className="font-semibold">Public summary hidden for privacy</p>
             <p className="mt-2 leading-7 text-[var(--muted)]">
-              This cohort has {entries.length} founder{entries.length === 1 ? "" : "s"}.
+              This cohort has {impact.founderCount} founder{impact.founderCount === 1 ? "" : "s"}.
               Public summaries appear only after at least {PUBLIC_LEADERBOARD_MIN_FOUNDERS} founders
               have joined, reducing the risk of identifying members by activity patterns.
             </p>
           </div>
-        ) : entries.length === 0 ? (
+        ) : impact.founderCount === 0 ? (
           <p className="text-[var(--muted)]">No founders in this cohort yet.</p>
         ) : (
           <div className="space-y-6">
