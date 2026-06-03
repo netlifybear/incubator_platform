@@ -23,7 +23,7 @@ export default async function FoundersPage({ searchParams }: FoundersPageProps) 
       <section className="text-center">
         <h1 className="text-4xl font-semibold tracking-tight">Browse founders</h1>
         <p className="mt-4 text-lg leading-7 text-[var(--muted)]">
-          Verified startup founders building portable reputation across incubator cohorts.
+          Verified startup founders building portable credibility across incubator cohorts.
         </p>
       </section>
 
@@ -88,7 +88,7 @@ export default async function FoundersPage({ searchParams }: FoundersPageProps) 
                   {founder._count.reviews} review{founder._count.reviews === 1 ? "" : "s"}
                 </span>
                 <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
-                  {founder._count.badges} badge{founder._count.badges === 1 ? "" : "s"}
+                  {founder._count.badges} tag{founder._count.badges === 1 ? "" : "s"}
                 </span>
                 <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 font-medium">
                   {founder.profileCompletePercentage}% complete

@@ -34,7 +34,7 @@ export async function generateMetadata({
   const displayName = publicFounderDisplayName(founder);
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app";
   const cohortTag = founder.cohort?.name ?? "an incubator cohort";
-  const description = founder.bio ?? `${displayName} is a verified founder in ${cohortTag} with portable cohort reputation.`;
+  const description = founder.bio ?? `${displayName} is a verified founder in ${cohortTag} with portable cohort credibility.`;
 
   return {
     title: `${displayName} | Founder Profile`,
@@ -54,7 +54,7 @@ export async function generateMetadata({
       siteName: "Incubator Trust",
       url: `/founder/${slug}`,
       username: slug,
-      images: [{ url: `${baseUrl}/api/badge/${slug}`, width: 240, height: 80, alt: `${displayName} reputation badge` }],
+      images: [{ url: `${baseUrl}/api/badge/${slug}`, width: 240, height: 80, alt: `${displayName} credibility tag` }],
     },
   };
 }
@@ -222,7 +222,7 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
         </article>
 
         <article className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold">Reputation</h2>
+          <h2 className="text-2xl font-semibold">Credibility</h2>
           <div className="mt-2 flex items-baseline gap-1">
             <span className="text-4xl font-bold text-[var(--accent)]">{points.total}</span>
             <span className="text-sm text-[var(--muted)]">pts</span>
@@ -243,7 +243,7 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
               href={`/leaderboard/public?cohort=${founder.cohort.slug}`}
               className="mt-3 inline-flex text-sm font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
             >
-              View full cohort ranking
+              View cohort contribution summary
             </Link>
           )}
           <div className="mt-4 space-y-1 text-sm text-[var(--muted)]">
@@ -263,13 +263,13 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
       </section>
 
       <section className="rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
-        <h2 className="text-lg font-semibold">Portable reputation tag</h2>
+        <h2 className="text-lg font-semibold">Portable credibility tag</h2>
         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          Embed this tag on your startup website to show your verified cohort reputation.
+          Embed this tag on your startup website to show your verified cohort credibility.
         </p>
         <div className="mt-4 overflow-x-auto">
           <code className="block whitespace-pre rounded-2xl bg-[var(--panel-strong)] p-4 text-xs text-[var(--muted)]">
-            {`<img src="${process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app"}/api/badge/${slug}" alt="Incubator Trust reputation tag" width="240" height="80" />`}
+            {`<img src="${process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app"}/api/badge/${slug}" alt="Incubator Trust credibility tag" width="240" height="80" />`}
           </code>
         </div>
         <CopyLinkButton
@@ -286,7 +286,7 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
         <section className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-8 shadow-sm">
           <h2 className="text-xl font-semibold">Join your cohort&apos;s trust network</h2>
           <p className="mt-2 leading-7 text-[var(--muted)]">
-            Incubator Trust turns cohort knowledge into portable reputation. Sign in to find
+            Incubator Trust turns cohort knowledge into portable credibility. Sign in to find
             trusted vendor recommendations from founders in your incubator.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">

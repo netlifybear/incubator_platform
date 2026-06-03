@@ -129,7 +129,7 @@ export default async function SeoPage() {
                 <ActionItem label="Complete your profile" detail={`${profilePct}% complete`} href="/profile/settings" />
               ) : null}
               <ActionItem label="Add backlinks" detail="Track domains mentioning you" href="/backlinks" />
-              <ActionItem label="Export reputation JWT" detail="Download signed profile data" href="/api/reputation/export" />
+              <ActionItem label="Export credibility packet" detail="Download signed profile data" href="/api/reputation/export" />
             </div>
           </section>
         </div>
@@ -166,14 +166,14 @@ export default async function SeoPage() {
             </Link>
             <Link href="/grow" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
               <p className="font-semibold">Public profile</p>
-              <p className="mt-1 text-sm text-[var(--muted)]">View your grow hub with contribution tags and points</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">View your grow hub with contribution tags and credibility factors</p>
             </Link>
             <Link href="/profile/settings" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
               <p className="font-semibold">Profile settings</p>
               <p className="mt-1 text-sm text-[var(--muted)]">Edit name, bio, startup info, and slug</p>
             </Link>
             <Link href="/api/reputation/export" className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 transition hover:border-[var(--accent)]">
-              <p className="font-semibold">Export reputation</p>
+              <p className="font-semibold">Export credibility packet</p>
               <p className="mt-1 text-sm text-[var(--muted)]">Download signed JWT of your profile data</p>
             </Link>
           </div>

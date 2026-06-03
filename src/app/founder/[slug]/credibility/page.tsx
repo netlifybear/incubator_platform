@@ -243,7 +243,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             "@context": "https://schema.org",
             "@type": "Person",
             name: displayName,
-            description: founder.bio ?? `${displayName} is a verified founder with portable cohort reputation.`,
+            description: founder.bio ?? `${displayName} is a verified founder with portable cohort credibility.`,
             ...(founder.cohort?.name && {
               affiliation: {
                 "@type": "Organization",

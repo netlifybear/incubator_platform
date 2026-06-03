@@ -45,6 +45,32 @@ What founders grant the platform:
 
 That reciprocity justifies stricter quality standards than a general consumer review site can sustain.
 
+## Language Model
+
+Use this vocabulary when describing the product:
+
+```text
+Private cohort trust graph
+  -> public-safe structured-data projection
+  -> portable founder credibility
+  -> credibility report and signed packet
+  -> AI/search discoverability
+```
+
+The private graph is the incubator's verified operating memory: cohort membership, named founder reviews, vendor relationships, helpful votes, contribution signals, requests, and activity. The full graph is not public. The product publishes only a public-safe projection through crawlable founder, vendor, cohort-summary, credibility-report, and structured-data surfaces.
+
+Prefer these terms:
+
+| Avoid | Prefer |
+|-------|--------|
+| Reputation points | Credibility factors or internal contribution scoring |
+| Badges | Contribution tags or contribution signals |
+| Credit report | Founder credibility report |
+| AI SEO boost | AI/search discoverability |
+| Leaderboard | Private cohort contribution view |
+
+Keep "reputation" for protocol, patent, and legacy portability language such as signed reputation export/import. Product-facing copy should lead with credibility, contribution, and public-safe discoverability.
+
 ## Current Product Shape
 
 The app currently includes:

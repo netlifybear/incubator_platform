@@ -46,7 +46,7 @@ export function ReputationImportCard() {
         className="flex w-full items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-3 text-sm font-semibold transition hover:border-[var(--accent)]"
       >
         <div className="text-left">
-          <p className="text-sm font-semibold">Import your reputation</p>
+          <p className="text-sm font-semibold">Import your credibility</p>
           <p className="text-xs text-[var(--muted)]">Upload a JWT from another incubator</p>
         </div>
         <span className="text-sm text-[var(--accent)]">-&gt;</span>
@@ -54,7 +54,7 @@ export function ReputationImportCard() {
 
       {showImportForm ? (
         <div className="mt-4 rounded-xl border border-[var(--border)] bg-white/70 p-4">
-          <p className="text-sm font-medium text-[var(--muted)]">Import reputation JWT</p>
+          <p className="text-sm font-medium text-[var(--muted)]">Import credibility JWT</p>
           <textarea
             value={importJwt}
             onChange={(e) => setImportJwt(e.target.value)}
@@ -75,7 +75,7 @@ export function ReputationImportCard() {
               disabled={importing || !importJwt.trim()}
               className="rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {importing ? "Importing..." : "Import reputation"}
+              {importing ? "Importing..." : "Import credibility"}
             </button>
             <button
               type="button"

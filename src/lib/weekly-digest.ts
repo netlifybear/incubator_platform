@@ -133,7 +133,7 @@ function digestHtml(digest: FounderDigest): string {
     actionsHtml += `<li><a href="${vendorsUrl}">Write your first review</a> — share vendor experience with your cohort</li>`;
   }
   if (digest.backlinkVerifiedCount === 0) {
-    actionsHtml += `<li><a href="${backlinksUrl}">Add a backlink</a> — connect your startup's URL to build portable reputation</li>`;
+    actionsHtml += `<li><a href="${backlinksUrl}">Add a backlink</a> — connect your startup's URL to build portable credibility</li>`;
   }
   if (digest.incomingTargetedRequests > 0) {
     actionsHtml += `<li><a href="${requestsUrl}">Answer ${digest.incomingTargetedRequests} founder question(s)</a> — help peers evaluating vendors</li>`;

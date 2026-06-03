@@ -2,6 +2,8 @@
 
 This maps the product thesis to implemented features and patent/spec coverage. Use it to prioritize future work and avoid drifting away from the core business logic.
 
+Product language should follow `product.md`: private cohort trust graph first, public-safe structured-data projection second, portable founder credibility third. AI/search discoverability is an outcome of crawlable public-safe surfaces, not a promised ranking boost.
+
 ## Feature Coverage
 
 | Product Thesis | Implemented Features | Patent/Spec Coverage |

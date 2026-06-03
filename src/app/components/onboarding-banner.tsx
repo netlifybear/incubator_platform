@@ -37,9 +37,9 @@ export function OnboardingBanner({
     },
     {
       done: badgeCount > 0,
-      label: "Earn your first badge",
+      label: "Earn your first contribution tag",
       href: "/rewards",
-      description: "Contribute to unlock reputation milestones.",
+      description: "Contribute useful knowledge to build portable credibility.",
     },
   ];
 
@@ -53,7 +53,7 @@ export function OnboardingBanner({
             Getting started
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-normal">
-            Welcome! Finish setup to unlock your reputation.
+            Welcome! Finish setup to build your credibility.
           </h2>
           <p className="mt-1 text-sm text-[var(--muted)]">
             {completed} of {steps.length} steps done

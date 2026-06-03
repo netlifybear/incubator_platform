@@ -73,7 +73,7 @@ export default async function Home({ searchParams }: HomeProps) {
     { label: "Trusted vendors", value: vendors.length },
     { label: "Cohort reviews", value: totalReviewCount },
     { label: "Open requests", value: openRequests.length },
-    { label: "Your badges", value: badgeCount },
+    { label: "Your tags", value: badgeCount },
   ];
 
   const streak = computeReviewStreak(founder.lastReviewDate);
@@ -94,8 +94,8 @@ export default async function Home({ searchParams }: HomeProps) {
                 Write
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-                Review vendors your cohort trusts. Your contributions build private
-                reputation and public credibility.
+                Review vendors your cohort trusts. Your contributions strengthen the
+                private trust graph and public credibility.
               </p>
               {activeSprint && mySprintProgress ? (
                 <div className="mt-4 flex flex-wrap gap-4 text-sm">
@@ -235,19 +235,19 @@ export default async function Home({ searchParams }: HomeProps) {
 
             <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-ambient)]">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
-                Reputation
+                Credibility
               </p>
               <h2 className="mt-2 text-xl font-semibold">Build portable trust</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                Reviews, badges, nominations, and helpful votes feed your cohort
-                reputation.
+                Reviews, contribution tags, nominations, and helpful votes feed your
+                portable credibility.
               </p>
               <div className="mt-4 grid gap-2">
                 <Link
                   href="/leaderboard"
                   className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
-                  Leaderboard
+                  Contribution view
                 </Link>
                 <Link
                   href="/rewards"

@@ -17,7 +17,7 @@ export default async function CohortsPage() {
       <section className="text-center">
         <h1 className="text-4xl font-semibold tracking-tight">Cohorts</h1>
         <p className="mt-4 text-lg leading-7 text-[var(--muted)]">
-          Incubator cohorts with verified vendor reviews and portable reputation.
+          Incubator cohorts with verified vendor reviews and portable credibility.
         </p>
       </section>
 

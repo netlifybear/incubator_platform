@@ -24,8 +24,8 @@ export default async function BadgesPage() {
           Your earned tags
         </h1>
         <p className="mt-4 max-w-2xl leading-7 text-[var(--muted)]">
-          Contribution tags represent your reputation across the platform — from verified cohort
-          membership to review quality and community contributions.
+          Contribution tags represent credibility signals across the platform — from verified
+          cohort membership to review quality and community contributions.
         </p>
       </section>
 

@@ -31,17 +31,17 @@ export function CelebrationToast({ pointsEarned, newTotal, rank, badgeType }: Ce
         <div className="min-w-0 flex-1">
           {unlockedTierName ? (
             <p className="text-lg font-bold text-green-800">
-              Tier unlocked! {unlockedTierName}
+              Contribution milestone reached: {unlockedTierName}
             </p>
           ) : (
             <p className="font-semibold text-green-800">
-              {badgeType ? `Badge earned! +${pointsEarned} pts` : `+${pointsEarned} pts earned`}
+              {badgeType ? "Contribution tag earned" : "Contribution recorded"}
             </p>
           )}
           <p className="mt-1 text-sm text-green-700">
-            You now have {newTotal} pts.
-            {rank && ` Rank: #${rank.rank} of ${rank.total}.`}
-            {rankImproved && " Great climb!"}
+            Your contribution trail now has {newTotal} internal scoring signals.
+            {rank && ` Cohort contribution position: #${rank.rank} of ${rank.total}.`}
+            {rankImproved && " Your contributions are highly visible inside the cohort."}
           </p>
           {progress?.next ? (
             <div className="mt-3">
@@ -50,7 +50,7 @@ export function CelebrationToast({ pointsEarned, newTotal, rank, badgeType }: Ce
                   {progress.next.title}
                 </span>
                 <span className="text-green-600">
-                  {newTotal} / {progress.next.threshold} pts
+                  {newTotal} / {progress.next.threshold} signals
                 </span>
               </div>
               <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-green-200">
