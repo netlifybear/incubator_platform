@@ -547,7 +547,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
                 <CredibilityActions reputationJwt={reputationJwt} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--muted)]">Machine-Readable JWT</span>
+                <span className="text-sm text-[var(--muted)]">Verification data (JWT)</span>
                 <code className="max-w-[16rem] truncate rounded-lg bg-[var(--panel-strong)] px-2 py-1 text-xs text-[var(--muted)]">
                   {reputationJwt}
                 </code>

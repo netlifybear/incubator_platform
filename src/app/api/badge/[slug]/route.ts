@@ -92,7 +92,7 @@ function generateBadgeSvg(
   <rect x="16" y="54" width="140" height="6" rx="3" fill="#333"/>
   <rect x="16" y="54" width="${Math.round(profilePct * 1.4)}" height="6" rx="3" fill="#4ade80"/>
   <text x="16" y="72" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#4ade80">${profilePct}% profile complete</text>
-  <text x="180" y="72" font-family="system-ui, sans-serif" font-size="9" fill="#666">incubator-trust</text>
+  <text x="180" y="72" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#888">incubator-trust</text>
 </svg>`;
 }
 

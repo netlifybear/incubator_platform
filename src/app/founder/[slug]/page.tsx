@@ -33,7 +33,8 @@ export async function generateMetadata({
   const displayName = publicFounderDisplayName(founder);
   const baseUrl = process.env.NEXTAUTH_URL ?? "https://incubator-trust.vercel.app";
   const cohortTag = founder.cohort?.name ?? "an incubator cohort";
-  const description = founder.bio ?? `${displayName} is a verified founder in ${cohortTag} with portable cohort credibility.`;
+  const bioTag = founder.bio ? `${founder.bio} ` : "";
+  const description = `${bioTag}Verified founder in ${cohortTag} — public-safe credibility profile with contribution tags and cohort context.`;
 
   return {
     title: `${displayName} | Founder Profile`,

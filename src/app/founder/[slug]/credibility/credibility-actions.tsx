@@ -15,7 +15,7 @@ export function CredibilityActions({ reputationJwt }: { reputationJwt: string })
         onClick={() => navigator.clipboard.writeText(reputationJwt)}
         className="rounded-lg bg-[var(--accent)] px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-[var(--accent-strong)]"
       >
-        Copy JWT
+        Copy to clipboard
       </button>
     </div>
   );
