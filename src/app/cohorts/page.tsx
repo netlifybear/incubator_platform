@@ -4,6 +4,8 @@ import { listPublicCohorts } from "@/lib/cohorts";
 
 const PRIVACY_THRESHOLD_FOUNDERS = 2;
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Cohorts — Incubator Trust",
   description: "Browse public-safe incubator cohort summaries built from verified vendor reviews and contribution signals.",

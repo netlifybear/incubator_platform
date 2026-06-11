@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [founders, cohorts] = await Promise.all([
     prisma.user.findMany({

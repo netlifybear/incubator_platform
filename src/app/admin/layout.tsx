@@ -3,6 +3,8 @@ import { AppShell } from "@/app/components/app-shell";
 import { getCurrentAdmin } from "@/lib/auth";
 import { AdminNav } from "./admin-nav";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await getCurrentAdmin();
 

@@ -198,8 +198,8 @@ See `.env.example` for all required variables:
 
 | Var | Required | Purpose |
 |-----|----------|---------|
-| `DATABASE_URL` | Yes | Prisma Postgres connection |
-| `DIRECT_DATABASE_URL` | Yes | Direct Postgres connection |
+| `DATABASE_URL` | Yes | App runtime database connection. Use the pooled Supabase Postgres URL for Vercel demos, or the `prisma+postgres://...` URL printed by `npx prisma dev` for local Prisma Postgres. |
+| `DIRECT_DATABASE_URL` | Yes | Direct Postgres connection used by Prisma CLI/schema/seed commands. Use the direct Supabase URL for Vercel demos, or the direct local URL printed by `npx prisma dev`. |
 | `NEXTAUTH_SECRET` | Yes | NextAuth JWT encryption |
 | `NEXTAUTH_URL` | Yes | App base URL |
 | `AUTH_GOOGLE_ID` | For GSC | Google OAuth client ID |

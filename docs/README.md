@@ -11,6 +11,8 @@ This folder holds durable product documentation for the Incubator Trust Platform
 | `product.md` | Product thesis, flywheel, authority model, privacy/SEO guardrails, and near-term direction. |
 | `traceability.md` | Compact map from product thesis to implemented features and patent/spec coverage. |
 | `public-credibility-qa.md` | Time-bound visual QA record for public credibility surfaces; open product follow-ups are consolidated into `traceability.md`. |
+| `story.md` | Four-act narrative explaining the platform's value — from the problem (lost cohort knowledge) through the resolution (portable, verifiable credibility). |
+| `positioning.md` | Strategic positioning frame — the platform as a credit bureau for founder credibility. Use for investor pitches and partnership conversations. |
 | `../plans/` | Active handoffs, deferred work, and compact records of implemented plans. |
 
 ## Ownership

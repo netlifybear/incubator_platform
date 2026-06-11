@@ -145,14 +145,14 @@ async function main() {
     prisma.vendor.upsert({
       where: { id: "demo-vendor-legal" },
       update: {
-        badgeAwardSecret: hashIssuerSecret("demo-vendor-award-secret"),
+        tagAwardSecret: hashIssuerSecret("demo-vendor-award-secret"),
       },
       create: {
         id: "demo-vendor-legal",
         name: "Northstar Startup Counsel",
         category: "Legal",
         contact: "hello@northstar.example",
-        badgeAwardSecret: hashIssuerSecret("demo-vendor-award-secret"),
+        tagAwardSecret: hashIssuerSecret("demo-vendor-award-secret"),
         cohortId: cohort.id,
       },
     }),
@@ -219,14 +219,14 @@ async function main() {
   await prisma.investor.upsert({
     where: { id: "demo-investor-1" },
     update: {
-      badgeAwardSecret: hashIssuerSecret("demo-investor-award-secret"),
+      tagAwardSecret: hashIssuerSecret("demo-investor-award-secret"),
     },
     create: {
       id: "demo-investor-1",
       name: "Riley Investor",
       email: "riley-investor@example.com",
       company: "Demo Ventures",
-      badgeAwardSecret: hashIssuerSecret("demo-investor-award-secret"),
+      tagAwardSecret: hashIssuerSecret("demo-investor-award-secret"),
     },
   });
 
@@ -312,8 +312,8 @@ async function main() {
     },
   });
 
-  // Demo badges
-  await prisma.badge.upsert({
+  // Demo contribution tags
+  await prisma.contributionTag.upsert({
     where: { id: "demo-badge-maya" },
     update: {},
     create: {
@@ -324,7 +324,7 @@ async function main() {
     },
   });
 
-  await prisma.badge.upsert({
+  await prisma.contributionTag.upsert({
     where: { id: "demo-badge-jordan" },
     update: {},
     create: {
