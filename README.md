@@ -32,7 +32,9 @@ NEXTAUTH_URL="http://localhost:3000"
 For a Vercel + Supabase demo, set `DATABASE_URL` to the pooled Supabase Postgres
 connection string and `DIRECT_DATABASE_URL` to the direct Supabase Postgres
 connection string. Keep both values in environment variables only; do not commit
-database passwords.
+database passwords. URL-encode special characters in database passwords,
+especially `$`, so local Next.js env expansion does not alter the connection
+string.
 
 Push schema and seed demo data:
 

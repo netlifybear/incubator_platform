@@ -18,6 +18,8 @@ Set these in Vercel:
 
 Do not use the Supabase publishable key as `DATABASE_URL`; Prisma needs a Postgres connection string. Do not commit database passwords or service-role keys.
 
+If a Supabase database password contains special characters, URL-encode the password segment in both Postgres URLs before putting them in `.env` or Vercel. This is especially important for `$`, because Next.js expands env values and can otherwise shorten the password at local dev startup.
+
 ## Schema And Seed
 
 Run these locally with `.env` pointing at Supabase:
@@ -37,7 +39,8 @@ admin@example.com / password
 
 ## Connection Choice
 
-- App runtime: pooled Supabase URL in `DATABASE_URL`.
+- Production app runtime: pooled Supabase URL in `DATABASE_URL`.
+- Local development app runtime: direct Supabase URL in `DIRECT_DATABASE_URL` when present.
 - Prisma CLI/schema/seed: direct Supabase URL in `DIRECT_DATABASE_URL`.
 
-This keeps serverless runtime traffic on the pooler while keeping schema operations on a direct database connection.
+This keeps serverless runtime traffic on the pooler while keeping local development and schema operations on a direct database connection.
