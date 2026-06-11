@@ -9,6 +9,7 @@ This folder holds durable product documentation for the Incubator Trust Platform
 | `../README.md` | Setup, verification, and project entry point. |
 | `../OPERATING.md` | Route map, demo accounts, smoke flow, architecture, env vars, DB-backed tests, and implementation guardrails. |
 | `product.md` | Product thesis, flywheel, authority model, privacy/SEO guardrails, and near-term direction. |
+| `founder-credibility-faq.md` | Plain-language explanation of what builds founder credibility, what does not, and how public/private trust boundaries work. |
 | `traceability.md` | Compact map from product thesis to implemented features and patent/spec coverage. |
 | `public-credibility-qa.md` | Time-bound visual QA record for public credibility surfaces; open product follow-ups are consolidated into `traceability.md`. |
 | `story.md` | Four-act narrative explaining the platform's value — from the problem (lost cohort knowledge) through the resolution (portable, verifiable credibility). |

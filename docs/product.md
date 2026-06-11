@@ -86,6 +86,8 @@ The app currently includes:
 
 See `../OPERATING.md` for route-level detail.
 
+See `founder-credibility-faq.md` for the plain-language explanation of how verified reviews, public reviews, Connect, exchanges, Grow, and public/private boundaries relate to founder credibility.
+
 ## Guardrails
 
 - Public profiles are opt-in.

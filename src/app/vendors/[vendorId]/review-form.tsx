@@ -84,7 +84,7 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
         className="rounded-3xl border border-[var(--border)] bg-[var(--panel)] p-6"
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">{mode === "founder" ? "Add a named review" : "Add a review"}</h2>
+          <h2 className="text-2xl font-semibold">{mode === "founder" ? "Add a verified founder review" : "Add a public review"}</h2>
           <button
             type="button"
             onClick={() => setGuided((g) => !g)}
@@ -95,8 +95,8 @@ export function ReviewForm({ action, mode = "founder" }: ReviewFormProps) {
         </div>
         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
           {mode === "founder"
-            ? "Your name will appear with this review so other founders can judge context and credibility."
-            : "Help others decide. Your review will appear alongside any name you leave."}
+            ? "Your name and cohort context appear with this review so other founders can judge credibility."
+            : "Share a lightweight public review. This is separate from verified founder reputation."}
         </p>
 
         {mode === "consumer" ? (

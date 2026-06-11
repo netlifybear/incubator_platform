@@ -66,6 +66,28 @@ export default async function RewardsPage() {
           </section>
 
           <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Founder credibility FAQ</h2>
+            <div className="mt-4 divide-y divide-[var(--border)]">
+              <FaqItem
+                question="What builds founder credibility?"
+                answer="Useful verified founder contributions: detailed vendor reviews, peer-helpful context, contribution signals, complete profile data, and verified external references."
+              />
+              <FaqItem
+                question="Do public reviews count?"
+                answer="Public reviews help vendor signal, but they do not build verified founder credibility. Founder credibility depends on signed-in cohort context."
+              />
+              <FaqItem
+                question="Does review quality matter?"
+                answer="Yes. Specific outcomes, tradeoffs, numbers, firsthand use, and disclosure make a review more credible than a short rating-only note."
+              />
+              <FaqItem
+                question="Do exchanges count?"
+                answer="Sending, accepting, or declining an exchange does not count by itself. Published collaborations can support credibility when they become verified contribution or backlink evidence."
+              />
+            </div>
+          </section>
+
+          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
             <h2 className="text-xl font-semibold">Your impact</h2>
             <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
               What your contributions mean for the cohort.
@@ -139,6 +161,15 @@ function BreakdownRow({ label, value }: { label: string; value: number }) {
     <div className="flex items-center justify-between rounded-xl bg-[var(--panel)] px-4 py-3 text-sm">
       <span className="text-[var(--muted)]">{label}</span>
       <span className="font-semibold">{value}</span>
+    </div>
+  );
+}
+
+function FaqItem({ question, answer }: { question: string; answer: string }) {
+  return (
+    <div className="py-4 first:pt-0 last:pb-0">
+      <p className="font-semibold">{question}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{answer}</p>
     </div>
   );
 }

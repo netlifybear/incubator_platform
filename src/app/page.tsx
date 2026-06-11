@@ -231,9 +231,17 @@ export default async function Home({ searchParams }: HomeProps) {
             <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-ambient)]">
               <p className="text-sm text-[var(--muted)]">Signed in as</p>
               <p className="mt-1 text-xl font-semibold">{founder.name ?? founder.email}</p>
-              <p className="mt-3 inline-flex rounded-xl bg-[var(--panel-strong)] px-3 py-2 text-sm font-medium text-[var(--accent-strong)]">
-                Verified cohort member
-              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <p className="inline-flex rounded-xl bg-[var(--panel-strong)] px-3 py-2 text-sm font-medium text-[var(--accent-strong)]">
+                  Verified cohort member
+                </p>
+                <Link
+                  href="/profile/settings"
+                  className="inline-flex rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                >
+                  Edit profile
+                </Link>
+              </div>
             </div>
 
             <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-ambient)]">
@@ -246,6 +254,12 @@ export default async function Home({ searchParams }: HomeProps) {
                 portable credibility.
               </p>
               <div className="mt-4 grid gap-2">
+                <Link
+                  href="/grow"
+                  className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-strong)]"
+                >
+                  View credibility hub
+                </Link>
                 <Link
                   href="/connect"
                   className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
@@ -268,7 +282,7 @@ export default async function Home({ searchParams }: HomeProps) {
                   href="/profile/settings"
                   className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
-                  Profile settings
+                  Edit public profile
                 </Link>
               </div>
             </div>

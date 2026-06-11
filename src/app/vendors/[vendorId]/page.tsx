@@ -342,13 +342,13 @@ export default async function VendorPage({ params, searchParams }: VendorPagePro
               href={`/vendors/${vendor.id}?mode=founder`}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition ${reviewMode === "founder" ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-strong)] text-[var(--muted)] hover:bg-[var(--panel-strong)]"}`}
             >
-              Founder review
+              Verified founder review
             </a>
             <a
               href={`/vendors/${vendor.id}?mode=consumer`}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition ${reviewMode === "consumer" ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-strong)] text-[var(--muted)] hover:bg-[var(--panel-strong)]"}`}
             >
-              Quick review
+              Public review
             </a>
           </div>
           {reviewMode === "founder" && action ? (

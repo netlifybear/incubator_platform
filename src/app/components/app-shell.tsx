@@ -29,25 +29,25 @@ function NavGroup({
   title,
   links,
 }: {
-  title?: string;
+  title: string;
   links: Array<{ href: string; label: string }>;
 }) {
   return (
-    <div className="space-y-1">
-      {title ? (
-        <p className="px-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-          {title}
-        </p>
-      ) : null}
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="block rounded-xl px-3 py-2 text-sm font-medium text-[var(--foreground)] transition hover:bg-[var(--panel-strong)] hover:text-[var(--accent)]"
-        >
-          {link.label}
-        </Link>
-      ))}
+    <div>
+      <p className="px-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+        {title}
+      </p>
+      <div className="mt-2 space-y-1">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="block rounded-xl px-3 py-2 text-sm font-medium text-[var(--foreground)] transition hover:bg-[var(--panel-strong)] hover:text-[var(--accent)]"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
@@ -60,11 +60,12 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
           <Link href="/" className="block rounded-xl px-3 py-2 text-lg font-semibold">
             Incubator Trust
           </Link>
-          <nav className="mt-6 grid gap-1">
-            <NavGroup links={hubLinks} />
+          <nav className="mt-6 grid gap-6">
+            <NavGroup title="Work" links={hubLinks} />
             <NavGroup title="Explore" links={exploreLinks} />
             {founder?.role === "admin" ? (
               <NavGroup
+                title="Admin"
                 links={[{ href: "/admin", label: "Admin" }]}
               />
             ) : null}
@@ -79,7 +80,16 @@ export function AppShell({ children, cohortName, founder }: AppShellProps) {
               <p className="mt-1 font-medium">{cohortName ?? "No cohort assigned"}</p>
             </div>
               <div className="flex flex-wrap items-center gap-3 text-sm">
-                <span className="text-[var(--muted)]">{founder ? getFounderDisplayName(founder) : "Guest"}</span>
+                {founder ? (
+                  <Link
+                    href="/profile/settings"
+                    className="rounded-xl px-2 py-1 font-medium text-[var(--foreground)] transition hover:bg-[var(--panel-strong)] hover:text-[var(--accent)]"
+                  >
+                    {getFounderDisplayName(founder)}
+                  </Link>
+                ) : (
+                  <span className="text-[var(--muted)]">Guest</span>
+                )}
                 {founder?.role === "alumni" ? (
                   <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
                     Alumni

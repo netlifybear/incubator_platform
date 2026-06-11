@@ -52,11 +52,12 @@ export default async function VendorsPage({ searchParams }: Props) {
         <h1 className="mt-4 text-4xl font-semibold tracking-tight">
           {query
             ? `Search results for "${query}"`
-            : `Browse ${vendors.length} trusted vendors`}
+            : "Your cohort's vendor directory"}
         </h1>
         <p className="mt-4 max-w-2xl leading-7 text-[var(--muted)]">
-          Named reviews from verified cohort founders. Filter by category, search
-          by name, or sort by rating.
+          {vendors.length} vendor{vendors.length === 1 ? "" : "s"} reviewed by
+          founders in {founder.cohort.name}. Filter by category, search by name,
+          or sort by rating.
         </p>
         <Link
           href="/top-vendors"
@@ -131,9 +132,9 @@ export default async function VendorsPage({ searchParams }: Props) {
 
       {crossCohort.length > 0 && !query && !category ? (
         <section className="mt-10 rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-          <h2 className="text-xl font-semibold">Also trusted by other cohorts</h2>
+          <h2 className="text-xl font-semibold">Vendors gaining trust in other cohorts</h2>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            Highly rated vendors from other incubator cohorts.
+            Useful network signal, shown separately from your cohort&apos;s private reviews.
           </p>
           <div className="mt-4 space-y-3">
             {crossCohort.map((vendor) => (

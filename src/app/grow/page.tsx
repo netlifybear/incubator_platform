@@ -55,21 +55,37 @@ export default async function GrowPage() {
             Your credibility and contribution trail. Track what you have shared, who it
             helped, and how private cohort work becomes public-safe credibility.
           </p>
-          {profilePublic ? (
-            <Link
-              href={`/founder/${founder.profileSlug}`}
-              className="mt-4 inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--accent-strong)]"
-            >
-              View public profile
-            </Link>
-          ) : (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {profilePublic ? (
+              <Link
+                href={`/founder/${founder.profileSlug}`}
+                className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--accent-strong)]"
+              >
+                View public profile
+              </Link>
+            ) : (
+              <Link
+                href="/profile/settings"
+                className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--accent-strong)]"
+              >
+                Enable public profile
+              </Link>
+            )}
             <Link
               href="/profile/settings"
-              className="mt-4 inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--accent-strong)]"
+              className="inline-flex items-center justify-center rounded-xl border border-[var(--border)] bg-white px-5 py-3 text-sm font-semibold transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
-              Enable public profile
+              Edit profile settings
             </Link>
-          )}
+            {founder.profileSlug ? (
+              <Link
+                href={`/founder/${founder.profileSlug}/credibility`}
+                className="inline-flex items-center justify-center rounded-xl border border-[var(--border)] bg-white px-5 py-3 text-sm font-semibold transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              >
+                View credibility report
+              </Link>
+            ) : null}
+          </div>
         </section>
 
         <WorkflowStrip active="grow" />

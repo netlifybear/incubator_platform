@@ -15,6 +15,7 @@ This folder contains execution plans, product direction notes, and historical im
 | Streak milestones | `gamification-rethink.md` | Product direction | Scope separately after the impact dashboard has been observed in local or production usage. |
 | Credibility report verification polish | `founder-credit-report.md` | Optional polish | Existing `/founder/[slug]/credibility` page and API work. Optional follow-up: PDF/export polish, richer verification UI, and inquiry-history display. |
 | Connect inline answering | `gamification-rethink.md` | Optional UX optimization | Let founders answer open vendor requests from `/connect` without navigating away. Design the workflow before implementation. |
+| Founder-as-vendor | `founder-as-vendor.md` | Product direction | Allow founders to opt into service-provider listings only with separate founder-credibility and vendor-trust ledgers. Do not let received vendor reviews directly increase founder credibility. |
 | Grow SEO alignment | `gamification-rethink.md` | Deferred | Revisit after Grow's data model settles. Consider metadata, semantic structure, and JSON-LD only where the public surface supports it. |
 | Portability hardening | `reciprocity-pipeline.md` | Optional hardening | Shared-secret verification works and public-key endpoint exists when configured. Full cross-instance public-key policy and key rotation remain future work. |
 | AI/SEO refinements | `ai-seo-geo-reviews.md` | Optional | Q&A schema only if public Q&A exists; richer founder/startup structured data can be scoped separately. |
