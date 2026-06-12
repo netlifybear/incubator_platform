@@ -1,13 +1,13 @@
-import { prisma } from "@/lib/prisma";
-import { sendNotificationEmail } from "@/lib/email";
-import { escapeHtml, escapeHtmlAttribute } from "@/lib/html";
-import { createNotification } from "@/lib/notifications";
+import { prisma } from "./prisma.ts";
+import { sendNotificationEmail } from "./email.ts";
+import { escapeHtml, escapeHtmlAttribute } from "./html.ts";
+import { createNotification } from "./notifications.ts";
 import type { Prisma } from "@prisma/client";
 import {
   normalizeVendorRequestEdit,
   normalizeVendorRequestCategory,
   normalizeVendorRequestDescription,
-} from "@/lib/vendor-request-validation";
+} from "./vendor-request-validation.ts";
 
 export type CreateTargetedRequestInput = {
   cohortId: string;

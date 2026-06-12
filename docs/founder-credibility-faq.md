@@ -4,6 +4,8 @@
 
 Founder credibility is the platform's public-safe summary of useful, verified contribution. It is built from actions that help other founders make better operating decisions, especially vendor decisions.
 
+In one sentence: founder credibility evidence, collected by incubators and reported in a format investors and AI search can understand.
+
 ## What builds credibility?
 
 The primary credibility action is writing verified founder reviews. A strong founder review includes firsthand context, specific details, tradeoffs, outcomes, and any required disclosure.
@@ -23,6 +25,20 @@ The intended mental model is:
 ```text
 Useful verified reviews -> peer trust + quality signal -> founder credibility
 ```
+
+## What are credibility tiers?
+
+Credibility tiers are maturity labels for the founder's verified evidence. They are not competitive rankings and do not subtract from other founders.
+
+The current tier model is:
+
+- Establishing: building an initial verified contribution record.
+- Verified Contributor: at least one useful verified contribution with a substantially complete profile.
+- Trusted Contributor: multiple quality reviews with peer validation and contribution signals.
+- Cohort Authority: sustained contribution across review quality, helpfulness, contribution signals, profile completeness, and verified references.
+- Public Credibility Leader: strong public-safe evidence with an enabled public profile and multiple verified external references.
+
+The intent is to make the credibility report easier to scan while preserving the review-quality and anti-manipulation guardrails.
 
 ## Do helpful votes count?
 
@@ -59,3 +75,7 @@ Write + Connect -> useful founder contributions -> credibility signals -> Grow, 
 Or, more simply:
 
 > Founders build portable credibility by contributing useful vendor knowledge: writing high-quality verified reviews and helping peers evaluate vendors.
+
+Investor/search framing:
+
+> Founder credibility evidence, collected by incubators and reported in a format investors and AI search can understand.

@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { POSITIVE_WORDS, NEGATIVE_WORDS } from "@/lib/review-quality";
+import { prisma } from "./prisma.ts";
+import { POSITIVE_WORDS, NEGATIVE_WORDS } from "./review-quality.ts";
 
 export type ReviewQualityStats = {
   totalReviews: number;

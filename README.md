@@ -2,6 +2,8 @@
 
 Cohort knowledge turned into portable founder credibility.
 
+Founder credibility evidence, collected by incubators and reported in a format investors and AI search can understand.
+
 ## Status
 
 The platform implementation is built through the private trust loop, public credibility flywheel, SEO education/backlink tooling, review-quality engine, reputation portability, multi-issuer contribution tags, and trust/safety guardrails.

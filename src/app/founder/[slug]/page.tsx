@@ -9,6 +9,10 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { CopyLinkButton } from "@/app/components/copy-link-button";
+import { CredibilityTierBadge } from "@/app/components/credibility-tier-badge";
+import { computeCredibilityFactors } from "@/lib/credibility-factors";
+import { getCredibilityTierFromEvidence } from "@/lib/credibility-tier";
+import { getFounderImpactSummary } from "@/lib/impact";
 import { ShareProfileButton } from "./share-profile-button";
 import { ProfileViewTracker } from "./profile-view-tracker";
 
@@ -69,7 +73,7 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
 
   const displayName = publicFounderDisplayName(founder);
   const badges = await getFounderBadges(founder.email);
-  const [helpfulVoteCount, reviewStats, session] = await Promise.all([
+  const [helpfulVoteCount, reviewStats, session, impact] = await Promise.all([
     prisma.helpfulVote.count({
       where: {
         value: true,
@@ -82,7 +86,15 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
       _count: true,
     }),
     getServerSession(authOptions),
+    getFounderImpactSummary(founder.id),
   ]);
+  const credibility = await computeCredibilityFactors(founder.id, { impact, useCache: true });
+  const credibilityTier = getCredibilityTierFromEvidence({
+    credibility,
+    impact,
+    profileCompletePercentage: founder.profileCompletePercentage,
+    publicProfileEnabled: founder.publicProfileEnabled,
+  });
 
   const reviewedCategories = await prisma.review.findMany({
     where: { userId: founder.id },
@@ -174,6 +186,7 @@ export default async function FounderProfilePage({ params }: FounderProfilePageP
           </p>
         )}
         <div className="mt-6 flex flex-wrap gap-3">
+          <CredibilityTierBadge tier={credibilityTier} />
           {founder.cohort ? (
             <Link
               href={`/cohorts/${founder.cohort.slug}`}

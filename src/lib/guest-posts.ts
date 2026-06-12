@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { sendNotificationEmail } from "@/lib/email";
-import { createNotification } from "@/lib/notifications";
-import { recordActivity } from "@/lib/activity";
+import { prisma } from "./prisma.ts";
+import { sendNotificationEmail } from "./email.ts";
+import { createNotification } from "./notifications.ts";
+import { recordActivity } from "./activity.ts";
 
 export type GuestPostExchangeWithUsers = {
   id: string;

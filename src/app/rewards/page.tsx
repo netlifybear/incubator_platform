@@ -81,6 +81,10 @@ export default async function RewardsPage() {
                 answer="Yes. Specific outcomes, tradeoffs, numbers, firsthand use, and disclosure make a review more credible than a short rating-only note."
               />
               <FaqItem
+                question="What are credibility tiers?"
+                answer="Tiers are maturity labels for verified evidence, not competitive rankings. They summarize review quality, peer helpfulness, contribution signals, profile completeness, and verified external references."
+              />
+              <FaqItem
                 question="Do exchanges count?"
                 answer="Sending, accepting, or declining an exchange does not count by itself. Published collaborations can support credibility when they become verified contribution or backlink evidence."
               />

@@ -2,9 +2,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
-import { authorizeDemoFounder } from "@/lib/demo-auth";
-import { prisma } from "@/lib/prisma";
-import { sendMagicLinkEmail } from "@/lib/email";
+import { authorizeDemoFounder } from "./demo-auth.ts";
+import { prisma } from "./prisma.ts";
+import { sendMagicLinkEmail } from "./email.ts";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as NextAuthOptions["adapter"],

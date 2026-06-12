@@ -1,8 +1,8 @@
 import {
   founderProfileSlugFromEmail,
   normalizeFounderProfileSlug,
-} from "@/lib/founder-profile-presenter";
-import { prisma } from "@/lib/prisma";
+} from "./founder-profile-presenter.ts";
+import { prisma } from "./prisma.ts";
 
 const publicFounderProfileSelect = {
   id: true,

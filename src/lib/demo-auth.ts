@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "./prisma.ts";
 
 const demoPasswords = new Map<string, string>([
   ["maya@example.com", "password"],

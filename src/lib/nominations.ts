@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "./prisma.ts";
 import { contributionTagDefinition } from "@/config/contribution-tag-definitions";
-import { awardTag } from "@/lib/contribution-tags";
+import { awardTag } from "./contribution-tags.ts";
 
 export type NominationWithUsers = {
   id: string;

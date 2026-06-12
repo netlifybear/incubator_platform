@@ -12,6 +12,8 @@ import { getFounderReferralStats } from "@/lib/invites";
 import { getFounderImpactSummary } from "@/lib/impact";
 import { getContributionFeedback } from "@/lib/contribution-feedback";
 import { computeCredibilityFactors } from "@/lib/credibility-factors";
+import { getCredibilityTierFromEvidence } from "@/lib/credibility-tier";
+import { CredibilityTierBadge } from "@/app/components/credibility-tier-badge";
 
 export default async function GrowPage() {
   const founder = await getCurrentFounder();
@@ -31,6 +33,12 @@ export default async function GrowPage() {
     getContributionFeedback(founder.id, founder.cohortId),
   ]);
   const credibility = await computeCredibilityFactors(founder.id, { impact, useCache: true });
+  const credibilityTier = getCredibilityTierFromEvidence({
+    credibility,
+    impact,
+    profileCompletePercentage: founder.profileCompletePercentage,
+    publicProfileEnabled: founder.publicProfileEnabled,
+  });
 
   const streak = computeReviewStreak(founder.lastReviewDate);
   const profilePublic = founder.publicProfileEnabled;
@@ -55,6 +63,9 @@ export default async function GrowPage() {
             Your credibility and contribution trail. Track what you have shared, who it
             helped, and how private cohort work becomes public-safe credibility.
           </p>
+          <div className="mt-4">
+            <CredibilityTierBadge tier={credibilityTier} showDescription />
+          </div>
           <div className="mt-4 flex flex-wrap gap-2">
             {profilePublic ? (
               <Link
@@ -186,6 +197,9 @@ export default async function GrowPage() {
 
           <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
             <h2 className="text-xl font-semibold">Credibility factors</h2>
+            <div className="mt-4">
+              <CredibilityTierBadge tier={credibilityTier} />
+            </div>
             {credibility.isThinFile ? (
               <div className="mt-4 space-y-2">
                 <p className="text-sm leading-6 text-[var(--muted)]">

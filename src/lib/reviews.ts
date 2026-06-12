@@ -2,10 +2,10 @@ import {
   normalizeReviewComment,
   normalizeReviewWorkType,
   validateReviewRating,
-} from "@/lib/review-validation";
-import { prisma } from "@/lib/prisma";
-import { recordActivity } from "@/lib/activity";
-import { computeAndAwardBadges } from "@/lib/badges";
+} from "./review-validation.ts";
+import { prisma } from "./prisma.ts";
+import { recordActivity } from "./activity.ts";
+import { computeAndAwardBadges } from "./badges.ts";
 
 export type CreateReviewInput = {
   vendorId: string;

@@ -9,6 +9,8 @@ import { listBacklinksForFounder } from "@/lib/backlinks";
 import { reviewContributionPoints } from "@/lib/review-quality";
 import { computeCredibilityFactors, toPublicCredibilityFactors } from "@/lib/credibility-factors";
 import { getFounderImpactSummary } from "@/lib/impact";
+import { getCredibilityTierFromEvidence } from "@/lib/credibility-tier";
+import { CredibilityTierBadge } from "@/app/components/credibility-tier-badge";
 import { prisma } from "@/lib/prisma";
 import crypto from "node:crypto";
 import { CredibilityActions } from "./credibility-actions";
@@ -140,6 +142,12 @@ async function getFounderCredibilityData(slug: string) {
 
   const credibility = await computeCredibilityFactors(founder.id, { impact, useCache: true });
   const publicFactors = toPublicCredibilityFactors(credibility);
+  const credibilityTier = getCredibilityTierFromEvidence({
+    credibility,
+    impact,
+    profileCompletePercentage: founder.profileCompletePercentage,
+    publicProfileEnabled: founder.publicProfileEnabled,
+  });
 
   return {
     founder,
@@ -158,6 +166,7 @@ async function getFounderCredibilityData(slug: string) {
     reviewFreshnessLabel,
     credibility,
     publicFactors,
+    credibilityTier,
     badgeVerificationHash,
     gscConnected,
     accountAgeDays: Math.floor((issuedAt.getTime() - founder.createdAt.getTime()) / 86400000),
@@ -255,6 +264,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
     badgeVerificationHash,
     credibility,
     publicFactors,
+    credibilityTier,
     gscConnected,
     accountAgeDays,
     lastUpdatedLabel,
@@ -338,6 +348,7 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
           
           {/* Header info */}
           <div className="mt-6 flex flex-wrap gap-4 text-sm">
+            <CredibilityTierBadge tier={credibilityTier} />
             <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1">
               {founder.cohort?.name ?? "Incubator Cohort"} • Verified Member
             </span>
@@ -356,6 +367,9 @@ export default async function FounderCredibilityPage({ params }: FounderCredibil
             <p className="mt-2 text-sm text-[var(--muted)]">
               {`An overview of ${displayName}'s contribution track record on ${founder.cohort?.name ?? "the platform"}.`}
             </p>
+            <div className="mt-4">
+              <CredibilityTierBadge tier={credibilityTier} showDescription />
+            </div>
             <div className="mt-4 space-y-3">
               {credibility.isThinFile ? (
                 <div className="rounded-xl bg-gray-50 p-4 text-sm leading-6 text-[var(--muted)]">

@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import {
   selectPrismaAccelerateUrl,
   selectPrismaConnectionString,
-} from "@/lib/prisma-connection";
+} from "./prisma-connection.ts";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;

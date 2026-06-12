@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { getVoteCounts } from "@/lib/helpful-votes";
+import { prisma } from "./prisma.ts";
+import { getVoteCounts } from "./helpful-votes.ts";
 
 export type CohortAnalytics = {
   reviews: {
