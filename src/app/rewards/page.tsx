@@ -6,6 +6,7 @@ import { hasActiveCohort } from "@/lib/tenant-policy";
 import { getFounderPoints } from "@/lib/points";
 import { computeReviewStreak } from "@/lib/rewards";
 import { prisma } from "@/lib/prisma";
+import { CREDIBILITY_TIERS } from "@/lib/credibility-tier";
 
 const RULES = [
   { action: "Share a useful review", description: "Specific details, outcomes, numbers, and firsthand context make a review easier to trust." },
@@ -82,12 +83,31 @@ export default async function RewardsPage() {
               />
               <FaqItem
                 question="What are credibility tiers?"
-                answer="Tiers are maturity labels for verified evidence, not competitive rankings. They summarize review quality, peer helpfulness, contribution signals, profile completeness, and verified external references."
+                answer="Tiers are maturity labels for verified evidence, not competitive rankings. The available tiers are Establishing, Verified Contributor, Trusted Contributor, Cohort Authority, and Public Credibility Leader."
               />
               <FaqItem
                 question="Do exchanges count?"
                 answer="Sending, accepting, or declining an exchange does not count by itself. Published collaborations can support credibility when they become verified contribution or backlink evidence."
               />
+            </div>
+          </section>
+
+          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold">Credibility tier ladder</h2>
+            <div className="mt-4 space-y-3">
+              {Object.values(CREDIBILITY_TIERS).map((tier) => (
+                <div key={tier.key} className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[var(--accent-strong)]">
+                      {tier.iconText}
+                    </span>
+                    <div>
+                      <p className="font-semibold">{tier.label}</p>
+                      <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{tier.description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
 
