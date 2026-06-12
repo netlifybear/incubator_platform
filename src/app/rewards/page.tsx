@@ -85,18 +85,13 @@ export default async function RewardsPage() {
                 question="What are credibility tiers?"
                 answer="Tiers are maturity labels for verified evidence, not competitive rankings. The available tiers are Establishing, Verified Contributor, Trusted Contributor, Cohort Authority, and Public Credibility Leader."
               >
-                <TierList compact />
+                <TierList />
               </FaqItem>
               <FaqItem
                 question="Do exchanges count?"
                 answer="Sending, accepting, or declining an exchange does not count by itself. Published collaborations can support credibility when they become verified contribution or backlink evidence."
               />
             </div>
-          </section>
-
-          <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
-            <h2 className="text-xl font-semibold">Credibility tier ladder</h2>
-            <TierList />
           </section>
 
           <section className="rounded-3xl border border-[var(--border)] bg-white/70 p-6 shadow-sm">
@@ -177,29 +172,18 @@ function BreakdownRow({ label, value }: { label: string; value: number }) {
   );
 }
 
-function TierList({ compact = false }: { compact?: boolean }) {
+function TierList() {
   return (
-    <div className={compact ? "mt-3 flex flex-wrap gap-2" : "mt-4 space-y-3"}>
+    <div className="mt-3 flex flex-wrap gap-2">
       {Object.values(CREDIBILITY_TIERS).map((tier) => (
         <div
           key={tier.key}
-          className={
-            compact
-              ? "inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--panel)] px-3 py-2 text-sm"
-              : "rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4"
-          }
+          className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--panel)] px-3 py-2 text-sm"
         >
           <span className="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[var(--accent-strong)]">
             {tier.iconText}
           </span>
-          {compact ? (
-            <span className="font-semibold">{tier.label}</span>
-          ) : (
-            <div>
-              <p className="font-semibold">{tier.label}</p>
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">{tier.description}</p>
-            </div>
-          )}
+          <span className="font-semibold">{tier.label}</span>
         </div>
       ))}
     </div>
